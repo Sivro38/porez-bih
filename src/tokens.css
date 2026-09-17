@@ -1,0 +1,63 @@
+/* ============================================================ */
+/* Paleta i mjere — jedno mjesto za cijeli program.             */
+/*                                                              */
+/* Boje nisu izmisljene nego uzete iz Windows XP (Luna) i iz    */
+/* styles.css, koji je izvorni stil i ne dira se. Ko dodaje novi */
+/* prozor: uzmi odavde umjesto da bira novu nijansu. Tri sivila  */
+/* za isti tekst su tacno ono zbog cega ovaj fajl postoji.       */
+/*                                                              */
+/* Ucitava se odmah poslije styles.css, prije svih ostalih.      */
+/* ============================================================ */
+
+:root {
+  /* --- povrsine --- */
+  --xp-bez:          #ECE9D8;   /* podloga prozora i traka */
+  --xp-polje:        #FFFFFF;   /* unos, spisak, dokument */
+  --xp-polje-mirno:  #F0EFE8;   /* onemoguceno polje */
+  --xp-red-paran:    #F7F9FC;   /* naizmjenicni red u spisku */
+
+  /* --- linije --- */
+  --xp-crta:         #ACA899;   /* razdjelnik i okvir odjeljka */
+  --xp-crta-blaga:   #EDEBE3;   /* crta izmedju redova tabele */
+  --xp-crta-tabele:  #D4D0C8;   /* ispod naslova, okvir tabele */
+  --xp-okvir-polja:  #7F9DB9;   /* utisnuta ivica unosa */
+  --xp-okvir-dugmeta:#003C74;   /* ivica dugmeta */
+
+  /* --- plava --- */
+  --xp-izbor:        #316AC5;   /* izabrana stavka, puna plava */
+  --xp-plava-tamna:  #0A246A;   /* ivica izabranog, naglasak */
+  --xp-naslov:       #003399;   /* naslov odjeljka u dokumentu */
+  --xp-veza:         #003399;   /* veza u tekstu */
+
+  /* --- tekst --- */
+  --xp-tekst:        #000000;
+  --xp-tekst-blijed: #555555;   /* napomena, opis, podnozje */
+  --xp-tekst-mirni:  #666666;   /* onemoguceno, izvedeno */
+  --xp-tekst-prazan: #999999;   /* tekst-primjer u praznom polju */
+
+  /* --- naglasci --- */
+  --xp-bordo:        #8A1C3A;   /* ono sto je na obrascu fiksno */
+  --xp-potpis:       #1A3A9C;   /* oznaka mjesta potpisa */
+  --xp-narandzasta:  #E9A825;   /* obrub dugmeta pod misem */
+
+  /* --- poruke --- */
+  --xp-pazi-pod:     #FFFBE6;   /* upozorenje: podloga */
+  --xp-pazi-crta:    #E0C56B;
+  --xp-pazi-tekst:   #3D3016;
+  --xp-dobro-pod:    #EFFAE8;   /* dobra vijest: podloga */
+  --xp-dobro-crta:   #A8CE96;
+  --xp-dobro-tekst:  #2E6B1F;
+  --xp-opasno-pod:   #FDF3F3;   /* nepovratna radnja */
+  --xp-opasno-crta:  #D8A8A8;
+  --xp-opasno-tekst: #8A1C1C;
+
+  /* --- mjere --- */
+  /* XP dugme je visoko 23px, slova 8pt (11px), radijus 3px. Sitniji
+     tekst ide na 10px, naslov odjeljka na 12-13px. Vece od toga se
+     dobija skalom prozora, ne novim stepenom u ljestvici. */
+  --xp-slova:        11px;
+  --xp-slova-sitna:  10px;
+  --xp-slova-naslov: 13px;
+  --xp-radijus:      3px;
+  --xp-visina-dugmeta: 23px;
+}

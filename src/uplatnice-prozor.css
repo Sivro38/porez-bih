@@ -1,0 +1,179 @@
+/* ============================================================ */
+/* Prozor sa uplatnicama — traka za prikaz i dva rezima.        */
+/* ============================================================ */
+
+.upl-prozor .xp-prozor-body { padding: 10px 12px 14px; }
+
+/* --- traka za izbor prikaza --- */
+
+.upl-alat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding-bottom: 9px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ACA899;
+  box-shadow: 0 1px 0 #fff;
+}
+.upl-lbl { font-size: 11px; color: #000; margin-right: 2px; }
+.upl-hint { font-size: 10px; color: #666; margin-left: auto; }
+
+/* dugme aktivnog rezima izgleda pritisnuto */
+.upl-alat .pd-btn.aktivan {
+  background: linear-gradient(180deg, #cfe0f5, #a8c6ea);
+  border-color: #0A246A;
+  font-weight: bold;
+}
+
+/* --- tabovi (vidljivi samo u rezimu "jedna po jedna") --- */
+
+.upl-tabovi { display: none; gap: 3px; margin-left: 6px; }
+.upl-prozor.rezim-jedna .upl-tabovi { display: inline-flex; }
+
+.upl-tab {
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+  font-size: 11px;
+  width: 24px;
+  height: 22px;
+  color: #000;
+  border: 1px solid #7F9DB9;
+  border-radius: 3px 3px 0 0;
+  background: linear-gradient(180deg, #fff, #e3e9ef);
+  cursor: pointer;
+}
+.upl-tab:hover { background: linear-gradient(180deg, #fff, #cfe0f5); }
+.upl-tab.aktivan {
+  background: linear-gradient(180deg, #fff, #fffbe6);
+  border-color: #0A246A;
+  font-weight: bold;
+}
+
+/* --- rezimi prikaza --- */
+
+.upl-prozor.rezim-jedna .upl-stavka { display: none; }
+.upl-prozor.rezim-jedna .upl-stavka.aktivna { display: block; }
+
+/* u rezimu "sve" prva uplatnica nema visak razmaka iznad */
+.upl-prozor .upl-stavka:first-child .form-caption { margin-top: 0; }
+
+/* Obrasci su siroki — kad je prozor uzi, neka se skroluje vodoravno
+   umjesto da se raspored razbije. */
+.upl-prozor .xp-prozor-body { overflow: auto; }
+
+/* --- umanjeni prikaz --- */
+/*
+ * Uplatnice se na ekranu crtaju u 75% velicine da sve tri stanu bez
+ * skrolanja. Namjerno `zoom`, a ne `transform: scale()`: zoom skalira i
+ * prostor koji element zauzima, dok bi transform samo vizuelno smanjio
+ * obrazac i ostavio prazninu oko njega.
+ *
+ * Nijedna dimenzija u samom obrascu se ne dira, pa raspored i stil
+ * ostaju netaknuti - sve se smanji u istom omjeru.
+ */
+/*
+ * Skalu racuna uplatniceProzor.js iz velicine prozora, pa korisnik moze
+ * povecati obrazac time sto poveca prozor. 0,75 je samo polazna, za
+ * slucaj da racun jos nije prosao.
+ */
+.upl-prozor .upl-stavka { zoom: var(--upl-skala, 0.75); }
+
+/*
+ * Mjesto za klizac se drzi i kad ga nema. Inace njegova pojava suzi
+ * tijelo za 15px, sto promijeni skalu, pa obrazac poskoci pri samom
+ * rubu izmedju "staje" i "ne staje".
+ */
+.upl-prozor .xp-prozor-body { scrollbar-gutter: stable; }
+
+/* ============================================================ */
+/* Sazetak za telefon                                            */
+/* ============================================================ */
+/*
+ * Na sirokom ekranu se vidi replika obrasca, na telefonu kartica.
+ * Zamjena, ne umanjenje: replika na 400px nije ni citka ni korisna,
+ * jer se s telefona ne stampa nego se brojevi prepisuju u banku.
+ */
+
+.upl-sazetak { display: none; }
+
+@media screen and (max-width: 760px) {
+  .upl-prozor .form-caption,
+  .upl-prozor .real-form { display: none; }
+
+  .upl-prozor .upl-stavka {
+    zoom: 1;                      /* kartica se ne umanjuje */
+    margin-bottom: 10px;
+  }
+
+  .upl-sazetak {
+    display: block;
+    border: 1px solid #7F9DB9;
+    border-radius: 3px;
+    background: #FFFFFF;
+    font-size: 13px;
+  }
+
+  .upl-sazetak-zaglavlje {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 7px 9px;
+    background: linear-gradient(180deg, #D9E4F5, #B9CDEB);
+    border-bottom: 1px solid #7F9DB9;
+  }
+  .upl-sazetak-naslov {
+    font-size: 12px;
+    font-weight: bold;
+    color: #003399;
+    line-height: 1.2;
+  }
+  .upl-sazetak-iznos {
+    font-size: 17px;
+    font-weight: bold;
+    color: #000;
+    white-space: nowrap;
+  }
+
+  .upl-red {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 6px 9px;
+    border-bottom: 1px solid #EDEBE3;
+  }
+  .upl-red:last-child { border-bottom: none; }
+
+  .upl-red-naziv { font-size: 11px; color: #555; flex: none; }
+  .upl-red-vrijednost {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-align: right;
+    color: #000;
+    min-width: 0;
+  }
+  .upl-red-vrijednost.mono {
+    font-family: "Courier New", Courier, monospace;
+    font-weight: bold;
+    letter-spacing: 0.3px;
+  }
+
+  .upl-kopiraj {
+    flex: none;
+    height: 22px;
+    padding: 0 7px;
+    font-family: Tahoma, Verdana, Arial, sans-serif;
+    font-size: 10px;
+    color: #000;
+    border: 1px solid #003C74;
+    border-radius: 3px;
+    background: linear-gradient(180deg, #FFFFFF 0%, #F6F5F0 46%, #EAE8DD 47%, #DAD5C6 100%);
+    cursor: pointer;
+  }
+  .upl-kopiraj.kopirano {
+    border-color: #4E8A34;
+    background: linear-gradient(180deg, #EFFAE8, #C9E8B8);
+  }
+}

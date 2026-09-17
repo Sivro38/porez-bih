@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>kalkulacija.exe</title>
+<style>
+  *{ box-sizing:border-box; }
+  html,body{
+    margin:0;
+    min-height:100%;
+    background: linear-gradient(180deg, #6a96d4 0%, #3d6ba8 45%, #2a4d7d 100%);
+    font-family: Tahoma, Verdana, Arial, sans-serif;
+    padding: 24px 10px;
+  }
+  .window{
+    max-width: 960px;
+    margin: 0 auto;
+    background: #ECE9D8;
+    border: 1px solid #0A246A;
+    border-radius: 8px 8px 3px 3px;
+    box-shadow: 3px 3px 12px rgba(0,0,0,0.45);
+    overflow: visible;
+    position:relative;
+  }
+  .titlebar{
+    height: 30px;
+    background: linear-gradient(180deg, #2A6EE8 0%, #1958D6 6%, #0F45B8 50%, #1958D6 94%, #2A6EE8 100%);
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 2px 3px 2px 6px; border-radius: 7px 7px 0 0;
+  }
+  .titletext{ color:#fff; font-size:13px; font-weight:bold; text-shadow: 1px 1px 1px rgba(0,0,0,0.5); display:flex; align-items:center; gap:6px; }
+  .titletext .ico{ width:16px;height:16px; background: linear-gradient(135deg,#ffd24a,#e8a415); border-radius:2px; display:inline-block; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.3); }
+  .winbtns{ display:flex; gap:3px; }
+  .winbtns span{ width:21px; height:20px; background: linear-gradient(180deg,#4d8fe0,#1a5cc4); border:1px solid #0A246A; border-radius:3px; color:#fff; font-size:11px; font-weight:bold; display:flex; align-items:center; justify-content:center; box-shadow: inset 0 1px 0 rgba(255,255,255,0.5); }
+  .winbtns .close{ background: linear-gradient(180deg,#e8685a,#c2321f); }
+
+  .menubar{ background:#ECE9D8; border-bottom: 1px solid #ACA899; padding: 3px 4px; font-size: 11px; color:#000; display:flex; gap:2px; position:relative; user-select:none; }
+  .menu-item{ padding: 3px 8px; border-radius:2px; cursor:pointer; position:relative; }
+  .menu-item:hover, .menu-item.open{ background:#316AC5; color:#fff; }
+  .dropdown{ display:none; position:absolute; top:100%; left:0; min-width:210px; background:#ECE9D8; border:1px solid #0A246A; box-shadow: 2px 2px 6px rgba(0,0,0,0.4); z-index:50; padding:2px; }
+  .menu-item.open .dropdown{ display:block; }
+  .dropdown .opt{ padding:5px 10px 5px 26px; font-size:11px; color:#000; white-space:nowrap; position:relative; cursor:pointer; }
+  .dropdown .opt:hover{ background:#316AC5; color:#fff; }
+  .dropdown .sep{ height:1px; background:#ACA899; margin:3px 4px; }
+  .dropdown .opt .chk{ position:absolute; left:8px; }
+
+  .content{ padding: 14px 16px 16px; background:#ECE9D8; }
+
+  .groupbox{ border: 1px solid #ACA899; border-top-color:#fff; border-left-color:#fff; background:#ECE9D8; border-radius:3px; padding: 12px 12px 14px; margin-bottom: 14px; position: relative; }
+  .groupbox legend{ font-size: 11px; font-weight: bold; color: #003399; padding: 0 5px; margin-left: 6px; }
+
+  label.field{ display:block; font-size: 11px; color:#000; margin-bottom: 5px; }
+  .xp-input-row{ display:flex; align-items:center; gap:8px; }
+  input[type=text]{ flex:1; font-family: Tahoma, Verdana, Arial, sans-serif; font-size: 20px; font-weight:bold; color:#000; padding: 6px 8px; border: 2px solid; border-color: #7F9DB9 #E3E9EF #E3E9EF #7F9DB9; background:#fff; outline:none; }
+  input[type=text]:focus{ border-color:#003399 #7FB3E8 #7FB3E8 #003399; background: #FFFFF0; }
+  .curr-lbl{ font-size:12px; color:#333; }
+
+  table.xp-table{ width:100%; border-collapse:collapse; background:#fff; border: 2px solid; border-color: #7F9DB9 #E3E9EF #E3E9EF #7F9DB9; font-size:12px; }
+  table.xp-table th, table.xp-table td{ padding: 5px 8px; text-align:left; border-bottom: 1px solid #D4D0C8; }
+  table.xp-table td.num{ text-align:right; font-variant-numeric: tabular-nums; font-weight:bold; }
+  table.xp-table td.pct{ text-align:right; font-variant-numeric: tabular-nums; color:#555; width:64px; }
+  tr.xp-header th, tr.xp-header td{ background: linear-gradient(180deg,#F5F4EA,#E3E1D3); border-bottom: 1px solid #ACA899; font-weight:bold; color:#000; }
+  tr.xp-highlight td, tr.xp-highlight th{ background:#FFFFC2; }
+  tr.xp-section td{ background: linear-gradient(180deg,#D9E4F5,#B9CDEB); color:#003399; font-weight:bold; font-size:11px; padding:4px 8px; border-top:1px solid #7F9DB9; border-bottom:1px solid #7F9DB9; }
+  tr.xp-total td, tr.xp-total th{ background:#E5FFD9; font-weight:bold; font-size:14px; border-top: 2px solid #4E8A34; }
+  tr.xp-net td, tr.xp-net th{ background: linear-gradient(180deg,#DFF3D0,#C3EBA6); font-weight:bold; font-size:19px; padding: 12px 8px; border-top: 3px solid #2E6B1F; border-bottom: 3px solid #2E6B1F; color:#1F4D14; }
+  tr.xp-net td.pct{ font-size:13px; font-weight:bold; }
+
+  .statusbar{ display:flex; justify-content:space-between; background:#ECE9D8; border-top: 1px solid #fff; box-shadow: 0 -1px 0 #ACA899; font-size: 11px; color:#333; padding: 4px 10px; border-radius: 0 0 3px 3px; }
+  .statusbar .seg{ border-left: 1px solid #ACA899; border-right: 1px solid #fff; padding: 0 10px; }
+  .statusbar .seg:first-child{ border-left:none; padding-left:0; }
+
+  .clippy-note{ font-size:11px; color:#333; background:#FFFFE1; border:1px solid #000; border-radius:4px; padding:8px 10px; margin-top:12px; box-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+
+  .modal-overlay{ display:none; position:fixed; inset:0; background:rgba(0,0,0,0.35); z-index:100; align-items:center; justify-content:center; }
+  .modal-overlay.show{ display:flex; }
+  .about-win{ width:300px; background:#ECE9D8; border:1px solid #0A246A; border-radius:6px; box-shadow: 3px 3px 12px rgba(0,0,0,0.5); overflow:hidden; }
+  .about-win .titlebar{ border-radius:5px 5px 0 0; }
+  .about-body{ padding:16px; font-size:12px; text-align:center; }
+  .about-body .ico-big{ width:40px;height:40px; margin:0 auto 10px; background: linear-gradient(135deg,#ffd24a,#e8a415); border-radius:6px; box-shadow: inset 0 0 0 2px rgba(0,0,0,0.2); }
+  .about-ok{ margin-top:12px; padding:4px 18px; border:1px solid #003399; background: linear-gradient(180deg,#fff,#e3e9ef); border-radius:3px; font-size:11px; cursor:pointer; }
+
+  /* ============================================================ */
+  /* UPLATNICA — kompaktan, jednoredni izgled, papir-stil          */
+  /* ============================================================ */
+  .uplatnice-wrap{ display:none; }
+  .uplatnice-wrap.show{ display:block; }
+
+  .form-caption{ font-family: Tahoma, Arial, sans-serif; font-size:11px; color:#003399; font-weight:bold; margin: 10px 0 4px; }
+  .form-caption:first-child{ margin-top:0; }
+
+  .real-form{
+    width:100%;
+    max-width: 900px;
+    margin: 0 auto 18px;
+    background:#fffdf8;
+    border: 1px solid #000;
+    display:flex;
+    font-family: Georgia, "Times New Roman", serif;
+    color:#000;
+    box-shadow: 2px 3px 8px rgba(0,0,0,0.3);
+    font-size: 11px;
+  }
+
+  .rf-lbl-inline{ font-size:10px; color:#333; white-space:nowrap; }
+  .rf-lbl-block{ flex:0 0 132px; font-size:9.5px; color:#333; line-height:1.25; padding-right:6px; }
+  .rf-val-inline{ font-family: Verdana, Tahoma, Arial, sans-serif; font-weight:700; color:#8a1c3a; font-size:12px; }
+
+  /* --- lijeva kolona --- */
+  .rf-left{ flex: 0 0 44%; border-right: 1px solid #ccc; display:flex; flex-direction:column; }
+
+  .rf-lined{ padding: 4px 10px 3px; border-bottom: 1px solid #ccc; }
+  .rf-line{ display:flex; align-items:baseline; gap:6px; border-bottom: 1px solid #bbb; min-height:15px; padding-bottom:1px; margin-bottom:2px; }
+  .rf-line:last-child{ margin-bottom:0; }
+  .rf-line.blank{ min-height:14px; }
+
+  .rf-row-single{ display:flex; align-items:center; gap:6px; padding: 5px 10px; border-bottom: 1px solid #ccc; }
+  .rf-mjesto-line{ flex:1; border-bottom:1px solid #999; height:13px; margin: 0 2px; }
+
+  .rf-datebox-row{ display:flex; align-items:center; gap:1px; flex:0 0 auto; }
+  .rf-datebox-row .slash{ font-size:10px; padding:0 1px; color:#333; }
+  .rf-digit{ display:inline-flex; align-items:center; justify-content:center; width:12px; height:15px; border: 1px solid #444; font-size: 10px; font-family: Verdana, sans-serif; color:#8a1c3a; font-weight:700; }
+
+  .rf-sig-block{ display:flex; border-bottom:none; flex:1; }
+  .rf-sig-labels{ flex:1; display:flex; flex-direction:column; }
+  .rf-sig-labels .rf-row-single{ flex:1; }
+  .rf-sig-line{ flex:1; border-bottom:1px solid #999; height:13px; margin-left:6px; }
+  .rf-stamp-box{ flex: 0 0 34%; border-left: 1px solid #ccc; display:flex; align-items:center; justify-content:center; position:relative; }
+  .rf-stamp-box .stamp-label{ font-size: 10px; color:#333; }
+  .rf-stamp-circle{ position:absolute; width:46px; height:46px; border: 1.5px dashed #8a1c3a; border-radius:50%; opacity:0.3; }
+
+  .rf-fill-hint{ display:block; font-size:8px; color:#999; font-style:italic; font-family: Tahoma, Arial, sans-serif; margin-top:1px; }
+
+  /* --- desna kolona --- */
+  .rf-right{ flex: 1; display:flex; flex-direction:column; }
+
+  .rf-acc-row{ display:flex; align-items:center; gap:8px; padding: 5px 10px; border-bottom: 1px solid #ccc; }
+  .rf-digitgrid{ display:flex; gap:1px; flex-wrap:wrap; }
+  .rf-digitgrid .box{ width: 18px; height: 20px; border: 1px solid #444; display:flex; align-items:center; justify-content:center; font-size:13px; font-family: Verdana, sans-serif; font-weight:700; color:#8a1c3a; }
+  .rf-digitgrid.small .box{ width:15px; height:18px; font-size:11px; }
+
+  .rf-km-row{ border-bottom: 1px solid #ccc; padding: 6px 10px; display:flex; align-items:center; gap: 12px; }
+  .rf-km-lbl{ font-size:14px; font-weight:bold; }
+  .rf-km-val{ font-family: Verdana, Tahoma, sans-serif; font-weight:700; color:#8a1c3a; font-size:20px; border-bottom: 1px solid #444; padding: 0 6px 1px; min-width:110px; }
+  .rf-hitno{ margin-left:auto; display:flex; align-items:center; gap:5px; font-size:10px; }
+  .rf-hitno .box{ width:13px;height:13px;border:1px solid #444; }
+
+  .rf-jp-box{ border: 2px solid #000; display:flex; flex-direction:column; }
+  .rf-jp-title{ text-align:center; font-size: 10px; font-style: italic; padding: 2px 0; border-bottom: 1px solid #999; }
+  .rf-jp-row{ border-bottom: 1px solid #ddd; }
+  .rf-jp-row:last-child{ border-bottom:none; }
+
+  .rf-jp-row-flat{ display:flex; align-items:center; gap:6px; padding:4px 8px; }
+  .rf-jp-checkbox-wrap{ display:flex; align-items:center; gap:4px; margin-left:auto; }
+  .rf-checkbox{ width:14px; height:14px; border: 1px solid #444; display:inline-block; }
+
+  .rf-vrsta-period-row{ display:flex; align-items:stretch; }
+  .rf-vrsta-part{ flex:0 0 58%; display:flex; align-items:center; gap:6px; padding:4px 8px; border-right:1px solid #ddd; }
+  .rf-period-part{ flex:1; padding:3px 8px; }
+  .rf-period-title{ text-align:center; font-style:italic; font-size:9px; margin-bottom:2px; }
+  .rf-period-line{ display:flex; align-items:center; gap:3px; margin-top:1px; font-size:9px; }
+  .rf-period-line .rf-digit{ width:10px; height:12px; font-size:8.5px; }
+
+  .rf-opcina-row{ display:flex; align-items:center; gap:18px; padding:4px 8px; }
+  .rf-opcina-part{ display:flex; align-items:center; gap:6px; }
+
+  .rf-poziv-row{ display:flex; align-items:center; gap:6px; padding:4px 8px; }
+
+  @media (max-width: 760px){
+    .real-form{ flex-direction:column; font-size:10px; }
+    .rf-left{ border-right:none; border-bottom:1px solid #ccc; flex:none; }
+    .rf-lbl-block{ flex-basis:100px; }
+    .rf-digitgrid .box{ width:15px; height:18px; font-size:11px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="window">
+  <div class="titlebar">
+    <div class="titletext"><span class="ico"></span>kalkulacija_freelance.exe</div>
+    <div class="winbtns"><span>_</span><span>▢</span><span class="close">✕</span></div>
+  </div>
+
+  <div class="menubar" id="menubar">
+    <div class="menu-item" data-menu="datoteka">
+      Datoteka
+      <div class="dropdown">
+        <div class="opt" data-action="novo">Novi obračun</div>
+        <div class="opt" data-action="spremi">Spremi kao...</div>
+        <div class="opt" data-action="ispis">Ispis uplatnica...</div>
+        <div class="sep"></div>
+        <div class="opt" data-action="izlaz">Izlaz</div>
+      </div>
+    </div>
+    <div class="menu-item" data-menu="uredi">
+      Uredi
+      <div class="dropdown">
+        <div class="opt" data-action="kopiraj">Kopiraj ukupan iznos</div>
+        <div class="opt" data-action="ocisti">Očisti unos</div>
+        <div class="opt" data-action="vrati">Vrati na 3.399,44</div>
+      </div>
+    </div>
+    <div class="menu-item" data-menu="prikaz">
+      Prikaz
+      <div class="dropdown">
+        <div class="opt" data-action="toggle-postotak"><span class="chk" id="chk-postotak">✓</span>Prikaži % kolonu</div>
+        <div class="opt" data-action="toggle-uplatnice"><span class="chk" id="chk-uplatnice"> </span>Prikaži uplatnice</div>
+        <div class="sep"></div>
+        <div class="opt" data-action="osvjezi">Osvježi</div>
+      </div>
+    </div>
+    <div class="menu-item" data-menu="alati">
+      Alati
+      <div class="dropdown">
+        <div class="opt" data-action="postavke">Postavke poreske stope...</div>
+        <div class="opt" data-action="historija">Historija uplata</div>
+      </div>
+    </div>
+    <div class="menu-item" data-menu="pomoc">
+      Pomoć
+      <div class="dropdown">
+        <div class="opt" data-action="uputstvo">Uputstvo za korištenje</div>
+        <div class="sep"></div>
+        <div class="opt" data-action="oprogramu">O programu</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <div class="groupbox">
+      <legend>Unos</legend>
+      <label class="field" for="osnovica">Osnovica (ukupan prihod)</label>
+      <div class="xp-input-row">
+        <input type="text" id="osnovica" inputmode="decimal" value="3399,44">
+        <span class="curr-lbl">KM</span>
+      </div>
+    </div>
+
+    <div class="groupbox">
+      <legend>Obračun</legend>
+      <table class="xp-table" id="obracun-table">
+        <tbody>
+          <tr class="xp-header">
+            <th>Stavka</th>
+            <th class="pct-col" style="text-align:right;">%</th>
+            <th style="text-align:right;">Iznos (KM)</th>
+          </tr>
+          <tr class="xp-highlight">
+            <th>Osnovica (ukupan prihod)</th>
+            <td class="pct pct-col">100,00%</td>
+            <td class="num" id="r-osnovica">–</td>
+          </tr>
+          <tr>
+            <th>Rashodi</th>
+            <td class="pct pct-col">20,00%</td>
+            <td class="num" id="r-rashodi">–</td>
+          </tr>
+          <tr>
+            <th>Osnovica za obračun doprinosa</th>
+            <td class="pct pct-col">80,00%</td>
+            <td class="num" id="r-osn-dopr">–</td>
+          </tr>
+          <tr>
+            <th>Doprinosi</th>
+            <td class="pct pct-col">4,00%</td>
+            <td class="num" id="r-4posto">–</td>
+          </tr>
+          <tr class="xp-section"><td colspan="3">Raspodjela doprinosa</td></tr>
+          <tr>
+            <th>Kanton</th>
+            <td class="pct pct-col">89,80%</td>
+            <td class="num" id="r-kanton">–</td>
+          </tr>
+          <tr>
+            <th>Federacija</th>
+            <td class="pct pct-col">10,20%</td>
+            <td class="num" id="r-federacija">–</td>
+          </tr>
+          <tr class="xp-section"><td colspan="3">Porez na dohodak</td></tr>
+          <tr>
+            <th>Osnovica poreza na dohodak</th>
+            <td class="pct pct-col">96,00%</td>
+            <td class="num" id="r-osn-poreza">–</td>
+          </tr>
+          <tr>
+            <th>Porez</th>
+            <td class="pct pct-col">10,00%</td>
+            <td class="num" id="r-porez">–</td>
+          </tr>
+          <tr class="xp-total">
+            <th>Ukupno za uplatu</th>
+            <td class="pct pct-col" id="r-ukupno-pct">–</td>
+            <td class="num" id="r-ukupno">–</td>
+          </tr>
+          <tr class="xp-net">
+            <th>Ukupno za zadržat</th>
+            <td class="pct pct-col" id="r-neto-pct">–</td>
+            <td class="num" id="r-neto">–</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="groupbox uplatnice-wrap" id="uplatnice-wrap">
+      <legend>Uplatnice — Nalog za uplatu javnih prihoda</legend>
+      <div id="forms-mount"></div>
+    </div>
+
+    <div class="clippy-note">
+      💡 Popunjeno automatski: Primatelj, Svrha, Račun primatelja i Vrsta prihoda (iz tvoje tablice), i Iznos (KM, live iz obračuna). Prazno je ostavljeno ono što ja ne znam: tvoje ime/adresa/telefon, tvoj vlastiti račun, JMBG/porezni broj, općina, proračunska organizacija, poziv na broj, porezni period i datum — to upiši ručno prije nego odeš u banku.
+    </div>
+
+  </div>
+
+  <div class="statusbar">
+    <span class="seg" id="status-msg">Spremno</span>
+    <span class="seg">100%</span>
+  </div>
+</div>
+
+<div class="modal-overlay" id="about-overlay">
+  <div class="about-win">
+    <div class="titlebar">
+      <div class="titletext"><span class="ico"></span>O programu</div>
+      <div class="winbtns"><span class="close" id="about-close-x">✕</span></div>
+    </div>
+    <div class="about-body">
+      <div class="ico-big"></div>
+      <div style="font-weight:bold; margin-bottom:4px;">Kalkulacija freelance prihoda</div>
+      <div style="color:#555;">verzija 1,0 (build XP)</div>
+      <div style="margin-top:8px; color:#555;">Obračun doprinosa i poreza, plus replika obrasca za uplatu javnih prihoda.</div>
+      <button class="about-ok" id="about-ok">U redu</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function fmt(n){
+  return n.toLocaleString('bs-BA', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function parseInput(v){
+  if(!v) return 0;
+  let s = v.replace(/\s/g,'');
+  if(s.includes(',') && s.includes('.')){ s = s.replace(/\./g,'').replace(',', '.'); }
+  else if(s.includes(',')){ s = s.replace(',', '.'); }
+  const n = parseFloat(s);
+  return isNaN(n) ? 0 : n;
+}
+
+function calc(){
+  const osnovica = parseInput(document.getElementById('osnovica').value);
+  const rashodi = osnovica * 0.20;
+  const osnDoprinosa = osnovica - rashodi;
+  const cetiriPosto = osnDoprinosa * 0.04;
+  const kanton = cetiriPosto * 0.898;
+  const federacija = cetiriPosto * 0.102;
+  const osnPoreza = osnDoprinosa - cetiriPosto;
+  const porez = osnPoreza * 0.10;
+  const ukupno = cetiriPosto + porez;
+  const neto = osnovica - ukupno;
+
+  document.getElementById('r-osnovica').textContent = fmt(osnovica);
+  document.getElementById('r-rashodi').textContent = fmt(rashodi);
+  document.getElementById('r-osn-dopr').textContent = fmt(osnDoprinosa);
+  document.getElementById('r-4posto').textContent = fmt(cetiriPosto);
+  document.getElementById('r-kanton').textContent = fmt(kanton);
+  document.getElementById('r-federacija').textContent = fmt(federacija);
+  document.getElementById('r-osn-poreza').textContent = fmt(osnPoreza);
+  document.getElementById('r-porez').textContent = fmt(porez);
+  document.getElementById('r-ukupno').textContent = fmt(ukupno);
+  document.getElementById('r-neto').textContent = fmt(neto);
+
+  const ukupnoPct = osnovica > 0 ? (ukupno / osnovica * 100) : 0;
+  const netoPct = osnovica > 0 ? (neto / osnovica * 100) : 0;
+  document.getElementById('r-ukupno-pct').textContent = fmt(ukupnoPct) + '%';
+  document.getElementById('r-neto-pct').textContent = fmt(netoPct) + '%';
+
+  const amounts = { kanton: kanton, federacija: federacija, porez: porez };
+  document.querySelectorAll('.real-form').forEach(form => {
+    const key = form.getAttribute('data-form');
+    form.querySelector('.js-km-val').textContent = fmt(amounts[key]);
+  });
+}
+
+function digitBoxesHTML(value, length, cls){
+  const str = (value || '').toString();
+  let html = '<div class="rf-digitgrid ' + (cls||'') + '">';
+  for(let i=0; i<length; i++){
+    html += '<span class="box">' + (str[i] ? str[i] : '') + '</span>';
+  }
+  html += '</div>';
+  return html;
+}
+
+function dateBoxesHTML(digitClass){
+  return '<div class="rf-datebox-row">'
+    + '<span class="'+digitClass+'"></span><span class="'+digitClass+'"></span>'
+    + '<span class="slash">/</span>'
+    + '<span class="'+digitClass+'"></span><span class="'+digitClass+'"></span>'
+    + '<span class="slash">/</span>'
+    + '<span class="'+digitClass+'"></span><span class="'+digitClass+'"></span><span class="'+digitClass+'"></span><span class="'+digitClass+'"></span>'
+    + '</div>';
+}
+
+function periodBoxesHTML(){
+  const row = () => '<span class="rf-digit"></span><span class="rf-digit"></span>/<span class="rf-digit"></span><span class="rf-digit"></span>/<span class="rf-digit"></span><span class="rf-digit"></span><span class="rf-digit"></span><span class="rf-digit"></span>';
+  return '<div class="rf-period-part">'
+    + '<div class="rf-period-title">Porezni period</div>'
+    + '<div class="rf-period-line"><span style="width:14px;">Od</span>' + row() + '</div>'
+    + '<div class="rf-period-line"><span style="width:14px;">Do</span>' + row() + '</div>'
+    + '</div>';
+}
+
+function renderForm(cfg){
+  return '' +
+  '<div class="form-caption">'+cfg.caption+'</div>' +
+  '<div class="real-form" data-form="'+cfg.key+'">' +
+
+    '<div class="rf-left">' +
+
+      '<div class="rf-lined">' +
+        '<div class="rf-line"><span class="rf-lbl-inline">Uplatio je (ime, adresa, i telefon):</span></div>' +
+        '<div class="rf-line blank"></div>' +
+        '<div class="rf-line blank"></div>' +
+      '</div>' +
+
+      '<div class="rf-lined">' +
+        '<div class="rf-line"><span class="rf-lbl-inline">Svrha doznake:</span><span class="rf-val-inline">'+cfg.svrha+'</span></div>' +
+        '<div class="rf-line blank"></div>' +
+        '<div class="rf-line blank"></div>' +
+      '</div>' +
+
+      '<div class="rf-lined" style="border-bottom:none;">' +
+        '<div class="rf-line"><span class="rf-lbl-inline">Primatelj/Primalac:</span><span class="rf-val-inline">'+cfg.primatelj+'</span></div>' +
+        '<div class="rf-line blank"></div>' +
+        '<div class="rf-line blank" style="border-bottom:1px solid #ccc;"></div>' +
+      '</div>' +
+
+      '<div class="rf-row-single">' +
+        '<span class="rf-lbl-inline">Mjesto i datum uplate:</span>' +
+        '<span class="rf-mjesto-line"></span>' +
+        dateBoxesHTML('rf-digit') +
+      '</div>' +
+
+      '<div class="rf-sig-block">' +
+        '<div class="rf-sig-labels">' +
+          '<div class="rf-row-single"><span class="rf-lbl-inline">Potpis i pečat nalogodavatelja:</span><span class="rf-sig-line"></span></div>' +
+          '<div class="rf-row-single" style="border-bottom:none;"><span class="rf-lbl-inline">Potpis ovlaštene osobe/lica:</span><span class="rf-sig-line"></span></div>' +
+        '</div>' +
+        '<div class="rf-stamp-box"><div class="rf-stamp-circle"></div><div class="stamp-label">Pečat Banke</div></div>' +
+      '</div>' +
+
+    '</div>' +
+
+    '<div class="rf-right">' +
+
+      '<div class="rf-acc-row">' +
+        '<span class="rf-lbl-block">Račun pošiljatelja/pošiljaoca</span>' +
+        digitBoxesHTML('', 16, 'js-racun-posiljalac') +
+      '</div>' +
+      '<div style="padding:0 10px 4px 152px; margin-top:-3px; border-bottom:1px solid #ccc;"><span class="rf-fill-hint">— popuni ručno (tvoj vlastiti račun) —</span></div>' +
+
+      '<div class="rf-acc-row">' +
+        '<span class="rf-lbl-block">Račun primatelja/primaoca</span>' +
+        digitBoxesHTML(cfg.acc, 16, '') +
+      '</div>' +
+
+      '<div class="rf-km-row">' +
+        '<div class="rf-km-lbl">KM</div>' +
+        '<div class="rf-km-val js-km-val">–</div>' +
+        '<div class="rf-hitno"><span class="box"></span>HITNO</div>' +
+      '</div>' +
+
+      '<div class="rf-jp-box">' +
+        '<div class="rf-jp-title">samo za uplate javnih prihoda</div>' +
+
+        '<div class="rf-jp-row">' +
+          '<div class="rf-jp-row-flat">' +
+            '<span class="rf-lbl-block" style="flex-basis:150px;">Broj poreznog obveznika</span>' +
+            digitBoxesHTML('', 13, 'small') +
+            '<div class="rf-jp-checkbox-wrap"><span class="rf-lbl-inline">Vrsta uplate</span><span class="rf-checkbox"></span></div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="rf-jp-row">' +
+          '<div class="rf-vrsta-period-row">' +
+            '<div class="rf-vrsta-part">' +
+              '<span class="rf-lbl-block" style="flex-basis:90px;">Vrsta prihoda</span>' +
+              digitBoxesHTML(cfg.vrsta, 6, 'small') +
+            '</div>' +
+            periodBoxesHTML() +
+          '</div>' +
+        '</div>' +
+
+        '<div class="rf-jp-row">' +
+          '<div class="rf-opcina-row">' +
+            '<div class="rf-opcina-part">' +
+              '<span class="rf-lbl-inline">Općina</span>' +
+              digitBoxesHTML('', 3, 'small') +
+            '</div>' +
+            '<div class="rf-opcina-part">' +
+              '<span class="rf-lbl-inline">Proračunska/budžetska organizacija</span>' +
+              digitBoxesHTML('', 7, 'small') +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="rf-jp-row">' +
+          '<div class="rf-poziv-row">' +
+            '<span class="rf-lbl-inline">Poziv na broj</span>' +
+            digitBoxesHTML('', 10, 'small') +
+          '</div>' +
+        '</div>' +
+
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+const formsConfig = [
+  { key:'kanton', caption:'1. Doprinos — Kanton (ZZO ZEDOK Zenica)', svrha:'Doprinos za zdravstveno osiguranje', primatelj:'Zavod zdrav. osig. ZEDOK Zenica', acc:'1340100000002157', vrsta:'712116' },
+  { key:'federacija', caption:'2. Doprinos — Federacija (Fond solidarnosti Sarajevo)', svrha:'Doprinos za zdravstveno osiguranje', primatelj:'Fond solidarnosti Sarajevo', acc:'1020500000640018', vrsta:'712116' },
+  { key:'porez', caption:'3. Porez na dohodak (Budžet ZEDOK)', svrha:'Porez na dohodak od samostalne djelatnosti', primatelj:'Budžet ZEDOK', acc:'1340100000001672', vrsta:'716116' }
+];
+
+document.getElementById('forms-mount').innerHTML = formsConfig.map(renderForm).join('');
+
+document.getElementById('osnovica').addEventListener('input', calc);
+calc();
+
+/* --- menu handling --- */
+const menuItems = document.querySelectorAll('.menu-item');
+function closeAllMenus(){ menuItems.forEach(m => m.classList.remove('open')); }
+menuItems.forEach(item => {
+  item.addEventListener('click', (e) => {
+    if(e.target.closest('.dropdown')){ return; } // let the option's own handler run this click
+    const wasOpen = item.classList.contains('open');
+    closeAllMenus();
+    if(!wasOpen){ item.classList.add('open'); }
+    e.stopPropagation();
+  });
+});
+document.addEventListener('click', closeAllMenus);
+
+const statusMsg = document.getElementById('status-msg');
+function setStatus(msg){
+  statusMsg.textContent = msg;
+  setTimeout(() => { statusMsg.textContent = 'Spremno'; }, 2200);
+}
+
+document.addEventListener('click', (e) => {
+  const opt = e.target.closest('.dropdown .opt');
+  if(!opt) return;
+  const action = opt.getAttribute('data-action');
+  e.stopPropagation();
+  switch(action){
+    case 'novo':
+      document.getElementById('osnovica').value = '';
+      calc(); setStatus('Novi obračun — unesi osnovicu'); break;
+    case 'vrati':
+      document.getElementById('osnovica').value = '3399,44';
+      calc(); setStatus('Vraćeno na zadanu vrijednost'); break;
+    case 'ocisti':
+      document.getElementById('osnovica').value = '0';
+      calc(); setStatus('Unos očišćen'); break;
+    case 'kopiraj': {
+      const val = document.getElementById('r-ukupno').textContent;
+      if(navigator.clipboard){ navigator.clipboard.writeText(val).catch(()=>{}); }
+      setStatus('Kopirano: ' + val + ' KM');
+      break;
+    }
+    case 'spremi': setStatus('Spremanje nije dostupno u demo verziji'); break;
+    case 'ispis': window.print(); break;
+    case 'izlaz': setStatus('Hvala na korištenju — prozor ostaje otvoren u demo verziji'); break;
+    case 'toggle-postotak': {
+      const showing = document.getElementById('chk-postotak').textContent.trim() === '✓';
+      document.getElementById('chk-postotak').textContent = showing ? ' ' : '✓';
+      document.querySelectorAll('.pct-col').forEach(el => { el.style.display = showing ? 'none' : ''; });
+      break;
+    }
+    case 'toggle-uplatnice': {
+      const wrap = document.getElementById('uplatnice-wrap');
+      const nowShow = !wrap.classList.contains('show');
+      wrap.classList.toggle('show', nowShow);
+      document.getElementById('chk-uplatnice').textContent = nowShow ? '✓' : ' ';
+      setStatus(nowShow ? 'Uplatnice prikazane' : 'Uplatnice sakrivene');
+      break;
+    }
+    case 'osvjezi': calc(); setStatus('Osvježeno'); break;
+    case 'postavke': setStatus('Poreske stope su fiksne prema Kantonu Zenica-Doboj'); break;
+    case 'historija': setStatus('Historija uplata nije dostupna u demo verziji'); break;
+    case 'uputstvo': setStatus('Unesi ukupan prihod — ostalo se računa automatski'); break;
+    case 'oprogramu': document.getElementById('about-overlay').classList.add('show'); break;
+  }
+  closeAllMenus();
+});
+
+document.getElementById('about-ok').addEventListener('click', () => {
+  document.getElementById('about-overlay').classList.remove('show');
+});
+document.getElementById('about-close-x').addEventListener('click', () => {
+  document.getElementById('about-overlay').classList.remove('show');
+});
+</script>
+</body>
+</html>

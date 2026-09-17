@@ -1,0 +1,59 @@
+/* ============================================================ */
+/* Dopune obrasca uplatnice — NOVI stilovi.                     */
+/* styles.css ostaje netaknut.                                  */
+/* ============================================================ */
+
+/*
+ * Dvije kategorije teksta na nalogu, kao na pravom papirnom obrascu:
+ *
+ *   .upisano  — ono sto korisnik unosi i sto se mijenja od osobe do
+ *               osobe (ime, adresa, telefon, vlastiti racun, JMBG,
+ *               opcina, mjesto, datum, period). Crno, kao da je
+ *               popunjeno hemijskom.
+ *
+ *   sve ostalo — ono sto je vec "odstampano" na obrascu i uvijek je
+ *               isto (svrha, primalac, racun primaoca, vrsta
+ *               prihoda, poziv na broj i budzetska organizacija koji
+ *               su uvijek nule). Ostaje #8a1c3a iz styles.css, pa se
+ *               ovdje i ne mora navoditi.
+ *
+ * Specificnost: styles.css ima `.rf-digitgrid .box` (0,1,1),
+ * `.rf-val-inline` (0,1,0) i `.rf-digit` (0,1,0). Selektori ispod ih
+ * ciljano nadjacavaju.
+ */
+
+.rf-val-inline.upisano { color: #000; }
+.rf-digitgrid.upisano .box { color: #000; }
+.rf-digit.upisano { color: #000; }
+
+/* Iznos je najpromjenjiviji podatak na nalogu — mijenja se sa svakim
+   obracunom, pa ide u istu kategoriju kao i rucno popunjena polja. */
+.rf-km-val.upisano { color: #000; }
+
+/* ============================================================ */
+/* Oznaka mjesta potpisa                                         */
+/* ============================================================ */
+
+/*
+ * Ukljucuje se prekidacem u "Moji podaci". Plavo, jer su crno vec
+ * korisnikovi podaci, a tamnocrveno ono sto je fiksno — potpis nije ni
+ * jedno ni drugo, nego podsjetnik da se tu potpise rukom.
+ *
+ * `.rf-sig-line` je linija visine 13px sa donjim obrubom; tekst sjeda
+ * na nju, pa se centrira i skracuje ako zatreba umjesto da je razvuce.
+ */
+.rf-sig-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.rf-potpis {
+  font-family: Verdana, Tahoma, Arial, sans-serif;
+  font-size: 9px;
+  font-weight: bold;
+  letter-spacing: 0.3px;
+  color: #1A3A9C;
+  white-space: nowrap;
+}

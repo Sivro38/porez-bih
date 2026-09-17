@@ -1,0 +1,5 @@
+# Statican jednostranicni alat — nema sta da se ne indeksira.
+User-agent: *
+Allow: /
+
+Sitemap: https://porez.pages.dev/sitemap.xml

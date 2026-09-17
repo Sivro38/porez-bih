@@ -1,0 +1,92 @@
+/* ============================================================ */
+/* Prozor "Upozorenje" — slika stoji u prozoru.                 */
+/* ============================================================ */
+
+/* Tijelo je flex da se slika moze uklopiti i kad korisnik promijeni
+   velicinu prozora — inace bi prerasla okvir ili ostavila prazninu. */
+.upoz-prozor .xp-prozor-body {
+  padding: 12px;
+  display: flex;
+  min-height: 0;
+}
+
+.upoz-slika {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+  /* cuva omjer u svakoj velicini prozora */
+  object-fit: contain;
+  margin: auto;
+
+  /* Izvorna slika je 738x591 i crta se veca od toga. Bez ovoga bi je
+     browser zamutio glatkim skaliranjem; ovako ostaje ostra i blokasta,
+     kao pixel art. Uvecanje ne dodaje detalje - samo cuva ivice. */
+  /* Redoslijed je bitan: posljednja vrijednost koju browser razumije
+     pobjeduje, a `pixelated` je ona koja je precizno definisana kao
+     nearest-neighbor. Prve dvije su za starije browsere. */
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}
+
+/* Zuti trokut umjesto obicne ikone u naslovnoj traci */
+.upoz-prozor .titlebar .ico {
+  background: linear-gradient(135deg, #ffd24a, #e8a415);
+  position: relative;
+}
+.upoz-prozor .titlebar .ico::after {
+  content: "!";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: bold;
+  color: #5a3b00;
+}
+
+/* Slika je namjerno uklopljena da stane cijela — bez skrolanja */
+.upoz-prozor .xp-prozor-body { overflow: hidden; }
+
+/* --- slika naspram teksta --- */
+/*
+ * Na sirokom ekranu ide slika. Na telefonu je nema: tekst u oblacicu
+ * tamo spadne na par piksela i ne moze se procitati, a isjecak sa misem
+ * je samo trosio visinu iznad poruke koja jedina nesto govori.
+ */
+
+.upoz-tekst { display: none; }
+
+/* Na desktopu okvir ne postoji kao kutija — slika se ponasa kao i prije */
+.upoz-slika-okvir { display: contents; }
+
+@media screen and (max-width: 760px) {
+  .upoz-slika-okvir { display: none; }
+
+  .upoz-tekst {
+    display: block;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #000;
+  }
+  .upoz-tekst p { margin: 0 0 12px; }
+  .upoz-tekst p:last-child { margin-bottom: 0; }
+
+  .upoz-tekst .upoz-dobro {
+    margin-top: 14px;
+    padding: 9px 11px;
+    background: #EFFAE8;
+    border: 1px solid #A8CE96;
+    border-radius: 3px;
+    color: #2E6B1F;
+  }
+
+  /* tijelo vise ne mora biti flex kontejner za sliku */
+  .upoz-prozor .xp-prozor-body {
+    display: block;
+    overflow: auto;
+    padding: 16px;
+  }
+}

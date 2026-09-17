@@ -1,0 +1,310 @@
+/* ============================================================ */
+/* Bocni prozor "Moji podaci" — NOVI elementi.                  */
+/* Namjerno odvojeno od styles.css da original ostane netaknut. */
+/* ============================================================ */
+
+/* styles.css ima `input[type=text]` (specificnost 0,1,1) sa fontom od
+   20px za veliko polje osnovice. Ovdje se ciljano nadjacava sa 0,1,2. */
+.pd-panel input[type=text],
+.pd-panel input[type=date],
+.pd-panel select {
+  flex: none;
+  width: 100%;
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+  font-size: 12px;
+  font-weight: normal;
+  color: #000;
+  padding: 3px 5px;
+  border: 2px solid;
+  border-color: #7F9DB9 #E3E9EF #E3E9EF #7F9DB9;
+  background: #fff;
+  outline: none;
+}
+.pd-panel input[type=text]:focus,
+.pd-panel input[type=date]:focus,
+.pd-panel select:focus {
+  border-color: #003399 #7FB3E8 #7FB3E8 #003399;
+  background: #FFFFF0;
+}
+/* select ima svoju visinu zbog strelice — poravnaj ga sa inputima */
+.pd-panel select { height: 26px; }
+
+.pd-panel input:disabled {
+  background: #F0EFE8;
+  color: #666;
+  cursor: not-allowed;
+}
+
+/* --- profili: tri mjesta --- */
+
+/*
+ * Ranije su ovdje bili padajuci izbornik i tri dugmeta. Za tri profila
+ * je to bilo previse koraka, pa su sada tri vidljiva mjesta: prazno se
+ * klikom popuni, puno se klikom ucita. Rjedje radnje idu iza tri tacke.
+ */
+
+.pd-mjesta {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #ACA899;
+  box-shadow: 0 1px 0 #fff;
+}
+
+.pd-mjesto { position: relative; min-width: 0; }
+
+.pd-mjesto-glavno {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  padding: 7px 3px 6px;
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+  font-size: 11px;
+  color: #000;
+  /* XP stavka liste: bijela podloga, tanka plavo-siva ivica, uglasto */
+  border: 1px solid #7F9DB9;
+  border-radius: 2px;
+  background: #FFFFFF;
+  cursor: pointer;
+}
+
+/* XP na prelaz misa daje blijedoplavu podlogu, ne preliv */
+.pd-mjesto-glavno:hover {
+  border-color: #316AC5;
+  background: #EAF1FB;
+}
+.pd-mjesto-glavno:active { background: #D8E6F8; }
+
+.pd-mjesto.prazno .pd-mjesto-glavno { color: var(--xp-tekst-blijed); background: #F7F6F1; }
+.pd-mjesto.prazno .pd-mjesto-glavno:hover { background: #EAF1FB; color: #000; }
+
+/*
+ * Izabrano mjesto: puna XP plava sa bijelim tekstom. To je potpis
+ * tog sistema — Vista i 7 su presli na meke prelive, XP nije.
+ */
+.pd-mjesto.aktivno .pd-mjesto-glavno {
+  border-color: #0A246A;
+  background: #316AC5;
+  color: #FFFFFF;
+}
+.pd-mjesto.aktivno .pd-mjesto-glavno:hover { background: #3F78D0; }
+
+.pd-mjesto-ikona { display: block; line-height: 0; }
+.pd-mjesto-ikona svg { display: block; }
+
+.pd-mjesto-naziv {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pd-mjesto-uredi {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 18px;
+  height: 16px;
+  padding: 0;
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+  font-size: 12px;
+  line-height: 1;
+  color: #333;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  background: none;
+  cursor: pointer;
+}
+.pd-mjesto-uredi:hover {
+  color: #000;
+  border-color: #316AC5;
+  background: #FFFFFF;
+}
+.pd-mjesto.aktivno .pd-mjesto-uredi { color: #E8F0FC; }
+.pd-mjesto.aktivno .pd-mjesto-uredi:hover { color: #000; }
+
+/* --- polja --- */
+
+.pd-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 12px;
+}
+.pd-field { display: flex; flex-direction: column; gap: 3px; }
+.pd-lbl { font-size: 11px; color: #000; }
+.pd-zakljucano .pd-lbl { color: var(--xp-tekst-mirni); }
+
+.pd-panel .pd-cifre {
+  font-family: "Courier New", Courier, monospace;
+  letter-spacing: 1px;
+}
+.pd-panel .pd-cifre::placeholder {
+  color: var(--xp-tekst-prazan);
+  letter-spacing: 0;
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+}
+
+/* --- prekidac za automatski datum --- */
+
+.pd-prekidac {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #000;
+  margin-top: 12px;
+  cursor: pointer;
+}
+.pd-prekidac input { margin: 0; }
+
+/* Isti plavi ton kao [TVOJ POTPIS] na uplatnici, da se veza vidi */
+.pd-potpis-primjer {
+  font-family: Verdana, Tahoma, Arial, sans-serif;
+  font-weight: bold;
+  color: #1A3A9C;
+}
+
+/* --- koraci za datum (−/+) --- */
+
+/*
+ * Dugmad stoje uz samo polje, jer se odnose na njega. `stretch` im daje
+ * tacno visinu polja, pa se ne moraju usaglasavati rucno kad se promijeni
+ * padding polja ili velicina na dodirnom uredjaju.
+ */
+.pd-datum { display: flex; align-items: stretch; gap: 3px; }
+
+/*
+ * Mora nadjacati `.pd-panel input[type=date]` (0,2,1) iznad, koji polju
+ * daje `flex: none; width: 100%` — s tim se polje ne bi suzilo, pa bi
+ * dugme "+" ispalo van okvira. Mjereno: virilo je 60px.
+ */
+.pd-panel .pd-datum input[type=date] {
+  flex: 1 1 auto;
+  width: auto;
+  min-width: 0;
+}
+
+.pd-korak {
+  flex: none;
+  width: 20px;
+  padding: 0;
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1;
+  color: #000;
+  border: 1px solid #003C74;
+  border-radius: 3px;
+  background:
+    linear-gradient(180deg,
+      #FFFFFF 0%,
+      #F6F5F0 46%,
+      #EAE8DD 47%,
+      #DAD5C6 100%);
+  box-shadow: inset 0 0 0 1px #FFFFFF;
+  cursor: pointer;
+}
+.pd-korak:hover:not(:disabled) {
+  border-color: #E9A825;
+  box-shadow: inset 0 0 0 1px #FFF3C9, 0 0 3px rgba(233, 168, 37, 0.45);
+}
+.pd-korak:active:not(:disabled) {
+  background: linear-gradient(180deg, #D2CEBF 0%, #E2DFD2 55%, #EFEDE4 100%);
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.22);
+}
+.pd-korak:disabled {
+  color: #ACA899;
+  border-color: #ACA899;
+  background: linear-gradient(180deg, #F4F3EE, #E6E4D9);
+  box-shadow: inset 0 0 0 1px #FFFFFF;
+  text-shadow: 1px 1px 0 #FFFFFF;
+  cursor: default;
+}
+
+/* --- dugmad --- */
+
+.pd-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #ACA899;
+  box-shadow: inset 0 1px 0 #fff;
+}
+
+/* Izgled dugmadi je u dugmad.css, koji se ucitava poslije ovoga i vazi
+   za sve prozore odjednom. Ovdje je nekad stajao svoj opis .pd-btn, ali
+   ga je taj fajl gazio u svakom svojstvu, pa je uklonjen. */
+
+.pd-hint { font-size: var(--xp-slova-sitna); color: var(--xp-tekst-blijed); margin-top: 10px; }
+
+@media screen and (max-width: 560px) {
+  .pd-grid { grid-template-columns: 1fr; }
+}
+
+/* --- visina bocnog prozora --- */
+/* Nizi od pune visine ekrana; sadrzaj se skroluje unutar njega. */
+/*
+ * Visina prati sadrzaj: sa fiksnih 470px se moralo skrolati. Razmaci
+ * unutra su stegnuti da sve stane bez skrola, a max-height je samo
+ * zastita da prozor ne preraste ekran.
+ */
+/*
+ * Skalu racuna podaci.js iz velicine prozora — ko hoce krupnija slova,
+ * poveca panel. Samo navise: donja granica je 1, pa se zateceni izgled
+ * ne moze smanjiti.
+ */
+.pd-panel .pd-sadrzaj { zoom: var(--pd-skala, 1); }
+
+.xp-prozor.pd-panel {
+  height: auto;
+  max-height: calc(100vh - 20px);
+  max-height: calc(100dvh - 20px);
+}
+
+/* Stegnuti razmaci, da panel stane bez skrolanja */
+.pd-panel .pd-grid { gap: 5px 10px; }
+.pd-panel .pd-field { gap: 2px; }
+.pd-panel input[type=text],
+.pd-panel input[type=date],
+.pd-panel select { padding: 2px 5px; }
+.pd-panel select { height: 23px; }
+.pd-panel .pd-mjesta { padding-bottom: 8px; margin-bottom: 9px; }
+.pd-panel .pd-prekidac { margin-top: 9px; }
+.pd-panel .pd-actions { margin-top: 9px; padding-top: 8px; }
+.pd-panel .pd-hint { margin-top: 7px; }
+.pd-panel .xp-prozor-body { padding: 12px; }
+
+/* Natpis ispred grupe dugmadi, kao u XP dijalozima */
+.pd-lbl-grupa {
+  font-size: 11px;
+  color: #000;
+  margin-right: 1px;
+  align-self: center;
+}
+.pd-actions .pd-desno { margin-left: auto; }
+
+
+/* --- naslov sekcije --- */
+
+/*
+ * Isplatilac se tice samo obrasca AMS-1035, pa stoji odvojen od podataka
+ * koji idu na uplatnice. Naslov uzima cijeli red mreze; polje sa
+ * `pd-siroko` isto.
+ */
+.pd-grupa {
+  grid-column: 1 / -1;
+  margin-top: 3px;
+  padding-bottom: 2px;
+  font-size: 10px;
+  font-weight: bold;
+  color: #0A246A;
+  border-bottom: 1px solid #ACA899;
+  box-shadow: 0 1px 0 #fff;
+}
+.pd-siroko { grid-column: 1 / -1; }

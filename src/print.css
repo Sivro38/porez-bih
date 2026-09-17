@@ -1,0 +1,278 @@
+/* ============================================================ */
+/* Ispis.                                                        */
+/*                                                               */
+/* Uplatnice su sada u vlastitom prozoru, dakle unutar           */
+/* .modal-overlay. Zato se svi prozori skrivaju OSIM njega, a    */
+/* njemu se skida sav "prozorski" okvir da na papir ide samo     */
+/* obrazac.                                                      */
+/* ============================================================ */
+
+@media print {
+  /*
+   * Margina 0 nije nemar nego jedini nacin da Chrome ne upise svoj
+   * naslov, adresu i datum u margine stranice. Razmak do ivice papira
+   * dajemo sami, u .ispis-* elementima i paddingu sadrzaja.
+   */
+  @page { size: A4; margin: 0; }
+  @page ams { size: A4 landscape; margin: 0; }
+
+  html, body {
+    background: #fff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Sve sto je dio prozora, a ne dio dokumenta */
+  .titlebar,
+  .menubar,
+  .statusbar,
+  .clippy-note,
+  .upl-alat,
+  .no-print {
+    display: none !important;
+  }
+
+  .window {
+    max-width: none;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    /* ako je prozor povucen po ekranu, na papiru mora biti poravnat */
+    transform: none !important;
+  }
+
+  .content { padding: 0; }
+
+  .groupbox {
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    margin: 0 0 6mm;
+  }
+  .groupbox legend { margin-left: 0; padding-left: 0; }
+
+  table.xp-table { page-break-inside: avoid; break-inside: avoid; }
+
+  /* --- prozori --- */
+
+  /* Moji podaci, dijalozi, "O programu" — nista od toga ne ide na papir */
+  .modal-overlay { display: none !important; }
+
+  /* ...osim uplatnica, kojima se skida okvir i pusta da teku po stranici.
+     Stampaju se i kad je prozor zatvoren, da "Ispis uplatnica..." nikad
+     ne da prazan papir. */
+  .modal-overlay.upl-overlay {
+    display: block !important;
+    position: static !important;
+    inset: auto !important;
+    background: none !important;
+    z-index: auto !important;
+    pointer-events: auto !important;
+  }
+  .upl-overlay .xp-prozor {
+    display: block !important;
+    width: auto !important;
+    max-width: none !important;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    transform: none !important;
+  }
+  .upl-overlay .xp-prozor-body {
+    padding: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  /*
+   * Obrazac je crtan za 900px. A4 sa 10mm margina daje 190mm, sto je oko
+   * 718 CSS piksela — obrazac se u toj sirini ne moze rasporediti kako
+   * treba: kucice za racun se lome u drugi red, a pecat ulazi u desnu
+   * kolonu. Zato se ne prelama nego umanjuje: 900 x 0,79 = 711px.
+   */
+  .upl-prozor .upl-stavka { zoom: 0.79 !important; }
+  .real-form { max-width: 900px; width: 900px; }
+
+  /* Na papir uvijek idu sve tri, bez obzira na rezim prikaza na ekranu */
+  .upl-prozor.rezim-jedna .upl-stavka { display: block !important; }
+
+  .real-form {
+    box-shadow: none;
+    margin: 0 auto 8mm;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .form-caption { page-break-after: avoid; break-after: avoid; }
+
+  /* Rezim "samo uplatnice" (Datoteka > Ispis uplatnica...) */
+  body.print-uplatnice .window { display: none !important; }
+  body.print-uplatnice .ams-overlay { display: none !important; }
+
+  /* --- AMS-1035 --- */
+
+  /*
+   * Isti postupak kao za uplatnice: podloga se pretvara u obican tok,
+   * prozoru se skida okvir, a traka sa postavkama ne ide na papir.
+   * Obrazac je A4 polozeno, pa i stranica mora biti polozena.
+   */
+  .modal-overlay.ams-overlay {
+    display: block !important;
+    position: static !important;
+    inset: auto !important;
+    background: none !important;
+    z-index: auto !important;
+    pointer-events: auto !important;
+  }
+  .ams-overlay .xp-prozor {
+    display: block !important;
+    width: auto !important;
+    max-width: none !important;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    transform: none !important;
+  }
+  .ams-overlay .xp-prozor-body {
+    padding: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+  .ams-alat { display: none !important; }
+  .ams-mount { overflow: visible !important; }
+
+  /*
+   * Obrazac je A4 polozeno. Imenovana stranica je jedini nacin da se
+   * orijentacija promijeni samo za njega — `@page` se ne da uslovljavati
+   * klasom na body-ju.
+   *
+   * Sirina ostaje 770px, koliko je i papir u originalu: zaglavlje stoji
+   * na tacnim pikselnim pozicijama racunatim za tu sirinu, pa bi ga
+   * razvlacenje na 100% razbacalo. Polozeni A4 sa 8mm margina daje oko
+   * 1062px, tako da 770px stane sa viskom.
+   */
+  .ams-obrazac {
+    page: ams;
+    zoom: 1 !important;
+    width: 770px !important;
+    margin: 0 auto;
+    box-shadow: none !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Rezim "samo AMS" (dugme Ispis u tom prozoru) */
+  body.print-ams .window { display: none !important; }
+  body.print-ams .upl-overlay { display: none !important; }
+
+  /*
+   * A4 sa marginama je oko 718 CSS piksela — ispod praga od 760px, pa
+   * su se pri ispisu ukljucivala mobilna pravila i na papir je umjesto
+   * obrazaca isla kartica za telefon. Svi nasi upiti su zato sada
+   * `screen and (...)`.
+   *
+   * styles.css se ne dira, a ima svoj `max-width: 760px` koji uspravlja
+   * obrazac u jednu kolonu i smanjuje slova. Ovdje se ponistava —
+   * vrijednosti su one koje isti fajl daje izvan tog upita.
+   */
+  .real-form { flex-direction: row; font-size: 11px; }
+  .rf-left { border-right: 1px solid #ccc; border-bottom: none; flex: 0 0 44%; }
+  .rf-lbl-block { flex-basis: 132px; }
+  .rf-digitgrid .box { width: 18px; height: 20px; font-size: 13px; }
+  .rf-digitgrid.small .box { width: 15px; height: 18px; font-size: 11px; }
+
+  /* Na papir ide obrazac, ne kartica za telefon */
+  .upl-sazetak { display: none !important; }
+  /* `flex`, ne `block`: obrazac JE flex kontejner, pa bi ga `block`
+     razlomio u jednu kolonu — lijeva i desna strana jedna ispod druge. */
+  .upl-prozor .real-form { display: flex !important; }
+
+  /* --- papir je bijel --- */
+
+  /*
+   * Prozor na ekranu ima XP bez podlogu (#ECE9D8). Na papiru se to
+   * vidjelo kao siva ploha oko obrazaca, a i trosi toner bez razloga.
+   * Od okvira prozora na papir ne ide nista: ni podloga, ni sjenka, ni
+   * hvatista za promjenu velicine.
+   */
+  .upl-overlay .xp-prozor,
+  .ams-overlay .xp-prozor,
+  .upl-overlay .xp-prozor-body,
+  .ams-overlay .xp-prozor-body {
+    background: #fff !important;
+    box-shadow: none !important;
+  }
+
+  .xp-hvatiste,
+  .xp-hvatiste-se,
+  .rucka-za-vucu { display: none !important; }
+
+  /* I sam obrazac ide na bijelo — krem podloga je za ekran */
+  .real-form,
+  .ams-obrazac {
+    background: #fff !important;
+    box-shadow: none !important;
+  }
+
+  /* --- nase zaglavlje i podnozje --- */
+
+  /*
+   * Fiksirani su, pa se u Chromeu ponove na svakoj stranici. Sadrzaj
+   * dobija razmak gore i dolje da ne prolazi ispod njih.
+   */
+  .ispis-zaglavlje,
+  .ispis-podnozje {
+    position: fixed;
+    left: 10mm;
+    right: 10mm;
+    display: flex;
+    justify-content: space-between;
+    gap: 8mm;
+    font-family: Tahoma, Verdana, Arial, sans-serif;
+    font-size: 8pt;
+    color: #555;
+  }
+  .ispis-zaglavlje {
+    top: 7mm;
+    padding-bottom: 2mm;
+    border-bottom: 0.4pt solid #aaa;
+  }
+  .ispis-podnozje {
+    bottom: 7mm;
+    padding-top: 2mm;
+    border-top: 0.4pt solid #aaa;
+    font-size: 7pt;
+  }
+  .ispis-naslov { font-weight: bold; color: #000; }
+  .ispis-desno { text-align: right; white-space: nowrap; }
+
+  /* Razmak koji je inace davala margina stranice */
+  body.ispis-u-toku .upl-overlay .xp-prozor-body,
+  body.ispis-u-toku .ams-overlay .xp-prozor-body {
+    padding: 16mm 10mm 14mm !important;
+  }
+
+  /* Boje moraju ostati — polja obrasca i zelena neto linija */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/*
+ * Zaglavlje i podnozje ispisa ne postoje na ekranu. Mora biti vezano za
+ * `screen`: pravilo stoji iza @media print bloka, pa bi ga inace
+ * nadjacalo i na papiru.
+ */
+@media screen {
+  .ispis-zaglavlje,
+  .ispis-podnozje { display: none; }
+}

@@ -1,0 +1,292 @@
+/* ============================================================ */
+/* Mobilna responzivnost.                                        */
+/*                                                               */
+/* Ucitava se posljednji (prije print.css) da moze nadjacati sve */
+/* ostalo. styles.css ostaje netaknut.                           */
+/*                                                               */
+/* Dvije odvojene stvari:                                        */
+/*   (pointer: coarse) — dodirni uredjaj bilo koje velicine:     */
+/*                       vece mete, bez hvatista za velicinu     */
+/*   (max-width: 760px) — uzak ekran: prozori preko cijelog      */
+/*                       ekrana, donja traka kao prekidac        */
+/* ============================================================ */
+
+
+/* ============================================================ */
+/* DODIRNI UREDJAJI                                              */
+/* ============================================================ */
+
+@media screen and (pointer: coarse) {
+
+  /*
+   * Promjena velicine prstom je neupotrebljiva, a hvatista sjede iznad
+   * sadrzaja i kradu dodire. Mjereno: dodir na donji desni ugao dugmeta
+   * "Razumijem" pogadjao je hvatiste, ne dugme.
+   */
+  .xp-hvatiste { display: none !important; }
+
+  .rucka-za-vucu {
+    cursor: default;
+    touch-action: auto;
+  }
+
+  /* --- dodirne mete na najmanje 44px --- */
+
+  /*
+   * 44px je preporuka za dodir, ali je u XP dugmetu ostavljalo previse
+   * praznog prostora oko natpisa. 32px je i dalje lako pogoditi, a
+   * dugme izgleda kako treba.
+   */
+  .xp-btn {
+    height: 32px;
+    padding: 0 18px;
+    font-size: 12px;
+  }
+
+  .pd-btn,
+  .upl-alat .pd-btn {
+    height: 32px;
+    padding: 0 12px;
+    font-size: 12px;
+  }
+
+  .winbtns span {
+    width: 30px;
+    height: 26px;
+    font-size: 14px;
+  }
+
+  .menu-item { padding: 11px 12px; }
+  .dropdown .opt { padding: 12px 12px 12px 26px; }
+  .dropdown .opt.ima-podmeni { padding-right: 28px; }
+
+  .upl-tab { width: 34px; height: 30px; font-size: 12px; }
+
+  .pd-panel input[type=text],
+  .pd-panel input[type=date],
+  .pd-panel select {
+    min-height: 40px;
+    font-size: 16px;   /* ispod 16px iOS zumira polje pri fokusu */
+  }
+  .pd-panel select { height: 40px; }
+
+  .pd-prekidac { min-height: 34px; }
+  .pd-prekidac input { width: 20px; height: 20px; }
+
+  /* Visinu koraci vec dobiju od polja (stretch); prst trazi i sirinu. */
+  .pd-korak { width: 34px; font-size: 16px; }
+
+  .up-tema { padding: 12px; }
+
+  .xp-traka { height: 44px; }
+  .xp-traka-dugme { font-size: 12px; }
+  .xp-traka-pocetak { font-size: 13px; }
+
+  .xp-precica { padding: 8px 3px 9px; }
+}
+
+
+/* ============================================================ */
+/* USKI EKRANI                                                   */
+/* ============================================================ */
+
+@media screen and (max-width: 760px) {
+
+  /*
+   * styles.css daje `padding: 24px 10px` na `html, body` — oba, ne samo
+   * body. Ako se nadjaca samo body, html zadrzi 10px sa strane.
+   */
+  html { padding: 0; overflow-x: hidden; }
+  body { padding: 0 0 48px; }
+
+  .xp-traka { height: 44px; }
+
+  /* --- precice odlaze, traka preuzima --- */
+  /*
+   * Red ikona na vrhu je gurao kalkulaciju i svaki prozor nadole, a
+   * radne povrsine na telefonu ionako nema — prozor pokriva ekran. Zato
+   * ista cetiri prozora stoje kao pokretaci na donjoj traci, koja je
+   * uvijek pri ruci, a vrh ekrana ostaje prozoru.
+   */
+  .xp-precice { display: none; }
+
+  /* --- traka kao pokretac --- */
+
+  /* Zatvoreni pokretaci se ovdje vide — traka je jedini ulaz u prozor */
+  .xp-traka-dugme.zatvoren { display: flex; }
+
+  /*
+   * Samo ikone: "Moji podaci" i "kalkulacija_freelance.exe" se na
+   * telefonu ionako skrate u tri slova i nista ne kazu, a cetiri ikone
+   * stanu bez stiskanja. Naziv ostaje u `title`.
+   */
+  .xp-traka-popis { gap: 5px; justify-content: center; padding: 4px 0; }
+  .xp-traka-tekst { display: none; }
+
+  /*
+   * Rastezljiva, ne fiksna: broj pokretaca je narastao na sest, a na
+   * uskom telefonu fiksnih 46px znaci da zadnji ispadne van trake i
+   * postane nedostupan. Mjereno na 320px: virio je 41px.
+   */
+  .xp-traka-dugme {
+    flex: 1 1 auto;
+    justify-content: center;
+    min-width: 0;
+    max-width: 46px;
+    padding: 0;
+  }
+  .xp-traka-ikona svg { width: 26px; height: 26px; }
+
+  /* --- prozori prate sadrzaj, ne pune ekran --- */
+  /*
+   * Fit content umjesto punog ekrana: prozor je tacno onoliki koliki mu
+   * je sadrzaj, pa nema unutrasnjeg skrola. `max-height` je samo zastita
+   * da prozor ne preraste ekran ako sadrzaj ipak bude duzi.
+   */
+
+  .window {
+    width: calc(100vw - 10px);
+    max-width: none;
+    height: auto;
+    /* Na telefonu prozor prati sadrzaj — granica visine bi mu vratila
+       unutrasnji skrol, koji ovdje namjerno ne postoji. */
+    max-height: none;
+    margin: 0 auto;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    transform: none !important;
+  }
+  .window.maksimiziran { width: calc(100vw - 10px); height: auto; }
+  .window.promjenjiv > .content { overflow: visible; }
+
+  /*
+   * Na telefonu prozor koji se otvori stoji tacno preko kalkulacije, pa
+   * joj naslovna traka viri tik iznad — dvije plave trake jedna iznad
+   * druge citaju se kao da je prozor ugnijezden, iako je ispred.
+   * Tamnija podloga i jaca sjenka ga jasno odvajaju.
+   */
+  .modal-overlay {
+    bottom: 48px;
+    /* Uz sam vrh: centriran prozor je sjedao preko kalkulacije i pustao
+       joj naslovnu traku da viri iznad, sto se citalo kao da je prozor
+       ugnijezden. Sada pocinje tamo gdje i ekran. */
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 0;
+    background: rgba(0, 0, 0, 0.62);
+  }
+  /* nemodalni i dalje ne zatamnjuje nista */
+  .modal-overlay.bez-podloge { background: transparent; }
+
+  .modal-overlay .xp-prozor {
+    box-shadow: 0 6px 28px rgba(0, 0, 0, 0.6);
+  }
+
+  .modal-overlay .xp-prozor,
+  .modal-overlay .xp-prozor.bocni {
+    width: calc(100vw - 20px) !important;
+    max-width: none !important;
+    height: auto !important;
+    max-height: calc(100dvh - 48px) !important;   /* podloga ide od vrha do trake */
+    margin: 0;
+    transform: none !important;
+  }
+
+  /* Prozor ionako prati sadrzaj — mijenjanje velicine nema smisla */
+  .xp-hvatiste { display: none !important; }
+
+  /* Nista ne smije viriti bocno */
+  .modal-overlay .xp-prozor { overflow-x: hidden; }
+
+  /* --- moji podaci --- */
+
+  /*
+   * Dvije kolone, ne jedna: polja su kratka, a prozor tako stane bez
+   * skrolanja. U jednoj koloni deset polja premasi visinu telefona.
+   */
+  .pd-grid { grid-template-columns: 1fr 1fr; gap: 6px 8px; }
+  .pd-mjesta { gap: 5px; padding-bottom: 8px; margin-bottom: 9px; }
+  .pd-profili { gap: 5px; }
+  .pd-actions { gap: 5px; margin-top: 9px; padding-top: 8px; }
+  .pd-hint { display: none; }
+  .xp-prozor.pd-panel { height: auto !important; }
+
+  /* --- uplatnice --- */
+
+  /* umanjenje otpada: na telefonu se prikazuje kartica, ne obrazac */
+  .upl-alat { gap: 5px; }
+  .upl-hint { display: none; }
+
+  /* --- manje nego na desktopu --- */
+
+  /* Prozori se ne povlace pa se nemaju gdje ni centrirati */
+  [data-action="centriraj"] { display: none; }
+
+  /*
+   * Form kontrole imaju urodjenu minimalnu sirinu, pa se `flex: 1` samo
+   * po sebi ne moze suziti — bez ovoga oznaka "KM" ispadne van okvira.
+   */
+  .xp-input-row input[type=text] { min-width: 0; }
+
+  /* --- donja traka --- */
+
+  .xp-traka-sat { display: none; }
+}
+
+
+/* ============================================================ */
+/* VRLO USKI EKRANI                                              */
+/* ============================================================ */
+
+@media screen and (max-width: 420px) {
+
+  /* Tri kolone su pretijesne; postotak je najmanje vazan */
+  .pct-col { display: none !important; }
+
+  .content { padding: 10px 8px 12px; }
+  .groupbox { padding: 10px 8px 12px; }
+
+  .clippy-note { font-size: 10px; padding: 6px 8px; }
+
+  /* Naslov prozora se skracuje umjesto da se lomi */
+  .titletext {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+
+  /* Pocetak ustupa sirinu pokretacima kad ih ima puno */
+  .xp-traka-pocetak { padding: 0 9px 0 7px; font-size: 10px; }
+  .xp-traka-popis { gap: 4px; }
+  .xp-traka-ikona svg { width: 22px; height: 22px; }
+
+}
+
+
+/* ============================================================ */
+/* NIZAK EKRAN (telefon polozen)                                 */
+/* ============================================================ */
+
+@media screen and (max-height: 460px) and (pointer: coarse) {
+  /*
+   * Polozen telefon je siri od 760px, pa ne ulazi u blok iznad, ali je
+   * nizak kao i uspravan. Precice sa radne povrsine tu nemaju gdje, pa
+   * traka i ovdje preuzima ulogu pokretaca.
+   */
+  .xp-precice { display: none; }
+  .xp-traka-dugme.zatvoren { display: flex; }
+
+  /* Na polozenom telefonu nema visine za velike mete u meniju */
+  .menu-item { padding: 7px 10px; }
+  .dropdown .opt { padding: 8px 12px 8px 26px; }
+  .xp-traka { height: 36px; }
+  body { padding-bottom: 36px; }
+  .modal-overlay { bottom: 36px; }
+  .window,
+  .window.maksimiziran {
+    height: calc(100vh - 36px);
+    height: calc(100dvh - 36px);
+  }
+}

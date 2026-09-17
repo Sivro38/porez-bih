@@ -1,0 +1,7 @@
+# Vlasnik koda. Svaki pull request trazi njegov pregled prije spajanja,
+# ako je u postavkama grane ukljuceno "Require review from Code Owners".
+#
+# ZAMIJENI ovo svojim GitHub korisnickim imenom prije objave repozitorija.
+# Ako naziv ne postoji, GitHub ga tiho ignorise i pravilo nema efekta.
+
+* @TVOJ-GITHUB-NALOG

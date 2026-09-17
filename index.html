@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>kalkulacija.exe — porez i doprinosi na freelance prihod (FBiH)</title>
+
+<link rel="icon" type="image/png" sizes="32x32" href="./src/slike/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="./src/slike/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="./src/slike/favicon-180.png">
+
+<!-- Cloudflare svakom deployu daje svoju poddomenu (npr.
+     c4570e00.porez.pages.dev) i sve su javno dohvatljive sa istim
+     sadrzajem. Bez ovoga ih pretrazivac indeksira kao duplikate.
+     Ko ovo hostuje negdje drugdje: promijeni adresu i ovdje i u og:url
+     i og:image, te u public/sitemap.xml. -->
+<link rel="canonical" href="https://porez.pages.dev/">
+
+<meta name="description" content="Računa porez i doprinose na freelance prihod iz inostranstva za Federaciju BiH (Zeničko-dobojski kanton) i popunjava tri uplatnice i obrazac AMS-1035. Sve ostaje u tvom browseru — ništa se nikuda ne šalje.">
+<meta name="author" content="Emin Sivro">
+<meta name="theme-color" content="#245EDB">
+
+<!-- Za pregled linka kad se dijeli. Slika je u public/, pa joj ime ostaje
+     nepromijenjeno i poslije gradnje. -->
+<meta property="og:type" content="website">
+<meta property="og:locale" content="bs_BA">
+<meta property="og:site_name" content="kalkulacija_freelance.exe">
+<meta property="og:title" content="kalkulacija_freelance.exe">
+<meta property="og:description" content="Porez i doprinosi na freelance prihod iz inostranstva — FBiH, ZE-DO kanton. Uplatnice, AMS-1035, PDF i Excel. Sve ostaje u tvom browseru.">
+<meta property="og:url" content="https://porez.pages.dev/">
+<meta property="og:image" content="https://porez.pages.dev/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Kalkulator u stilu Windows XP-a">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="./src/styles.css">
+<link rel="stylesheet" href="./src/tokens.css">
+<link rel="stylesheet" href="./src/pozadina.css">
+<link rel="stylesheet" href="./src/meni.css">
+<link rel="stylesheet" href="./src/prozor.css">
+<link rel="stylesheet" href="./src/traka.css">
+<link rel="stylesheet" href="./src/precice.css">
+<link rel="stylesheet" href="./src/uplatnice.css">
+<link rel="stylesheet" href="./src/uplatnice-prozor.css">
+<link rel="stylesheet" href="./src/ams.css">
+<link rel="stylesheet" href="./src/upozorenje.css">
+<link rel="stylesheet" href="./src/uputstvo.css">
+<link rel="stylesheet" href="./src/podaci.css">
+<link rel="stylesheet" href="./src/postavke.css">
+<link rel="stylesheet" href="./src/pravno.css">
+<link rel="stylesheet" href="./src/dugmad.css">
+<link rel="stylesheet" href="./src/mobilni.css">
+<link rel="stylesheet" href="./src/veliki.css">
+<link rel="stylesheet" href="./src/print.css">
+</head>
+<body>
+
+<div class="window">
+  <!-- Naziv prozora je namjerno u obliku imena datoteke: to je citav
+       smisao XP izgleda, a ne zaostali interni naziv. -->
+  <div class="titlebar">
+    <div class="titletext"><span class="ico"></span>kalkulacija_freelance.exe</div>
+    <div class="winbtns"><span>_</span><span>▢</span><span class="close">✕</span></div>
+  </div>
+
+  <div class="menubar" id="menubar">
+    <div class="menu-item" data-menu="datoteka">
+      Datoteka
+      <div class="dropdown">
+        <div class="opt" data-action="novo">Novi obračun</div>
+        <div class="opt ima-podmeni">
+          Spremi kao
+          <span class="podmeni-strelica">▸</span>
+          <div class="dropdown podmeni">
+            <div class="opt" data-action="spremi-pdf">PDF dokument (.pdf)</div>
+            <div class="opt" data-action="spremi-excel">Excel tabela (.xlsx)</div>
+          </div>
+        </div>
+        <div class="opt" data-action="ispis">Ispis uplatnica...</div>
+        <div class="opt" data-action="ispis-ams">Ispis obrasca AMS-1035...</div>
+      </div>
+    </div>
+    <div class="menu-item" data-menu="uredi">
+      Uredi
+      <div class="dropdown">
+        <div class="opt" data-action="kopiraj">Kopiraj ukupan iznos</div>
+        <div class="opt" data-action="ocisti">Očisti unos</div>
+        <div class="opt" data-action="vrati">Vrati na <span id="lbl-zadana"></span></div>
+      </div>
+    </div>
+    <div class="menu-item" data-menu="prikaz">
+      Prikaz
+      <div class="dropdown">
+        <div class="opt" data-action="toggle-postotak"><span class="chk" id="chk-postotak">✓</span>Prikaži % kolonu</div>
+        <div class="opt" data-action="toggle-uplatnice"><span class="chk" id="chk-uplatnice"> </span>Prikaži uplatnice</div>
+        <div class="opt" data-action="toggle-ams"><span class="chk" id="chk-ams"> </span>Prikaži obrazac AMS-1035</div>
+        <div class="sep"></div>
+        <div class="opt" data-action="centriraj">Vrati prozor na sredinu</div>
+        <div class="opt" data-action="osvjezi">Osvježi</div>
+      </div>
+    </div>
+    <div class="menu-item" data-menu="alati">
+      Alati
+      <div class="dropdown">
+        <div class="opt" data-action="toggle-podaci"><span class="chk" id="chk-podaci"> </span>Moji podaci</div>
+        <div class="opt" data-action="postavke"><span class="chk" id="chk-postavke"> </span>Postavke poreskih stopa...</div>
+        <div class="sep"></div>
+        <div class="opt" data-action="obrisi-sve">Obriši sve podatke...</div>
+      </div>
+    </div>
+    <div class="menu-item" data-menu="pomoc">
+      Pomoć
+      <div class="dropdown">
+        <div class="opt" data-action="uputstvo">Uputstvo za korištenje</div>
+        <div class="opt" data-action="upozorenje">Upozorenje...</div>
+        <div class="opt" data-action="pravno">Pravno i privatnost...</div>
+        <div class="sep"></div>
+        <div class="opt" data-action="oprogramu">O programu</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <div class="groupbox">
+      <legend>Unos</legend>
+      <label class="field" for="osnovica">Osnovica (ukupan prihod)</label>
+      <div class="xp-input-row">
+        <!-- vrijednost postavlja main.js iz ZADANA_OSNOVICA u config.js -->
+        <input type="text" id="osnovica" inputmode="decimal">
+        <span class="curr-lbl">KM</span>
+      </div>
+    </div>
+
+    <div class="groupbox">
+      <legend>Obračun</legend>
+      <table class="xp-table" id="obracun-table">
+        <tbody id="obracun-body"></tbody>
+      </table>
+    </div>
+
+    <div class="clippy-note">
+      💡 Primalac, Svrha, Račun primaoca i Vrsta prihoda su fiksni po kantonu; poziv na broj i budžetska organizacija su uvijek nule. Svoje podatke upiši pod <b>Alati → Moji podaci</b> — sami se prepisuju na sve tri uplatnice i mogu se snimiti kao imenovani profil.
+    </div>
+
+  </div>
+
+  <div class="statusbar">
+    <span class="seg" id="status-msg">Spremno</span>
+    <span class="seg">100%</span>
+  </div>
+</div>
+
+<!-- Dijalozi se grade u JS-u kroz napraviProzor() iz src/prozor.js -->
+
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>

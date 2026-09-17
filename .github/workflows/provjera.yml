@@ -1,0 +1,43 @@
+# Trci na svaki pull request i na svaki push u glavnu granu.
+#
+# Naziv posla ("build") je ono sto se bira u zastiti grane pod
+# "Require status checks to pass". Ako ga preimenujes, popravi i tamo.
+
+name: Provjera
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+# Samo citanje. Pull request sa tudjeg forka ne dobija nista vise.
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build i izvorni stil
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: npm
+
+      - name: Instalacija
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: styles.css mora ostati netaknut
+        shell: bash
+        run: |
+          if ! diff <(sed -n '8,175p' arhiva/izvorna-verzija.html) src/styles.css; then
+            echo "::error file=src/styles.css::styles.css se razlikuje od izvorne verzije. Pravilo 1 u RAZVOJ.md — novi stil ide u zaseban fajl."
+            exit 1
+          fi
+          echo "styles.css netaknut."

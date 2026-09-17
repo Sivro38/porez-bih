@@ -1,0 +1,69 @@
+name: Prijava greške
+description: Nešto ne radi, iznos je pogrešan, ružno je na telefonu
+labels: ["greska"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ako se radi o sigurnosnoj rupi — **ne ovdje.** Idi na karticu
+        **Security** → **Report a vulnerability**, to vidim samo ja.
+
+  - type: dropdown
+    id: gdje
+    attributes:
+      label: Gdje se dešava
+      options:
+        - Obračun (glavni prozor)
+        - Uplatnice
+        - Obrazac AMS-1035
+        - Moji podaci
+        - Postavke stopa
+        - Štampa ili PDF
+        - Excel
+        - Nešto drugo
+    validations:
+      required: true
+
+  - type: textarea
+    id: sta
+    attributes:
+      label: Šta se desilo
+      description: I šta si očekivao umjesto toga.
+    validations:
+      required: true
+
+  - type: textarea
+    id: koraci
+    attributes:
+      label: Kako da to ponovim
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: input
+    id: iznos
+    attributes:
+      label: Ako je iznos pogrešan
+      description: Koliko si upisao, šta je program ispisao, i koliko bi trebalo biti.
+      placeholder: "Upisao 1.000 — ispalo 108,80 — trebalo bi 108,79"
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser i uređaj
+      placeholder: "Chrome 131, Windows 11 / Safari, iPhone 13"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: potvrde
+    attributes:
+      label: Prije slanja
+      options:
+        - label: Pogledao sam postojeće issue i ovo još nije prijavljeno
+          required: true
+        - label: U ovoj prijavi nema mog JMBG-a, broja računa ni drugih ličnih podataka
+          required: true

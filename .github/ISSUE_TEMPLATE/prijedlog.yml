@@ -1,0 +1,43 @@
+name: Prijedlog ili podatak
+description: Nova mogućnost, šifre za drugi kanton, ispravka stope ili računa
+labels: ["prijedlog"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ovdje se računaju pare koje neko zaista uplati. Ako predlažeš
+        izmjenu **stope, računa, šifre općine ili obrasca**, treba izvor —
+        član zakona, službeni obrazac ili objava Porezne uprave.
+
+  - type: textarea
+    id: sta
+    attributes:
+      label: Šta predlažeš
+    validations:
+      required: true
+
+  - type: textarea
+    id: zasto
+    attributes:
+      label: Zašto
+      description: Koji problem to rješava i kome.
+    validations:
+      required: true
+
+  - type: input
+    id: izvor
+    attributes:
+      label: Izvor
+      description: Obavezno ako se tiče stopa, računa, šifri općina ili obrasca.
+      placeholder: "Zakon o porezu na dohodak FBiH, član 15. stav 7."
+
+  - type: dropdown
+    id: ko
+    attributes:
+      label: Bi li to sam uradio
+      options:
+        - Da, poslaću pull request
+        - Mogu, ako mi kažeš odakle da počnem
+        - Ne, samo prijavljujem
+    validations:
+      required: true

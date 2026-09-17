@@ -1,0 +1,45 @@
+/* ============================================================ */
+/* Podmeni koji se otvara udesno, kao u Windows XP.             */
+/* styles.css ostaje netaknut.                                  */
+/* ============================================================ */
+
+.dropdown .opt.ima-podmeni { position: relative; padding-right: 22px; }
+
+.dropdown .opt.ima-podmeni > .podmeni-strelica {
+  position: absolute;
+  right: 7px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 9px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.dropdown .podmeni {
+  position: absolute;
+  left: 100%;
+  top: -3px;         /* poravnaj sa gornjom ivicom roditelja, preko paddinga */
+  min-width: 190px;
+  margin-left: -1px;
+}
+
+/*
+ * styles.css ima `.menu-item.open .dropdown { display:block }` — descendant
+ * selektor, pa hvata i ovaj ugnijezdjeni podmeni. Sa specificnoscu (0,3,0)
+ * nadjacava obicno `.dropdown .podmeni { display:none }` (0,2,0), zbog cega
+ * je podmeni bio otvoren cim se otvori roditeljski meni. Zato skrivanje i
+ * prikazivanje moraju ici jacim selektorima od tog.
+ */
+.menu-item.open .dropdown .podmeni { display: none; }
+
+/* Hover na misu, klik na dodir — .otvoren postavlja JS */
+.menu-item.open .dropdown .opt.ima-podmeni:hover > .podmeni,
+.menu-item.open .dropdown .opt.ima-podmeni.otvoren > .podmeni { display: block; }
+
+/* Roditelj ostaje istaknut dok je podmeni otvoren */
+.dropdown .opt.ima-podmeni.otvoren { background: #316AC5; color: #fff; }
+
+/* Ako nema mjesta desno, prebaci podmeni lijevo */
+@media screen and (max-width: 620px) {
+  .dropdown .podmeni { left: auto; right: 100%; margin: 0 -1px 0 0; }
+}

@@ -1,0 +1,243 @@
+/* ============================================================ */
+/* Mini XP prozor + povlacenje — NOVI stilovi.                  */
+/* Namjerno preslikava .about-win iz styles.css da se izgled    */
+/* dijaloga ne promijeni pri prelasku na komponentu.            */
+/* ============================================================ */
+
+.xp-prozor {
+  background: #ECE9D8;
+  border: 1px solid #0A246A;
+  border-radius: 6px;
+  box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-width: calc(100vw - 20px);
+  max-height: calc(100vh - 20px);
+  /* Mobilni browseri racunaju 100vh BEZ URL trake, pa prozor moze
+     zavrsiti ispod nje. dvh prati stvarno vidljivu visinu. */
+  max-height: calc(100dvh - 20px);
+}
+
+.xp-prozor .titlebar {
+  border-radius: 5px 5px 0 0;
+  flex: none;
+}
+
+.xp-prozor-body {
+  padding: 16px;
+  font-size: 12px;
+  color: #000;
+  overflow: auto;
+  /* Popunjava preostalu visinu da podnozje sa dugmadima sjedne na dno.
+     Kad je visina prozora odredjena sadrzajem ovo nista ne mijenja. */
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.xp-prozor-body.centrirano { text-align: center; }
+
+/* Ikona iz "O programu" — ostaje dostupna kroz komponentu */
+.xp-prozor-body .ico-big {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 10px;
+  background: linear-gradient(135deg, #ffd24a, #e8a415);
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+.xp-prozor-akcije {
+  flex: none;
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: 10px 12px;
+  border-top: 1px solid #ACA899;
+  box-shadow: inset 0 1px 0 #fff;
+}
+
+.xp-btn {
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+  font-size: 11px;
+  color: #000;
+  padding: 4px 18px;
+  border: 1px solid #003399;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #fff, #e3e9ef);
+  cursor: pointer;
+}
+.xp-btn:hover { background: linear-gradient(180deg, #fff, #cfe0f5); }
+.xp-btn:active { background: linear-gradient(180deg, #dfe6ee, #fff); }
+.xp-btn.primarno { font-weight: bold; }
+
+/* --- povlacenje --- */
+
+.rucka-za-vucu {
+  cursor: move;
+  touch-action: none;   /* bez ovoga touch scrolla umjesto da vuce */
+  user-select: none;
+}
+.vuce-se { user-select: none; }
+
+/* --- bocni prozor (Moji podaci) --- */
+
+.modal-overlay.bocno-desno { justify-content: flex-end; }
+.modal-overlay.bocno-lijevo { justify-content: flex-start; }
+
+.xp-prozor.bocni {
+  margin: 10px;
+  height: calc(100vh - 20px);
+  height: calc(100dvh - 20px);
+  max-height: calc(100vh - 20px);
+  max-height: calc(100dvh - 20px);
+}
+
+/* --- nemodalni prozor --- */
+/* Bez zatamnjenja i bez hvatanja klikova: prozor ostaje otvoren i
+   pomjerljiv, a kalkulacija ispod je i dalje potpuno upotrebljiva. */
+
+.modal-overlay.bez-podloge {
+  background: transparent;
+  pointer-events: none;
+}
+.modal-overlay.bez-podloge > .xp-prozor {
+  pointer-events: auto;
+}
+
+/* --- animacija otvaranja --- */
+/* XP je prozore "izvlacio" iz sitnog u punu velicinu. Kratko traje da
+   ne smeta pri svakodnevnom radu. */
+
+@keyframes xp-otvara-se {
+  from { transform: scale(0.82); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+.xp-prozor.xp-otvara-se {
+  animation: xp-otvara-se 170ms cubic-bezier(0.2, 0.8, 0.3, 1);
+  transform-origin: center center;
+}
+
+.modal-overlay.show { animation: xp-podloga 170ms ease-out; }
+@keyframes xp-podloga { from { opacity: 0; } to { opacity: 1; } }
+
+/* Ko ne zeli animacije, nece ih ni dobiti */
+@media (prefers-reduced-motion: reduce) {
+  .xp-prozor.xp-otvara-se,
+  .modal-overlay.show { animation: none; }
+}
+
+/* --- dugmad u naslovnoj traci --- */
+/* styles.css ih crta kao dugmad, ali im ne daje kursor */
+.winbtns span { cursor: pointer; }
+
+/* --- promjena velicine --- */
+
+.xp-prozor.promjenjiv { position: relative; }
+
+.xp-hvatiste { position: absolute; z-index: 5; touch-action: none; }
+
+/* ivice */
+.xp-hvatiste-n { top: 0; left: 10px; right: 10px; height: 5px; cursor: ns-resize; }
+.xp-hvatiste-s { bottom: 0; left: 10px; right: 10px; height: 5px; cursor: ns-resize; }
+.xp-hvatiste-w { left: 0; top: 10px; bottom: 10px; width: 5px; cursor: ew-resize; }
+.xp-hvatiste-e { right: 0; top: 10px; bottom: 10px; width: 5px; cursor: ew-resize; }
+
+/* uglovi — imaju prednost nad ivicama jer su veci i dolaze poslije */
+.xp-hvatiste-nw { top: 0; left: 0; width: 12px; height: 12px; cursor: nwse-resize; }
+.xp-hvatiste-ne { top: 0; right: 0; width: 12px; height: 12px; cursor: nesw-resize; }
+.xp-hvatiste-sw { bottom: 0; left: 0; width: 12px; height: 12px; cursor: nesw-resize; }
+.xp-hvatiste-se { bottom: 0; right: 0; width: 16px; height: 16px; cursor: nwse-resize; }
+
+/* XP je u donjem desnom uglu imao kosu "hvataljku" */
+.xp-hvatiste-se::after {
+  content: "";
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  width: 11px;
+  height: 11px;
+  background:
+    linear-gradient(135deg, transparent 46%, #ACA899 46%, #ACA899 54%, transparent 54%),
+    linear-gradient(135deg, transparent 71%, #ACA899 71%, #ACA899 79%, transparent 79%);
+}
+
+/* Dok se mijenja velicina, sadrzaj ne smije hvatati misa ni se oznacavati */
+.xp-prozor.mijenja-velicinu { user-select: none; }
+.xp-prozor.mijenja-velicinu .xp-prozor-body { pointer-events: none; }
+
+/* Prozor kojem je velicina rucno postavljena mora pustiti tijelo da se
+   skuplja, inace bi sadrzaj probio zadanu visinu. */
+.xp-prozor.promjenjiv .xp-prozor-body { min-height: 0; }
+
+/* --- glavni prozor kad mu se mijenja velicina --- */
+/* Kad se zada visina, sadrzaj mora da se skroluje unutar okvira umjesto
+   da ispadne van njega. styles.css ostaje netaknut — .window vec ima
+   position:relative, sto je dovoljno za hvatista. */
+
+.window.promjenjiv {
+  display: flex;
+  flex-direction: column;
+}
+.window.promjenjiv > .titlebar,
+.window.promjenjiv > .menubar,
+.window.promjenjiv > .statusbar { flex: none; }
+
+.window.promjenjiv > .content {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+/* --- zadana velicina glavnog prozora --- */
+/* styles.css ga pusta da bude sirok do 960px i visok koliko sadrzaj.
+   Ovdje se zadaje polazna velicina; dvoklik na hvatiste vraca upravo nju. */
+
+/*
+ * Koliko visine pojede sve oko prozora. styles.css daje `padding: 24px`
+ * i html-u i body-ju — dakle 24+24 gore — a traka.css jos 30px trake i
+ * razmak u body-ju, ukupno 54 dolje. Zbir: 48 + (54+24) = 126.
+ *
+ * Stoji kao promjenjiva jer se na velikim ekranima traka i razmaci
+ * mijenjaju, pa bi se inace isti racun prepisivao na cetiri mjesta i
+ * negdje zaostao. Tako je i bilo: maksimiziran prozor je racunao 78
+ * umjesto 126 i virio 48px ispod ekrana.
+ */
+:root { --okvir-visina: 126px; }
+
+.window {
+  width: 480px;
+  height: 700px;
+  /* Bez ovoga prozor od 700px trazi ekran visok 826px, pa se na
+     obicnom laptopu cijela stranica pocne skrolati. */
+  max-height: calc(100vh - var(--okvir-visina));
+  max-height: calc(100dvh - var(--okvir-visina));
+}
+
+/* Glavni prozor mora biti iznad precica na radnoj povrsini (z-index 1) */
+.window { z-index: 10; }
+
+/* --- dijalog sa ponudjenim radnjama --- */
+
+.xp-izbor-poruka { margin-bottom: 10px; }
+.xp-izbor-lista { display: flex; flex-direction: column; gap: 6px; }
+.xp-izbor-stavka { width: 100%; text-align: center; }
+
+/* ============================================================ */
+/* Prozor koji se mora potvrditi                                 */
+/* ============================================================ */
+
+/*
+ * Podloga obicnog dijaloga ide do donje trake i staje ispod nje: traka
+ * je na z-index 9000, a podloga oko 100. Za pocetno upozorenje to je
+ * bila rupa — na telefonu traka drzi sest pokretaca, pa se upozorenje
+ * moglo preskociti jednim dodirom.
+ *
+ * Zato podloga koja blokira ide preko cijelog ekrana i iznad trake.
+ * `!important` je nuzan: podizanje prozora na vrh upisuje z-index u
+ * inline stil, a to inace pobjedjuje svako pravilo iz fajla.
+ */
+.modal-overlay.blokirajuca {
+  z-index: 9500 !important;
+  bottom: 0 !important;
+}

@@ -1,0 +1,138 @@
+/* ============================================================ */
+/* Donja traka sa prozorima — XP taskbar.                       */
+/* ============================================================ */
+
+.xp-traka {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 30px;
+  z-index: 9000;          /* iznad svih prozora */
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  padding: 0 4px 0 0;
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+  background: linear-gradient(180deg, #3f8CF3 0%, #245EDB 8%, #1941A5 40%, #1941A5 88%, #2354C7 100%);
+  border-top: 1px solid #4A8AF4;
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.35);
+  user-select: none;
+}
+
+/* --- lijevi "Start" --- */
+
+.xp-traka-pocetak {
+  display: flex;
+  align-items: center;
+  padding: 0 18px 0 12px;
+  margin-right: 6px;
+  font-size: 12px;
+  font-weight: bold;
+  font-style: italic;
+  color: #fff;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.45);
+  background: linear-gradient(180deg, #5CB646 0%, #3D9B25 45%, #2E8318 55%, #43A62B 100%);
+  border-right: 1px solid #1941A5;
+  border-radius: 0 9px 9px 0;
+}
+
+/* --- dugmad prozora --- */
+
+.xp-traka-popis {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 0;
+  overflow: hidden;
+}
+
+.xp-traka-dugme {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: 0 1 165px;
+  min-width: 40px;
+  height: 100%;
+  padding: 0 8px;
+  font-family: inherit;
+  font-size: 11px;
+  color: #fff;
+  text-align: left;
+  border: 1px solid #14389F;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #4C8BF0 0%, #2F6BDD 50%, #2A5FCE 100%);
+  cursor: pointer;
+  overflow: hidden;
+}
+.xp-traka-dugme:hover { background: linear-gradient(180deg, #6BA3F5, #3F7BE6); }
+
+/* Prozor koji je sprijeda — dugme izgleda pritisnuto */
+.xp-traka-dugme.pritisnuto {
+  background: linear-gradient(180deg, #1E48A8 0%, #2A5FC4 60%, #3568D0 100%);
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.45);
+  border-color: #10307F;
+  font-weight: bold;
+}
+/* Minimiziran — malo prigusen, da se razlikuje od otvorenog */
+.xp-traka-dugme.minimiziran { color: #D5E2F7; }
+
+.xp-traka-ikona { flex: none; font-size: 11px; line-height: 1; }
+.xp-traka-tekst { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* --- sat --- */
+
+.xp-traka-sat {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  font-size: 11px;
+  color: #fff;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(180deg, #2F8AE0 0%, #1D6FC9 45%, #1A62B8 100%);
+  border-left: 1px solid #4A8AF4;
+}
+
+/* Sadrzaj stranice ne smije zavrsiti ispod trake */
+body { padding-bottom: 54px; }
+
+/* Minimiziran glavni prozor */
+.window.minimiziran { display: none; }
+
+/* Traka se ne stampa */
+@media print {
+  .xp-traka { display: none !important; }
+  body { padding-bottom: 0 !important; }
+}
+
+@media screen and (max-width: 560px) {
+  .xp-traka-pocetak { padding: 0 10px 0 8px; font-size: 11px; }
+  .xp-traka-dugme { flex-basis: 110px; }
+}
+
+/* Maksimiziran glavni prozor.
+   Ponistava `max-width: 960px` iz styles.css, a visina odbija sve oko
+   prozora (vidi --okvir-visina u prozor.css) da stane tacno iznad trake. */
+.window.maksimiziran {
+  max-width: none;
+  width: calc(100vw - 20px);
+  height: calc(100vh - var(--okvir-visina));
+  height: calc(100dvh - var(--okvir-visina));
+}
+
+/* --- pokretaci --- */
+
+/*
+ * Prozor koji je prijavljen kao pokretac ima dugme i dok je zatvoren.
+ * Na sirokom ekranu se to dugme krije: tamo precice stoje na radnoj
+ * povrsini, a traka pokazuje samo otvorene prozore, kao u XP-u.
+ */
+.xp-traka-dugme.zatvoren { display: none; }
+
+.xp-traka-ikona svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+}

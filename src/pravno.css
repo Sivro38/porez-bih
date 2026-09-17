@@ -1,0 +1,118 @@
+/* ============================================================ */
+/* Pravno i privatnost — jedan dokument sa odjeljcima.           */
+/* ============================================================ */
+
+.pv-prozor .xp-prozor-body {
+  padding: 0;
+  overflow: auto;
+}
+
+/*
+ * Bijela podloga sa utisnutim okvirom, kao svako polje sa tekstom u XP-u.
+ * Sirina reda je ogranicena: dug red se tesko cita, a prozor se moze
+ * razvuci koliko korisnik hoce.
+ */
+.pv-dokument {
+  padding: 14px 18px 16px;
+  background: #fff;
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+  font-size: 11px;
+  line-height: 1.55;
+  color: #000;
+}
+
+.pv-odjeljak { margin-bottom: 16px; }
+.pv-odjeljak:last-of-type { margin-bottom: 10px; }
+
+.pv-dokument h3 {
+  margin: 0 0 6px;
+  padding-bottom: 4px;
+  font-size: var(--xp-slova-naslov);
+  color: var(--xp-naslov);
+  border-bottom: 1px solid var(--xp-crta-tabele);
+}
+
+.pv-dokument h4 {
+  margin: 12px 0 5px;
+  font-size: 12px;
+  color: var(--xp-naslov);
+}
+
+.pv-dokument p { margin: 0 0 7px; }
+.pv-dokument p:last-child { margin-bottom: 0; }
+
+.pv-dokument code {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 11px;
+  color: #333;
+  background: var(--xp-polje-mirno);
+  padding: 0 3px;
+  border-radius: 2px;
+}
+
+/* Ono sto se ne smije prescitati — zeleno za dobru vijest, jednako
+   naglaseno kao i upozorenje, ali bez alarma. */
+.pv-istaknuto {
+  padding: 8px 10px;
+  background: var(--xp-dobro-pod);
+  border: 1px solid var(--xp-dobro-crta);
+  border-radius: var(--xp-radijus);
+  color: var(--xp-dobro-tekst);
+}
+
+/* Odricanje odgovornosti nosi drugu boju — to nije dobra vijest */
+.pv-odjeljak:nth-of-type(6) .pv-istaknuto {
+  background: var(--xp-pazi-pod);
+  border-color: var(--xp-pazi-crta);
+  color: var(--xp-pazi-tekst);
+}
+
+/* --- tabele --- */
+
+.pv-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 7px;
+  font-size: var(--xp-slova-sitna);
+  border: 1px solid var(--xp-crta);
+}
+.pv-tabela th,
+.pv-tabela td {
+  padding: 4px 7px;
+  text-align: left;
+  border: 1px solid var(--xp-crta-tabele);
+  vertical-align: top;
+}
+.pv-tabela th {
+  font-weight: normal;
+  color: var(--xp-tekst-blijed);
+  background: linear-gradient(180deg, #F5F4EA, #E3E1D3);
+  white-space: nowrap;
+}
+.pv-tabela tr:nth-child(even) td { background: var(--xp-red-paran); }
+
+.pv-spisak td:first-child { white-space: nowrap; }
+
+/* --- podnozje --- */
+
+.pv-podnozje {
+  margin-top: 14px;
+  padding-top: 8px;
+  font-size: var(--xp-slova-sitna);
+  color: var(--xp-tekst-blijed);
+  border-top: 1px solid var(--xp-crta);
+}
+
+/* --- telefon --- */
+
+@media screen and (max-width: 760px) {
+  .pv-dokument { padding: 12px 12px 14px; font-size: 12px; }
+  .pv-dokument h3 { font-size: 13px; }
+  .pv-tabela { font-size: 11px; }
+  /* Kljucevi se lome umjesto da razvuku tabelu preko ekrana */
+  .pv-spisak td:first-child { white-space: normal; word-break: break-all; }
+}
+
+/* Napomena uz tabelu biblioteka */
+.pv-sitno { font-size: var(--xp-slova-sitna); color: var(--xp-tekst-blijed); margin-top: 6px; }
+.pv-dokument a { color: var(--xp-veza); }

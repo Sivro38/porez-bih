@@ -1,0 +1,370 @@
+/* ============================================================ */
+/* Obrazac AMS-1035 — replika papira.                            */
+/*                                                               */
+/* Kao i uplatnice: serifni font i tanke crne linije, jer je to  */
+/* papir, a ne dio XP suceljas. Okvir prozora ostaje XP.         */
+/* ============================================================ */
+
+/* --- traka sa postavkama --- */
+
+.ams-alat {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ACA899;
+  box-shadow: 0 1px 0 #fff;
+}
+
+.ams-lbl {
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+  font-size: 11px;
+  color: #000;
+}
+
+.ams-prozor .ams-broj {
+  width: 44px;
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+  font-size: 11px;
+  color: #000;
+  padding: 2px 4px;
+  border: 2px solid;
+  border-color: #7F9DB9 #E3E9EF #E3E9EF #7F9DB9;
+  background: #fff;
+}
+
+.ams-prekidac {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+  font-size: 11px;
+  color: #000;
+  cursor: pointer;
+}
+.ams-prekidac input { margin: 0; }
+
+.ams-alat .ams-desno { margin-left: auto; }
+
+/* --- papir --- */
+
+/*
+ * Sirina je vezana za A4 polozeno. Umanjenje je `zoom`, ne
+ * `transform: scale()`: zoom skalira i prostor koji element zauzima, pa
+ * prozor moze pratiti sadrzaj umjesto da ostane visak praznine.
+ */
+.ams-obrazac {
+  /* Skalu racuna ams.js iz velicine prozora — prozor veci, obrazac
+     krupniji. 0,86 je polazna, za slucaj da racun jos nije prosao. */
+  zoom: var(--ams-skala, 0.86);
+  width: 770px;          /* sirina papira u pt, 1pt = 1px */
+  margin: 0 auto;
+  padding: 10px 12px 12px;
+  background: #fffdf8;
+  border: 1px solid #000;
+  box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.3);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 11px;
+  color: #000;
+}
+
+.ams-sifra {
+  text-align: center;
+  font-size: 10px;
+  margin-bottom: 4px;
+}
+
+/* --- zaglavlje --- */
+
+/*
+ * Mjere su iz sluzbenog PDF-a obrasca (pufbih.ba, obrazac-ams_bos_web).
+ * Papir je sirok 770pt, pa se ovdje 1pt crta kao 1px i sve stoji u
+ * istom odnosu kao na originalu; `zoom` na .ams-obrazac ga onda uklopi
+ * u prozor.
+ *
+ * Zaglavlje je JEDAN okvir bez unutrasnjih pregrada — u originalu nema
+ * okomitih crta izmedju naziva ustanove, naslova i broja stranice.
+ */
+.ams-zaglavlje {
+  position: relative;
+  height: 84px;          /* y 474,9 - 559,4 */
+  border: 1px solid #000;
+  margin-bottom: 0;
+}
+
+/* Naziv ustanove je centriran oko x=115, ne poravnat lijevo */
+.ams-ustanova {
+  position: absolute;
+  left: 0;
+  top: 3px;
+  width: 158px;          /* centar na 79px od ivice okvira */
+  text-align: center;
+  font-size: 10px;       /* 9,96pt */
+  line-height: 12.2px;   /* razmak izmedju osnovica u originalu */
+}
+.ams-uprava {
+  display: block;
+  margin-top: 2px;
+  font-size: 14px;       /* 14,04pt — vece od ostatka bloka */
+  font-weight: bold;
+  line-height: 15px;     /* osnovica na ~78px, kao u originalu (77,3) */
+}
+
+.ams-sredina {
+  position: absolute;
+  left: 170px;
+  right: 175px;
+  top: 5px;
+  text-align: center;
+}
+.ams-sifra {
+  font-size: 10px;
+  margin-bottom: 7px;
+}
+.ams-naslov {
+  font-size: 16px;       /* 15,96pt */
+  line-height: 1.15;
+}
+
+/* Dvije kucice jedna ispod druge, uz desni dio zaglavlja */
+.ams-stranica {
+  position: absolute;
+  left: 545px;           /* x 581,1 - 35,9 */
+  top: 2px;              /* y 557,1 ispod vrha okvira na 559,4 */
+  width: 56px;           /* w 55,5 */
+}
+.ams-stranica-lbl,
+.ams-stranica-polje {
+  height: 13px;          /* h 12,6 */
+  border: 1px solid #000;
+  font-size: 7px;
+  text-align: center;
+  line-height: 11px;
+}
+/* Kucice nisu jedna na drugoj: izmedju njih je razmak (532,0 - 544,5) */
+.ams-stranica-polje { margin-top: 12px; }
+
+/* --- naslovi dijelova --- */
+
+/* "Dio 1—Podaci o primaocu" i ostali: 14,04pt, centrirano */
+.ams-dio {
+  text-align: center;
+  font-size: 14px;
+  padding: 7px 0 5px;
+}
+
+/* --- polja --- */
+
+/*
+ * Polja na papiru nisu razmaknuta nego razdvojena linijama — svako
+ * sjedi u svojoj celiji. Zato razmak ide kao padding unutar polja, a ne
+ * kao gap izmedju njih: gap bi ostavio prazninu tamo gdje treba crta.
+ */
+.ams-red {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid #000;
+}
+.ams-red + .ams-red { border-top: none; }
+
+.ams-polje {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 2px;
+  min-width: 0;
+  padding: 4px 8px 6px;
+  border-right: 1px solid #000;
+}
+.ams-polje:last-child { border-right: none; }
+.ams-rastegni { flex: 1; }
+/* Bez ovoga se suzi na sirinu natpisa, pa za drzavu ne ostane crte */
+.ams-drzava { flex: 0 0 150px; }
+
+/*
+ * Dio 1: mreza 2x2 — ime i JMBG gore, adresa i datum isplate dolje — a
+ * period stoji u trecoj koloni i uzima oba reda, kao na papiru.
+ */
+.ams-dio1 {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: stretch;
+}
+/* Gornji red ima crtu ispod sebe; bocna celija je presijeca */
+.ams-dio1 > .ams-polje:nth-child(1),
+.ams-dio1 > .ams-polje:nth-child(2) { border-bottom: 1px solid #000; }
+.ams-dio1 .ams-sa-strane {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  justify-content: center;
+  border-right: none;
+  border-bottom: none;
+}
+
+.ams-oznaka-polja {
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+/* Vrijednost sjedi na crti, kao rukom upisana na papiru */
+.ams-crta {
+  display: block;
+  min-height: 15px;
+  padding: 0 2px 1px;
+  border-bottom: 1px solid #555;
+}
+
+.ams-vr {
+  font-family: Verdana, Tahoma, Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/*
+ * Crno je ono sto korisnik upise, kao i na uplatnicama — ista podjela,
+ * pa se dva papira citaju na isti nacin.
+ */
+.upisano { color: #000; }
+.ams-obrazac .ams-vr:not(.upisano) { color: #8a1c3a; }
+
+/* --- kucice za cifre --- */
+
+.ams-kucice {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+}
+
+.ams-kucica {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 17px;
+  border: 1px solid #444;
+  font-family: Verdana, Tahoma, Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: #8a1c3a;
+}
+.ams-kucica.upisano,
+.ams-kucice.upisano .ams-kucica { color: #000; }
+
+.ams-kosa { padding: 0 2px; font-size: 11px; }
+.ams-vijek { padding: 0 2px; font-size: 11px; font-weight: 700; }
+
+/* --- Dio 3 --- */
+
+/*
+ * Kolone nisu jednake: 9) je siroka 171,3pt, ostalih pet po 119,7pt.
+ * Ranije su sve bile jednake, pa se prva ciniila pretijesna.
+ */
+.ams-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.ams-tabela th:first-child,
+.ams-tabela td:first-child { width: 22.25%; }
+.ams-tabela th:not(:first-child),
+.ams-tabela td:not(:first-child) { width: 15.55%; }
+
+.ams-tabela th,
+.ams-tabela td {
+  border: 1px solid #000;
+  padding: 3px 5px;
+  vertical-align: middle;
+}
+
+.ams-tabela th {
+  font-size: 10px;
+  font-weight: normal;
+  text-align: center;
+  line-height: 1.25;
+  height: 52px;
+}
+
+.ams-tabela td {
+  height: 20px;
+  text-align: right;
+  font-family: Verdana, Tahoma, Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/*
+ * Na papiru nema kolone sa natpisima — natpis o prijenosu stoji ispod
+ * tabele. Ranije je bio kolona, sto je izmisljalo strukturu koje na
+ * obrascu nema.
+ */
+/* Na papiru je to uokviren natpis uz dno tabele, ne slobodan tekst */
+.ams-ukupno-natpis {
+  padding: 4px 8px 5px;
+  font-size: 9px;
+  font-style: italic;
+  line-height: 1.25;
+  border: 1px solid #000;
+  border-top: none;
+}
+
+/*
+ * Kolone 13 i 14 se precrtavaju: porez u inostranstvu nije placen, pa
+ * nema ni kredita ni razlike. Precrtavaju se samo celije — zaglavlja
+ * ostaju citljiva, kao na papiru.
+ *
+ * Crta je SVG, ne preliv: preliv sa polupikselnim prelomima se crta kao
+ * siva mrlja umjesto kao tanka linija. `preserveAspectRatio: none` je
+ * razvuce preko celije koliko god da je velika.
+ */
+.ams-precrtano {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10' preserveAspectRatio='none'%3E%3Cline x1='0' y1='10' x2='10' y2='0' stroke='%23444' stroke-width='1' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+/* --- Dio 4 --- */
+
+/* Izjava je iznad crte, potpisi ispod nje — kao na papiru */
+.ams-izjava { border: 1px solid #000; }
+
+.ams-izjava p {
+  margin: 0;
+  padding: 6px 8px 8px;
+  font-size: 11px;
+  line-height: 1.35;
+  border-bottom: 1px solid #000;
+}
+
+.ams-potpisi { display: flex; align-items: stretch; }
+.ams-potpisi > .ams-polje { flex: 1; }
+
+.ams-potpis {
+  font-family: Verdana, Tahoma, Arial, sans-serif;
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 0.3px;
+  color: #1A3A9C;
+}
+
+/* ============================================================ */
+/* Telefon                                                       */
+/* ============================================================ */
+
+/*
+ * Obrazac je A4 polozeno — na telefonu se ne moze citati ni koristiti.
+ * Umjesto stiskanja, papir se pusta da se skrola vodoravno u svom
+ * okviru, a prozor ostaje u granicama ekrana.
+ */
+@media screen and (max-width: 760px) {
+  .ams-mount {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Skalu i ovdje racuna ams.js — tvrdih 0,5 je obrazac prelijevalo
+     preko okvira, pa je klizao vodoravno i kad nije morao. */
+  .ams-alat { gap: 5px; }
+  .ams-alat .ams-desno { margin-left: 0; }
+}
+

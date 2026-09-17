@@ -1,0 +1,72 @@
+/* ============================================================ */
+/* Precice na radnoj povrsini — gore lijevo, kao XP desktop.    */
+/* ============================================================ */
+
+.xp-precice {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 1;            /* iznad pozadine, ispod svih prozora */
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 92px;
+}
+
+.xp-precica {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  width: 100%;
+  padding: 5px 3px 6px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  background: none;
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+  cursor: pointer;
+}
+
+.xp-precica-ikona {
+  display: block;
+  width: 48px;
+  height: 48px;
+  filter: drop-shadow(1px 2px 2px rgba(0, 0, 0, 0.45));
+}
+.xp-precica-ikona svg { display: block; }
+
+.xp-precica-naziv {
+  font-size: 11px;
+  line-height: 1.25;
+  color: #fff;
+  text-align: center;
+  /* XP je nazive crtao sa sjenkom, da se citaju na svakoj pozadini */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85), 0 0 3px rgba(0, 0, 0, 0.6);
+  word-break: break-word;
+}
+
+/* --- oznacena i fokusirana --- */
+
+.xp-precica:hover .xp-precica-ikona { filter: drop-shadow(1px 2px 3px rgba(0,0,0,0.6)) brightness(1.08); }
+
+.xp-precica.oznacena {
+  background: rgba(49, 106, 197, 0.55);
+  border-color: rgba(120, 170, 235, 0.85);
+}
+.xp-precica.oznacena .xp-precica-naziv { background: #316AC5; }
+.xp-precica.oznacena .xp-precica-ikona { filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.45)) saturate(1.2); }
+
+.xp-precica:focus-visible {
+  outline: 1px dotted #fff;
+  outline-offset: -2px;
+}
+
+/* Precice se ne stampaju */
+@media print {
+  .xp-precice { display: none !important; }
+}
+
+/* Na uskom ekranu prozor prekriva precice, pa se sklanjaju */
+@media screen and (max-width: 620px) {
+  .xp-precice { display: none; }
+}

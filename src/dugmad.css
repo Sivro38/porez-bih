@@ -1,0 +1,138 @@
+/* ============================================================ */
+/* Dugmad — Windows XP (Luna) izgled, na jednom mjestu.          */
+/*                                                               */
+/* Ucitava se poslije svih koji definisu dugmad, pa vazi za sve  */
+/* prozore odjednom: podnozja dijaloga, alatne trake, profile.   */
+/*                                                               */
+/* Mjere su iz XP-a: visina 23px, najmanja sirina 75px, Tahoma   */
+/* 8pt (11px), ivica #003C74, radijus 3px.                       */
+/* ============================================================ */
+
+.xp-btn,
+.pd-btn,
+.upl-alat .pd-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: 23px;
+  padding: 0 12px;
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+  font-size: 11px;
+  font-weight: normal;
+  line-height: 1;
+  color: #000;
+  text-align: center;
+  white-space: nowrap;
+  cursor: pointer;
+
+  border: 1px solid #003C74;
+  border-radius: 3px;
+
+  /*
+   * XP dugme nije ravan preliv nego dva pojasa: svijetli gornji koji
+   * naglo prelazi u tamniji donji negdje oko polovine.
+   */
+  background:
+    linear-gradient(180deg,
+      #FFFFFF 0%,
+      #F6F5F0 46%,
+      #EAE8DD 47%,
+      #DAD5C6 100%);
+  box-shadow:
+    inset 0 0 0 1px #FFFFFF,
+    0 1px 0 rgba(0, 0, 0, 0.08);
+}
+
+/* Dugmad u podnozju dijaloga drze XP-ovu najmanju sirinu */
+.xp-prozor-akcije .xp-btn { min-width: 75px; }
+
+/* XP je na prelazu misa davao topli narandzasti obrub */
+.xp-btn:hover:not(:disabled),
+.pd-btn:hover:not(:disabled) {
+  border-color: #E9A825;
+  box-shadow:
+    inset 0 0 0 1px #FFF3C9,
+    0 0 3px rgba(233, 168, 37, 0.45);
+}
+
+.xp-btn:active:not(:disabled),
+.pd-btn:active:not(:disabled) {
+  background: linear-gradient(180deg, #D2CEBF 0%, #E2DFD2 55%, #EFEDE4 100%);
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.22);
+}
+
+.xp-btn:focus-visible,
+.pd-btn:focus-visible {
+  outline: 1px dotted #000;
+  outline-offset: -4px;
+}
+
+/*
+ * Zadano dugme u XP-u nosi dodatni plavi obrub, da se vidi sta ce
+ * uraditi Enter.
+ */
+.xp-btn.primarno {
+  font-weight: normal;
+  box-shadow:
+    inset 0 0 0 1px #FFFFFF,
+    0 0 0 1px #5A8DD6,
+    0 1px 0 rgba(0, 0, 0, 0.08);
+}
+.xp-btn.primarno:hover {
+  box-shadow:
+    inset 0 0 0 1px #FFF3C9,
+    0 0 0 1px #5A8DD6,
+    0 0 3px rgba(233, 168, 37, 0.45);
+}
+
+/* --- onemoguceno --- */
+
+.pd-btn:disabled,
+.xp-btn:disabled {
+  color: #ACA899;
+  border-color: #ACA899;
+  background: linear-gradient(180deg, #F4F3EE, #E6E4D9);
+  box-shadow: inset 0 0 0 1px #FFFFFF;
+  text-shadow: 1px 1px 0 #FFFFFF;
+  cursor: default;
+}
+
+/* --- dugmad u naslovnoj traci --- */
+/*
+ * styles.css ih vec crta; ovdje samo dobijaju XP-ovo ponasanje na
+ * prelaz i pritisak, koje nisu imali.
+ */
+.winbtns span {
+  cursor: pointer;
+  transition: filter 90ms linear;
+}
+.winbtns span:hover { filter: brightness(1.18); }
+.winbtns span:active { filter: brightness(0.88); }
+
+/* --- tabovi uplatnica --- */
+
+.upl-tab {
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+  font-size: 11px;
+  color: #000;
+  border: 1px solid #7F9DB9;
+  border-bottom: none;
+  border-radius: 3px 3px 0 0;
+  background: linear-gradient(180deg, #FFFFFF 0%, #F1EFE7 50%, #E3E0D3 100%);
+}
+.upl-tab:hover { background: linear-gradient(180deg, #FFFFFF, #DCE9F9); }
+.upl-tab.aktivan {
+  border-color: #003C74;
+  background: linear-gradient(180deg, #FFFFFF 0%, #FDFBEF 55%, #F7F3DC 100%);
+  font-weight: bold;
+}
+
+/* --- prekidac rezima prikaza --- */
+/* Ukljucen rezim izgleda utisnuto, kao XP toolbar dugme */
+.upl-alat .pd-btn.aktivan {
+  border-color: #0A246A;
+  background: linear-gradient(180deg, #C3D9F5 0%, #A8C7EC 55%, #BCD4F2 100%);
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.25);
+  font-weight: bold;
+}

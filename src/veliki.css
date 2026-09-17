@@ -1,0 +1,141 @@
+/* ============================================================ */
+/* Veliki ekrani — televizor i slicno.                           */
+/*                                                               */
+/* XP je crtan za 1024x768: dugme visoko 23px i slova od 11px su */
+/* na monitoru na pola metra taman, a na televizoru preko sobe   */
+/* sitna. Ovdje sve sto se cita ili dodiruje raste u dva koraka. */
+/*                                                               */
+/* Ucitava se poslije mobilni.css. Upiti se ne preklapaju        */
+/* (min-width naspram max-width), pa jedan drugom ne smetaju.    */
+/* ============================================================ */
+
+
+/* ============================================================ */
+/* 1800px — veliki monitor i 1080p televizor                     */
+/* ============================================================ */
+
+@media screen and (min-width: 1800px) {
+
+  .xp-btn,
+  .pd-btn,
+  .upl-alat .pd-btn {
+    height: 29px;
+    padding: 0 16px;
+    font-size: 13px;
+  }
+  .xp-prozor-akcije .xp-btn { min-width: 92px; }
+
+  .pd-korak { width: 24px; font-size: 15px; }
+  .upl-tab { font-size: 13px; }
+
+  /* prozorski okvir */
+  .titletext { font-size: 15px; }
+  .winbtns span { width: 20px; height: 18px; font-size: 13px; }
+  .menubar { font-size: 13px; padding: 4px 5px; }
+  .menu-item { padding: 4px 10px; }
+  .dropdown .opt { padding: 5px 14px 5px 28px; font-size: 13px; }
+  .statusbar { font-size: 13px; padding: 5px 12px; }
+
+  /* precice i traka */
+  .xp-precice { width: 108px; }
+  .xp-precica-ikona,
+  .xp-precica-ikona svg { width: 56px; height: 56px; }
+  .xp-precica-naziv { font-size: 13px; }
+
+  .xp-traka { height: 36px; }
+  .xp-traka-pocetak { font-size: 14px; }
+  .xp-traka-dugme { font-size: 13px; }
+  .xp-traka-ikona svg { width: 18px; height: 18px; }
+  .xp-traka-sat { font-size: 13px; }
+  /* traka 36 + razmak = 60 dolje, plus 24 html; gore 24+24 */
+  body { padding-bottom: 60px; }
+  :root { --okvir-visina: 132px; }
+
+  /* moji podaci */
+  .pd-lbl { font-size: 13px; }
+  .pd-panel input[type=text],
+  .pd-panel input[type=date],
+  .pd-panel select { font-size: 14px; }
+  .pd-prekidac { font-size: 13px; }
+  .pd-hint { font-size: 12px; }
+  .pd-mjesto-glavno { font-size: 13px; }
+
+  /* uputstvo */
+  .up-tema { font-size: 13px; }
+  .up-clanak { font-size: 13px; }
+
+  /* Polazna velicina prozora raste zajedno sa slovima u njemu */
+  .window { width: 560px; height: 800px; }
+}
+
+
+/* ============================================================ */
+/* 2560px — 4K televizor                                         */
+/* ============================================================ */
+
+@media screen and (min-width: 2560px) {
+
+  .xp-btn,
+  .pd-btn,
+  .upl-alat .pd-btn {
+    height: 40px;
+    padding: 0 24px;
+    font-size: 18px;
+  }
+  .xp-prozor-akcije .xp-btn { min-width: 130px; }
+
+  .pd-korak { width: 32px; font-size: 20px; }
+  .upl-tab { width: 34px; height: 30px; font-size: 17px; }
+
+  .titletext { font-size: 20px; }
+  .winbtns span { width: 26px; height: 23px; font-size: 17px; }
+  .menubar { font-size: 18px; padding: 6px 7px; }
+  .menu-item { padding: 6px 14px; }
+  .dropdown .opt { padding: 8px 20px 8px 38px; font-size: 18px; }
+  .statusbar { font-size: 17px; padding: 7px 16px; }
+
+  .xp-precice { width: 150px; }
+  .xp-precica-ikona,
+  .xp-precica-ikona svg { width: 80px; height: 80px; }
+  .xp-precica-naziv { font-size: 18px; }
+
+  .xp-traka { height: 50px; }
+  .xp-traka-pocetak { font-size: 19px; padding: 0 26px 0 18px; }
+  .xp-traka-dugme { font-size: 17px; flex-basis: 230px; }
+  .xp-traka-ikona svg { width: 26px; height: 26px; }
+  .xp-traka-sat { font-size: 17px; padding: 0 18px; }
+  body { padding-bottom: 74px; }
+  :root { --okvir-visina: 146px; }
+
+  .pd-lbl { font-size: 17px; }
+  .pd-panel input[type=text],
+  .pd-panel input[type=date],
+  .pd-panel select { font-size: 19px; padding: 5px 8px; }
+  .pd-panel select { height: 34px; }
+  .pd-prekidac { font-size: 17px; }
+  .pd-prekidac input { width: 20px; height: 20px; }
+  .pd-hint { font-size: 15px; }
+  .pd-mjesto-glavno { font-size: 17px; }
+
+  .up-tema { font-size: 17px; }
+  .up-clanak { font-size: 17px; }
+
+  /*
+   * Prozor raste, ali umjereno: XP prozor razvucen preko cijelog
+   * televizora vise ne lici na XP. Inline velicina koju korisnik sam
+   * povuce i dalje ima prednost.
+   */
+  .window { width: 720px; height: 1000px; }
+
+  /* Uplatnice namjerno ostaju na 0.75 — to je izabrana velicina, a
+     puna bi prerasla sirinu prozora koju im zadaje uplatniceProzor.js */
+
+  /*
+   * Upozorenje: sirinu mu postavlja JS kao inline stil (vezana je za
+   * omjer slike), pa se drukcije ne da nadjacati. Gornja granica raste,
+   * a visina i dalje drzi sliku u vidnom polju.
+   */
+  .upoz-prozor {
+    width: min(2100px, 72vw, calc((100dvh - 260px) * 1.2487)) !important;
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "porez",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Kalkulacija poreza i doprinosa na dohodak od samostalne djelatnosti (FBiH)",
+  "license": "GPL-3.0-or-later",
+  "author": "Emin Sivro (https://www.linkedin.com/in/eminsivro/)",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0"
+  },
+  "dependencies": {
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
+  }
+}

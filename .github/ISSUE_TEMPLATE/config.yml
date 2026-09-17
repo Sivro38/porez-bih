@@ -1,0 +1,6 @@
+# Prazan issue ostaje moguc — ne stane sve u dva obrasca.
+blank_issues_enabled: true
+
+# Ovdje se mogu dodati vanjske veze (npr. Discussions) kad repozitorij
+# dobije adresu. Trazi punu adresu, relativna ne radi.
+contact_links: []

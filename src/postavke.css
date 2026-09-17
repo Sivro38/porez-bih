@@ -1,0 +1,148 @@
+/* ============================================================ */
+/* Postavke poreskih stopa.                                      */
+/* ============================================================ */
+
+.po-prozor .xp-prozor-body { padding: 12px; }
+
+/* --- upozorenje --- */
+
+/*
+ * Zuta traka sa usklicnikom je XP-ov nacin da kaze "stani i procitaj".
+ * Stoji iznad polja, ne ispod, jer poslije izmjene nema svrhe.
+ */
+.po-upozorenje {
+  position: relative;
+  padding: 9px 11px 9px 34px;
+  background: #FFFBE6;
+  border: 1px solid #E0C56B;
+  border-radius: 3px;
+  font-size: 11px;
+  line-height: 1.45;
+  color: #3D3016;
+}
+.po-upozorenje::before {
+  content: "!";
+  position: absolute;
+  left: 10px;
+  top: 9px;
+  width: 15px;
+  height: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 11px;
+  color: #5A3B00;
+  background: linear-gradient(135deg, #FFD24A, #E8A415);
+  border: 1px solid #B9821A;
+  border-radius: 2px;
+}
+.po-upozorenje p { margin: 0 0 7px; }
+.po-upozorenje p:last-child { margin-bottom: 0; }
+
+/* --- kvacica koja otkljucava --- */
+
+.po-kvacica {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin: 11px 0 10px;
+  padding: 8px 10px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #000;
+  background: #F7F6F1;
+  border: 1px solid #ACA899;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.po-kvacica input { margin: 1px 0 0; flex: none; }
+
+/* --- stope --- */
+
+.po-stope {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.po-stopa {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+}
+.po-otkljucano .po-stopa:hover { background: #EAF1FB; border-color: #B9CDE8; }
+
+.po-lbl {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  font-size: 11px;
+  color: #000;
+}
+.po-opis { font-size: 10px; color: #666; }
+
+.po-unos {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.po-prozor .po-unos input[type=text] {
+  width: 68px;
+  flex: none;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 12px;
+  font-weight: normal;
+  color: #000;
+  text-align: right;
+  padding: 2px 5px;
+  border: 2px solid;
+  border-color: #7F9DB9 #E3E9EF #E3E9EF #7F9DB9;
+  background: #fff;
+  outline: none;
+}
+.po-prozor .po-unos input[type=text]:focus {
+  border-color: #003399 #7FB3E8 #7FB3E8 #003399;
+  background: #FFFFF0;
+}
+.po-prozor .po-unos input:disabled {
+  background: #F0EFE8;
+  color: #666;
+  cursor: not-allowed;
+}
+.po-znak { font-size: 11px; color: #000; }
+
+/* Sirina je fiksna da se oznake poravnaju u kolonu, i kad su prazne */
+.po-zadano {
+  flex: 0 0 82px;
+  font-size: 10px;
+  color: #8a1c3a;
+  text-align: right;
+}
+
+.po-promijenjena { background: #FFFBE6; border-color: #E0C56B; }
+
+/* Kanton se ne unosi nego izvodi, pa izgleda drukcije od ostalih */
+.po-izvedena .po-lbl,
+.po-izvedena .po-znak { color: #666; }
+.po-izvedena .po-zadano { color: #666; font-style: italic; }
+
+/* --- dugmad --- */
+
+.po-akcije {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 11px;
+  padding-top: 10px;
+  border-top: 1px solid #ACA899;
+  box-shadow: inset 0 1px 0 #fff;
+}
+.po-poruka { font-size: 10px; color: #14621C; }
+
