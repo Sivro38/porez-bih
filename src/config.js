@@ -9,7 +9,7 @@
  */
 
 /** Verzija programa — pise na radnoj povrsini i u "O programu". */
-export const VERZIJA = '1.0';
+export const VERZIJA = '1.0.1';
 
 /**
  * Zadane stope. Korisnik ih moze promijeniti u "Postavke poreske stope";

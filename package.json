@@ -1,7 +1,7 @@
 {
   "name": "porez",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "description": "Kalkulacija poreza i doprinosa na dohodak od samostalne djelatnosti (FBiH)",
   "license": "GPL-3.0-or-later",
