@@ -1,9 +1,9 @@
-import { stope } from './stope.js';
+import { stopeZa } from './stope.js';
 
 /**
  * Obracun doprinosa i poreza.
  *
- * Sve ide u feningima (cijeli brojevi). Svaka stavka se zaokruzi odmah,
+ * Sve ide u feninzima (cijeli brojevi). Svaka stavka se zaokruzi odmah,
  * a izvedene stavke se racunaju oduzimanjem od vec zaokruzenih - tako
  * zbirovi uvijek zatvaraju i ono sto pise na uplatnicama se poklapa sa
  * "Ukupno za uplatu":
@@ -14,10 +14,12 @@ import { stope } from './stope.js';
  *   ukupno  + neto             === osnovica
  *
  * @param {number} osnovicaKM ukupan prihod u KM
- * @returns {Object} sve stavke u feningima
+ * @param {string} [vrsta] vrsta prihoda iz VRSTE_PRIHODA; mijenja samo
+ *   postotak priznatih rashoda (20% povremena, 30% autorska naknada)
+ * @returns {Object} sve stavke u feninzima
  */
-export function obracun(osnovicaKM) {
-  const S = stope();
+export function obracun(osnovicaKM, vrsta) {
+  const S = stopeZa(vrsta);
   const osnovica = Math.max(0, Math.round(osnovicaKM * 100));
 
   const rashodi = Math.round(osnovica * S.rashodi);

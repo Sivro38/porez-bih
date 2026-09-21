@@ -28,6 +28,7 @@ function napraviTraku() {
   traka.innerHTML =
     '<div class="xp-traka-pocetak">kalkulacija</div>' +
     '<div class="xp-traka-popis"></div>' +
+    '<div class="xp-traka-zona"></div>' +
     '<div class="xp-traka-sat"></div>';
   document.body.append(traka);
   popis = traka.querySelector('.xp-traka-popis');
@@ -63,6 +64,19 @@ function napraviTraku() {
  * @param {Object} api mora imati jeOtvoren, jeMinimiziran, minimiziraj, vrati
  * @param {string} [ikona] emoji ili znak ispred naziva
  */
+/**
+ * Dodaj sitnu ikonu lijevo od sata — obavjestajna zona, kao XP tray.
+ *
+ * Tu ide ono sto treba ostati nadohvat i kad se poruka sklonila: ikona
+ * ne nestaje, pa se sadrzaj moze otvoriti kad god.
+ *
+ * @param {HTMLElement} element
+ */
+export function dodajUZonu(element) {
+  if (!traka) napraviTraku();
+  traka.querySelector('.xp-traka-zona').append(element);
+}
+
 export function prijavi(naziv, api, ikona = '') {
   if (!traka) napraviTraku();
   prijavljeni.push({ naziv, api, ikona, pokretac: false, pokreni: null });

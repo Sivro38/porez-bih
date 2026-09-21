@@ -232,3 +232,31 @@ export const PRAVNO = `
   <rect x="23.2" y="39.6" width="1.6" height="3.2" rx="0.8" fill="#6B460A"/>
   ${sjaj('pr-sjaj', 10, 4, 26, 26)}
 </svg>`;
+
+/* Globus — vanjske, sluzbene stranice. Meridijani su lukovi, ne elipse:
+   elipsa bi na 48px izgledala kao prsten oko lopte, ne kao linija po njoj. */
+export const RESURSI = `
+<svg viewBox="0 0 48 48" width="48" height="48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <defs>
+    <radialGradient id="re-lopta" cx="0.35" cy="0.3" r="0.85">
+      <stop offset="0" stop-color="#9FD4FF"/><stop offset="0.55" stop-color="#2C7FD4"/>
+      <stop offset="1" stop-color="#10437E"/>
+    </radialGradient>
+    <linearGradient id="re-sjaj" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <circle cx="24" cy="24" r="19" fill="url(#re-lopta)"/>
+  <g fill="none" stroke="#DCEEFF" stroke-width="1.3" opacity="0.85">
+    <path d="M5 24 h38"/>
+    <path d="M24 5 v38"/>
+    <path d="M24 5 C14 14 14 34 24 43"/>
+    <path d="M24 5 C34 14 34 34 24 43"/>
+    <path d="M9 14 C16 18 32 18 39 14"/>
+    <path d="M9 34 C16 30 32 30 39 34"/>
+  </g>
+  <circle cx="24" cy="24" r="19" fill="none" stroke="#0A2E5C" stroke-width="1.4"/>
+  <ellipse cx="19" cy="14" rx="10" ry="6" fill="url(#re-sjaj)"/>
+</svg>
+`;

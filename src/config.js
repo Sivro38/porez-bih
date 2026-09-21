@@ -9,19 +9,51 @@
  */
 
 /** Verzija programa — pise na radnoj povrsini i u "O programu". */
-export const VERZIJA = '1.0';
+export const VERZIJA = '1.1';
 
 /**
  * Zadane stope. Korisnik ih moze promijeniti u "Postavke poreske stope";
  * ono sto trenutno vazi cita se iz stope.js, ne odavde.
  */
 export const STOPE = {
-  rashodi:    0.20,   // priznati rashodi, udio u osnovici
+  rashodi:    0.20,   // priznati rashodi, povremena samostalna djelatnost
+  rashodiAutorski: 0.30,  // priznati rashodi, autorska naknada
   doprinosi:  0.04,   // doprinosi, udio u osnovici za doprinose
   federacija: 0.102,  // udio Federacije u doprinosima
   kanton:     0.898,  // udio Kantona u doprinosima (nosi ostatak zaokruzivanja)
   porez:      0.10,   // porez na dohodak, udio u osnovici poreza
 };
+
+/**
+ * Vrste prihoda. Razlikuju se samo po priznatim rashodima.
+ *
+ * Zakon o porezu na dohodak FBiH, clan 15:
+ *   stav 7 — 20% za dohodak od povremene samostalne djelatnosti
+ *   stav 8 — 30% za autorske naknade, ILI stvarni iznos troskova
+ *
+ * Stvarni iznos program ne racuna: trazi dokumentovane troskove, pa
+ * ko ide tim putem racuna sam.
+ *
+ * `stopa` je naziv polja u STOPE, ne broj: korisnik oba postotka
+ * moze mijenjati u postavkama, pa se cita u trenutku obracuna.
+ */
+export const VRSTE_PRIHODA = [
+  {
+    key: 'povremena',
+    label: 'Povremena samostalna djelatnost',
+    opis: 'programiranje, dizajn, prevod, konsalting, novinarstvo…',
+    stopa: 'rashodi',
+  },
+  {
+    key: 'autorska',
+    label: 'Autorska naknada',
+    opis: 'honorar za autorsko djelo — tekst, muzika, licenca',
+    stopa: 'rashodiAutorski',
+  },
+];
+
+/** Vrsta koja se nudi dok korisnik ne izabere drugu. */
+export const ZADANA_VRSTA = 'povremena';
 
 /**
  * Primaoci uplata - jedan unos = jedna uplatnica.
@@ -57,8 +89,12 @@ export const PRIMAOCI = [
     key: 'federacija',
     caption: '2. Doprinos — Federacija (Fond solidarnosti FBiH)',
     svrha: ['Doprinos za zdravstveno osiguranje', 'po osnovu druge samostalne djelatnosti'],
-    primalac: ['Fond solidarnosti Federacije', 'Bosne i Hercegovine'],
-    acc: '1020500000640018',
+    // Racun pripada Zavodu; Fond solidarnosti je namjena, i stoji u
+    // `caption` iznad uplatnice. Na papir ide vlasnik racuna, kako ga
+    // vodi i sluzbeni spisak uplatnih racuna Porezne uprave.
+    primalac: ['Zavod zdravstvenog osiguranja', 'i reosiguranja Federacije',
+               'Bosne i Hercegovine'],
+    acc: '1020500000064018',
     vrsta: '712116',
   },
   {
@@ -125,7 +161,7 @@ export const OPCINE_ZEDO = [
   { naziv: 'Maglaj',     sifra: '060' },
   { naziv: 'Tešanj',     sifra: '090' },
   { naziv: 'Usora',      sifra: '025' },
-  { naziv: 'Doboj Jug',  sifra: '132' },
+  { naziv: 'Doboj-Jug',  sifra: '132' },
   { naziv: 'Kakanj',     sifra: '043' },
   { naziv: 'Vareš',      sifra: '096' },
   { naziv: 'Visoko',     sifra: '098' },

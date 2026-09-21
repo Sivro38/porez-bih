@@ -1,4 +1,5 @@
 import { napraviProzor } from './prozor.js';
+import { IZVOR_ROKOVI } from './izvori.js';
 import { PRIMAOCI } from './config.js';
 import { pratiSkalu } from './skala.js';
 
@@ -43,6 +44,8 @@ export function napraviUplatniceProzor(onZatvaranju) {
         '<button type="button" class="pd-btn" data-upl-rezim="jedna">Jedna po jedna</button>' +
         '<span class="upl-tabovi">' + tabovi + '</span>' +
         '<span class="upl-hint">Ispis uvijek štampa sve tri</span>' +
+        '<span class="upl-rok">Uplati najkasnije <b>naredni dan</b> od primitka dohotka'
+          + IZVOR_ROKOVI + '</span>' +
       '</div>' +
       '<div id="forms-mount"></div>',
   });

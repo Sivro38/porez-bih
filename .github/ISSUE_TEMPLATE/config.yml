@@ -1,6 +1,9 @@
 # Prazan issue ostaje moguc — ne stane sve u dva obrasca.
 blank_issues_enabled: true
 
-# Ovdje se mogu dodati vanjske veze (npr. Discussions) kad repozitorij
-# dobije adresu. Trazi punu adresu, relativna ne radi.
-contact_links: []
+# Pitanja idu u Discussions, da se ne mijesaju sa prijavama gresaka.
+# Trazi punu adresu; ako forkujes projekat, promijeni je na svoju.
+contact_links:
+  - name: Pitanje
+    url: https://github.com/Sivro38/porez-bih/discussions
+    about: Nisi siguran je li greska? Pitaj ovdje.

@@ -1,4 +1,4 @@
-import { STOPE as ZADANE } from './config.js';
+import { STOPE as ZADANE, VRSTE_PRIHODA, ZADANA_VRSTA } from './config.js';
 
 /**
  * Trenutno vazece stope.
@@ -16,7 +16,8 @@ const KLJUC = 'porez.stope.v1';
 
 /** Stope koje korisnik moze mijenjati. Kanton se izvodi iz Federacije. */
 export const PROMJENJIVE = [
-  { key: 'rashodi',    label: 'Priznati rashodi',        opis: 'udio u ukupnom prihodu' },
+  { key: 'rashodi',    label: 'Priznati rashodi',        opis: 'povremena samostalna djelatnost' },
+  { key: 'rashodiAutorski', label: 'Priznati rashodi — autorska naknada', opis: 'kad je prihod autorska naknada' },
   { key: 'doprinosi',  label: 'Doprinosi',               opis: 'udio u osnovici za doprinose' },
   { key: 'federacija', label: 'Federacija',              opis: 'udio u doprinosima' },
   { key: 'porez',      label: 'Porez na dohodak',        opis: 'udio u osnovici poreza' },
@@ -50,6 +51,25 @@ export function stope() {
 /** Da li se razlikuju od zadanih iz config.js. */
 export function suIzmijenjene() {
   return PROMJENJIVE.some(({ key }) => trenutne[key] !== ZADANE[key]);
+}
+
+/**
+ * Stope za odabranu vrstu prihoda.
+ *
+ * Razlika izmedju vrsta je samo u priznatim rashodima, pa se ovdje
+ * `rashodi` zamijeni onim postotkom koji ta vrsta nosi. Sve ostalo —
+ * doprinosi, raspodjela, porez — je isto.
+ *
+ * Ovo vraca obican objekat stopa, pa i obracun i tabela i postotci u
+ * njoj gledaju u istu stvar i ne mogu se raziti.
+ *
+ * @param {string} [vrsta] kljuc iz VRSTE_PRIHODA
+ */
+export function stopeZa(vrsta) {
+  const s = stope();
+  const v = VRSTE_PRIHODA.find(x => x.key === vrsta)
+    || VRSTE_PRIHODA.find(x => x.key === ZADANA_VRSTA);
+  return { ...s, rashodi: s[v.stopa] };
 }
 
 /** Zadane vrijednosti, za prikaz "vrati na zadano". */

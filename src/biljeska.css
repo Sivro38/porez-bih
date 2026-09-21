@@ -1,0 +1,98 @@
+/* ============================================================ */
+/* Biljeska "Kako platiti" — gore desno na radnoj povrsini.     */
+/*                                                              */
+/* Papir, ne prozor: ostre ivice, tvrda sjenka bez zamucenja,   */
+/* bez radijusa. Boje su zute iz tokens.css, iste kao svako     */
+/* drugo upozorenje u programu.                                 */
+/*                                                              */
+/* Sklapa se klikom na zaglavlje (<details>).                   */
+/* ============================================================ */
+
+.xp-biljeska {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 1;               /* iznad pozadine, ispod svih prozora */
+  width: 196px;
+  padding: 0;
+  background: var(--xp-pazi-pod);
+  border: 1px solid var(--xp-pazi-crta);
+  /* Tvrda sjenka, bez blura — papir, ne staklo */
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.28);
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+  font-size: var(--xp-slova);
+  line-height: 1.45;
+  color: var(--xp-pazi-tekst);
+}
+.xp-biljeska[open] { padding-bottom: 8px; }
+
+.bilj-vrh {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 8px;
+  background: #FFF6CF;
+  font-weight: bold;
+  cursor: pointer;
+  list-style: none;         /* gasi zadani trokut */
+}
+.bilj-vrh::-webkit-details-marker { display: none; }
+.xp-biljeska[open] .bilj-vrh { border-bottom: 1px solid var(--xp-pazi-crta); }
+.bilj-vrh:hover { background: #FFF1B8; }
+.bilj-vrh:focus-visible { outline: 1px dotted var(--xp-pazi-tekst); outline-offset: -3px; }
+
+.bilj-cioda { flex: none; display: block; }
+
+/* Vlastiti trokut, desno — okrene se kad je otvoreno. */
+.bilj-vrh::after {
+  content: "";
+  margin-left: auto;
+  flex: none;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--xp-pazi-tekst);
+  transform: rotate(-90deg);
+  transition: transform 120ms ease-out;
+}
+.xp-biljeska[open] .bilj-vrh::after { transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bilj-vrh::after { transition: none; }
+}
+
+/* Ono u sta nismo sigurni ne smije zvucati kao da jesmo. */
+.bilj-tise { font-weight: normal; color: #7A6A3F; }
+
+.bilj-koraci {
+  margin: 8px 0 0;
+  padding: 0 10px 0 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.bilj-koraci li { margin: 0; }
+.bilj-koraci b { font-weight: bold; }
+
+.bilj-dno {
+  margin: 9px 10px 0;
+  padding-top: 7px;
+  border-top: 1px dotted var(--xp-pazi-crta);
+  font-size: var(--xp-slova-sitna);
+}
+
+/*
+ * Vidi se tek kad ima mjesta pored glavne kalkulacije.
+ *
+ * .window je najvise 960px i centriran, pa je desna margina
+ * (sirina - 960) / 2. Biljeska trazi 196 + 12 = 208px. Iz
+ * (sirina - 960) / 2 >= 208 slijedi sirina >= 1376px.
+ *
+ * Ispod toga bi zavrsila iza prozora (z-index 1 naspram 10) i
+ * vidjela bi joj se samo ivica, sto je gore nego da je nema. Ovo
+ * pokriva i telefon.
+ */
+@media screen and (max-width: 1379px) {
+  .xp-biljeska { display: none; }
+}

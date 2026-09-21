@@ -1,0 +1,67 @@
+/* ============================================================ */
+/* Sluzbeni resursi — spisak vanjskih veza.                     */
+/* ============================================================ */
+
+/* Dokument je dug; bez granice prozor naraste do pune visine ekrana.
+   Dva reda zbog starijih browsera: vh prvi, dvh pobjedjuje ako ga
+   browser razumije. */
+.re-prozor {
+  max-height: min(580px, calc(100vh - 96px));
+  max-height: min(580px, calc(100dvh - 96px));
+}
+
+.re-prozor .xp-prozor-body { font-size: var(--xp-slova); line-height: 1.55; }
+
+.re-uvod {
+  margin: 0 0 14px;
+  padding: 8px 10px;
+  background: var(--xp-pazi-pod);
+  border: 1px solid var(--xp-pazi-crta);
+  border-radius: 2px;
+  color: var(--xp-pazi-tekst);
+}
+
+.re-skupina + .re-skupina { margin-top: 16px; }
+
+.re-naslov {
+  margin: 0 0 7px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--xp-crta-tabele);
+  font-size: var(--xp-slova-naslov);
+  color: var(--xp-naslov);
+}
+
+.re-spisak {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.re-veza {
+  color: var(--xp-veza);
+  font-weight: bold;
+  text-decoration: underline;
+}
+.re-veza:hover { color: var(--xp-izbor); }
+.re-veza:focus-visible { outline: 1px dotted var(--xp-naslov); outline-offset: 2px; }
+
+.re-opis { color: var(--xp-tekst-blijed); }
+
+/* Puna adresa se ispisuje da se vidi kuda vodi prije nego se klikne. */
+.re-adresa {
+  font-family: Consolas, "Lucida Console", monospace;
+  font-size: var(--xp-slova-sitna);
+  color: var(--xp-tekst-prazan);
+  word-break: break-all;
+}
+
+.re-podnozje {
+  margin: 16px 0 0;
+  padding-top: 9px;
+  border-top: 1px solid var(--xp-crta-tabele);
+  font-size: var(--xp-slova-sitna);
+  color: var(--xp-tekst-blijed);
+}

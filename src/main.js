@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ZADANA_OSNOVICA, VERZIJA } from './config.js';
+import { ZADANA_OSNOVICA, VERZIJA, VRSTE_PRIHODA, ZADANA_VRSTA } from './config.js';
 import { obracun } from './calc.js';
 import { parseInput, fmt } from './format.js';
 import { renderTabela, popuniTabelu } from './tabela.js';
@@ -37,13 +37,18 @@ import { omoguciPovlacenje } from './drag.js';
 import { omoguciPromjenuVelicine } from './resize.js';
 import * as traka from './traka.js';
 import { napraviPrecice } from './precice.js';
+import { napraviBiljesku } from './biljeska.js';
+import { napraviNovosti, postaviNovosti } from './novosti.js';
+import { napraviResurse } from './resursi.js';
 import * as ikone from './ikone.js';
 import { izvoziPDF, izvoziExcel } from './izvoz.js';
 
 const OSNOVICA_KEY = 'porez.osnovica.v1';
+const VRSTA_KEY = 'porez.vrsta.v1';
 
 const $ = id => document.getElementById(id);
 const osnovicaEl = $('osnovica');
+const vrstaEl = $('vrsta-prihoda');
 const glavniProzor = document.querySelector('.window');
 
 /* ---------- glavni prozor na donjoj traci ---------- */
@@ -90,7 +95,7 @@ let prikaziPostotak = true;
  * vraca rucno jer je nosi inline stil, koji precrtavanje obrise.
  */
 function precrtajTabelu() {
-  $('obracun-body').innerHTML = renderTabela();
+  $('obracun-body').innerHTML = renderTabela(vrstaEl.value);
   document.querySelectorAll('.pct-col').forEach(el => {
     el.style.display = prikaziPostotak ? '' : 'none';
   });
@@ -112,7 +117,7 @@ let zadnjiObracun = null;
 let amsProzor = null;
 
 function preracunaj() {
-  const r = obracun(parseInput(osnovicaEl.value));
+  const r = obracun(parseInput(osnovicaEl.value), vrstaEl.value);
   zadnjiObracun = r;
   popuniTabelu(r);
   popuniIznose(r);
@@ -122,6 +127,36 @@ function preracunaj() {
 function zapamtiOsnovicu() {
   try { localStorage.setItem(OSNOVICA_KEY, osnovicaEl.value); } catch { /* storage nedostupan */ }
 }
+
+/* ---------- vrsta prihoda ---------- */
+
+/*
+ * Mijenja samo postotak priznatih rashoda — 20% za povremenu samostalnu
+ * djelatnost, 30% za autorsku naknadu. Tabela se mora PONOVO iscrtati,
+ * ne samo popuniti: postotak stoji u samom HTML-u kolone "%", pa bi
+ * inace ostao stari broj uz nove iznose.
+ */
+vrstaEl.innerHTML = VRSTE_PRIHODA.map(v =>
+  '<option value="' + v.key + '">' + v.label + '</option>').join('');
+vrstaEl.value = ZADANA_VRSTA;
+try {
+  const spremljena = localStorage.getItem(VRSTA_KEY);
+  if (spremljena && VRSTE_PRIHODA.some(v => v.key === spremljena)) vrstaEl.value = spremljena;
+} catch { /* storage nedostupan */ }
+
+function opisVrste() {
+  const v = VRSTE_PRIHODA.find(x => x.key === vrstaEl.value);
+  $('vrsta-opis').textContent = v ? v.opis : '';
+}
+opisVrste();
+
+vrstaEl.addEventListener('change', () => {
+  opisVrste();
+  precrtajTabelu();
+  preracunaj();
+  try { localStorage.setItem(VRSTA_KEY, vrstaEl.value); } catch { /* svejedno */ }
+  setStatus('Vrsta prihoda: ' + vrstaEl.options[vrstaEl.selectedIndex].text);
+});
 
 osnovicaEl.addEventListener('input', () => { preracunaj(); zapamtiOsnovicu(); });
 
@@ -242,6 +277,8 @@ const postavkeProzor = napraviPostavke(
 
 const uputstvo = napraviUputstvo();
 const pravno = napraviPravno();
+const resursi = napraviResurse();
+const novosti = napraviNovosti();
 
 // Pravi se zadnje da bi, pri prvom otvaranju, stajalo iznad svega ostalog.
 const upozorenje = napraviUpozorenje();
@@ -268,14 +305,26 @@ const otvoriUplatnice = () => { uplatniceProzor.otvori(); $('chk-uplatnice').tex
 const otvoriAMS = () => { amsProzor.otvori(); $('chk-ams').textContent = '✓'; };
 const otvoriUputstvo = () => uputstvo.otvori();
 const otvoriPravno = () => pravno.otvori();
+const otvoriResurse = () => resursi.otvori();
 
+/*
+ * Dvije grupe, razdvojene proredom: prvo ono cime se radi, pa ono sto
+ * se cita. Kalkulacija je prva jer je glavni prozor — ne moze se
+ * zatvoriti, pa je klik vraca naprijed umjesto da je otvara.
+ */
 napraviPrecice([
-  { naziv: 'Moji podaci', ikona: ikone.MOJI_PODACI, otvori: otvoriPodatke },
-  { naziv: 'Uplatnice',   ikona: ikone.UPLATNICE,   otvori: otvoriUplatnice },
-  { naziv: 'AMS-1035',    ikona: ikone.OBRAZAC,     otvori: otvoriAMS },
-  { naziv: 'Pomoć',       ikona: ikone.POMOC,       otvori: otvoriUputstvo },
-  { naziv: 'Pravno',      ikona: ikone.PRAVNO,      otvori: otvoriPravno },
+  { naziv: 'Kalkulacija', ikona: ikone.KALKULACIJA,  otvori: () => glavniApi.vrati() },
+  { naziv: 'Moji podaci', ikona: ikone.MOJI_PODACI,  otvori: otvoriPodatke },
+  { naziv: 'Uplatnice',   ikona: ikone.UPLATNICE,    otvori: otvoriUplatnice },
+  { naziv: 'AMS-1035',    ikona: ikone.OBRAZAC,      otvori: otvoriAMS },
+  { razmak: true },
+  { naziv: 'Pomoć',       ikona: ikone.POMOC,        otvori: otvoriUputstvo },
+  { naziv: 'Resursi',     ikona: ikone.RESURSI,      otvori: otvoriResurse },
+  { naziv: 'Pravno',      ikona: ikone.PRAVNO,       otvori: otvoriPravno },
 ]);
+
+/* Papiric gore desno; stoji na radnoj povrsini, iza prozora. */
+napraviBiljesku();
 
 /*
  * Ista cetiri prozora i na donjoj traci. Na telefonu su precice
@@ -290,6 +339,7 @@ traka.postaviPokretace([
   { api: amsProzor,       ikona: ikone.OBRAZAC,     pokreni: otvoriAMS },
   { api: uputstvo,        ikona: ikone.POMOC,       pokreni: otvoriUputstvo },
   { api: pravno,          ikona: ikone.PRAVNO,      pokreni: otvoriPravno },
+  { api: resursi,         ikona: ikone.RESURSI,     pokreni: otvoriResurse },
 ]);
 
 /**
@@ -441,6 +491,14 @@ document.addEventListener('click', e => {
       pravno.otvori();
       break;
 
+    case 'resursi':
+      resursi.otvori();
+      break;
+
+    case 'novosti':
+      novosti.otvori();
+      break;
+
     case 'centriraj':
       povlacenje.resetuj();
       setStatus('Prozor vraćen na sredinu');
@@ -449,3 +507,9 @@ document.addEventListener('click', e => {
 
   zatvoriMenije();
 });
+
+/*
+ * Balon sa izmjenama. Sam odlucuje hoce li se pojaviti — ceka da
+ * se skloni pocetno upozorenje i pamti da je zatvoren.
+ */
+postaviNovosti(() => novosti.otvori());

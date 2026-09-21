@@ -11,17 +11,24 @@ import * as ikone from './ikone.js';
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
 
 /**
- * @param {Array<{naziv: string, ikona: string, otvori: Function}>} stavke
+ * Stavka `{ razmak: true }` nije precica nego prored — njome se ikone
+ * dijele u grupe (alati, pa ono sto se cita). Indeks se ne pomjera: i
+ * dalje je polozaj u istom nizu, pa klik pogadja pravu stavku.
+ *
+ * @param {Array<{naziv?: string, ikona?: string, otvori?: Function,
+ *                razmak?: boolean}>} stavke
  */
 export function napraviPrecice(stavke) {
   const ploca = document.createElement('div');
   ploca.className = 'xp-precice';
   ploca.innerHTML = stavke.map((s, i) =>
-    '<button type="button" class="xp-precica" data-precica="' + i + '"'
-    + ' title="' + esc(s.naziv) + ' — dvoklik za otvaranje">'
-    + '<span class="xp-precica-ikona">' + s.ikona + '</span>'
-    + '<span class="xp-precica-naziv">' + esc(s.naziv) + '</span>'
-    + '</button>').join('');
+    s.razmak
+      ? '<div class="xp-precice-prored" aria-hidden="true"></div>'
+      : '<button type="button" class="xp-precica" data-precica="' + i + '"'
+        + ' title="' + esc(s.naziv) + ' — dvoklik za otvaranje">'
+        + '<span class="xp-precica-ikona">' + s.ikona + '</span>'
+        + '<span class="xp-precica-naziv">' + esc(s.naziv) + '</span>'
+        + '</button>').join('');
 
   // Ide na pocetak tijela da prozori u prirodnom redoslijedu ostanu iznad
   document.body.prepend(ploca);

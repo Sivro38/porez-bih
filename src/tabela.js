@@ -1,12 +1,17 @@
 import { REDOVI } from './config.js';
-import { stope } from './stope.js';
+import { stopeZa } from './stope.js';
 import { fmt, fmtPct } from './format.js';
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
 
-/** Izgradi tijelo tabele obracuna iz REDOVI - % kolona ide iz istih stopa. */
-export function renderTabela() {
-  const S = stope();
+/**
+ * Izgradi tijelo tabele obracuna iz REDOVI — % kolona ide iz istih
+ * stopa kao i sam obracun, pa se ne mogu raziti.
+ *
+ * @param {string} [vrsta] vrsta prihoda; mijenja postotak rashoda
+ */
+export function renderTabela(vrsta) {
+  const S = stopeZa(vrsta);
   let html = '<tr class="xp-header">'
     + '<th>Stavka</th>'
     + '<th class="pct-col" style="text-align:right;">%</th>'

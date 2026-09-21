@@ -13,6 +13,10 @@
   width: 92px;
 }
 
+/* Prored izmedju grupa ikona. Nije crta nego prazan prostor — XP je
+   grupe razdvajao razmakom, ne linijom. */
+.xp-precice-prored { height: 14px; flex: none; }
+
 .xp-precica {
   display: flex;
   flex-direction: column;

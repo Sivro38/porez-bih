@@ -3,6 +3,7 @@ import { PRIMAOCI, OPCINE_ZEDO, FIKSNE_NULE, ZADANA_OSNOVICA, punNaziv } from '.
 import { stope } from './stope.js';
 import { fmt, fmtPct, parseInput } from './format.js';
 import { obracun } from './calc.js';
+import { IZVOR_ROKOVI } from './izvori.js';
 
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
 
@@ -54,8 +55,14 @@ const teme = () => {
         '<li>Upiši ukupan prihod u polje <b>Osnovica</b>. Tabela se računa dok kucaš.</li>' +
         '<li>Otvori <b>Alati → Moji podaci</b> i upiši svoje podatke. To se radi jednom.</li>' +
         '<li>Otvori <b>Prikaz → Prikaži uplatnice</b> — tri naloga su već popunjena.</li>' +
-        '<li><b>Datoteka → Ispis uplatnica</b> i nosiš ih u banku.</li>' +
+        '<li><b>Datoteka → Ispis uplatnica</b> i nosiš ih u banku ili na poštu.</li>' +
+        '<li>Popuni <b>AMS-1035</b> u dva primjerka i odnesi ih u Poreznu upravu.</li>' +
       '</ol>' +
+      '<h4>Rokovi</h4>' +
+      '<ul>' +
+        '<li>Porez se uplaćuje <b>najkasnije naredni dan</b> od dana kada si primio dohodak.' + IZVOR_ROKOVI + '</li>' +
+        '<li>Obrazac AMS-1035 se predaje <b>u roku od 5 dana</b> od primitka dohotka, poreznoj ispostavi prema mjestu prebivališta.' + IZVOR_ROKOVI + '</li>' +
+      '</ul>' +
       '<p class="up-savjet">Unos preživi zatvaranje browsera, pa sljedeći put nastavljaš gdje si stao.</p>',
   },
   {
@@ -65,8 +72,12 @@ const teme = () => {
       '<p>Račun ide u koracima — svaki se oslanja na prethodni, ne na početnu osnovicu. Primjer je za osnovicu od ' + fmt(PRIMJER.osnovica) + ' KM.</p>' +
       lanacTabela(PRIMJER, STOPE) +
       '<p>Kolona <b>%</b> u glavnoj tabeli pokazuje stopu primijenjenu u tom koraku, ne udio u ukupnom prihodu. Možeš je sakriti pod <b>Prikaz → Prikaži % kolonu</b>.</p>' +
+      '<h4>Vrsta prihoda</h4>' +
+      '<p>Priznati rashodi nisu isti za svaki prihod. Za <b>povremenu samostalnu djelatnost</b> — programiranje, dizajn, prevod, konsalting — priznaje se <b>20%</b> (član 15. stav 7. Zakona o porezu na dohodak FBiH). Za <b>autorsku naknadu</b>, honorar za autorsko djelo, priznaje se <b>30%</b> (stav 8. istog člana).' + IZVOR_ROKOVI + '</p>' +
+      '<p>Bira se u glavnom prozoru, ispod polja za osnovicu. Mijenja samo taj postotak; doprinosi, raspodjela i porez ostaju isti. Izbor se pamti.</p>' +
+      '<p class="up-savjet">Zakon za autorske naknade dozvoljava i <b>stvarni iznos</b> troškova umjesto postotka. To traži dokumentovane troškove, pa program tu računicu ne radi — ko ide tim putem, računa sam.</p>' +
       '<h4>Zaokruživanje</h4>' +
-      '<p>Sve se računa u feningima, cijelim brojevima. Svaka stavka se zaokruži odmah, a Kanton nosi ostatak — zato tri uplatnice <b>uvijek</b> zbrajaju tačno na „Ukupno za uplatu”. Da se računalo u decimalama, znale bi promašiti za fening.</p>',
+      '<p>Sve se računa u feninzima, cijelim brojevima. Svaka stavka se zaokruži odmah, a Kanton nosi ostatak — zato tri uplatnice <b>uvijek</b> zbrajaju tačno na „Ukupno za uplatu”. Da se računalo u decimalama, znale bi promašiti za fening.</p>',
   },
   {
     id: 'podaci',
@@ -137,6 +148,7 @@ const teme = () => {
       '</ul>' +
       '<h4>Isplatilac</h4>' +
       '<p>Polja 6, 7 i 8 — naziv, adresa i država onoga ko ti je platio — upisuju se u <b>Moji podaci</b>, u odjeljku na dnu. Uplatnicama ne trebaju, ali bez njih obrazac nije potpun.</p>' +
+      '<p>Predaje se <b>u roku od 5 dana</b> od primitka dohotka, u <b>dva primjerka</b>.' + IZVOR_ROKOVI + '</p>' +
       '<p class="up-savjet">Obrazac se štampa na položeni A4. Ispis pokreni dugmetom u samom prozoru ili preko <b>Datoteka → Ispis obrasca AMS-1035</b>.</p>',
   },
   {
@@ -211,7 +223,7 @@ const teme = () => {
       '<p class="up-oprez">Ovo nije službena stranica i nije povezana ni s jednom institucijom. <b>Prije uplate provjeri iznose</b> kod Porezne uprave FBiH, u banci ili kod knjigovođe.</p>' +
       '<ul>' +
         '<li>Računi, vrste prihoda i šifre općina vrijede samo za <b>Zeničko-dobojski kanton</b>.</li>' +
-        '<li>Stope i računi upisani su ručno i mogu biti zastarjeli.</li>' +
+        '<li>Stope, računi i šifre općina provjereni su kod Porezne uprave FBiH 21.09.2026, ali se propisi mijenjaju — prije uplate provjeri iznose.</li>' +
         '<li>Obračun pokriva dohodak od samostalne djelatnosti — ne obuhvata olakšice, odbitke ni posebne slučajeve.</li>' +
       '</ul>' +
       '<p>Cijelo upozorenje: <b>Pomoć → Upozorenje</b>.</p>',

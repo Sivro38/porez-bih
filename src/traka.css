@@ -82,17 +82,84 @@
 .xp-traka-ikona { flex: none; font-size: 11px; line-height: 1; }
 .xp-traka-tekst { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
+/* --- obavjestajni dio (XP tray): ikone i sat --- */
+/*
+ * Nosi ono sto treba ostati nadohvat i kad se poruka sklonila. Dok je
+ * prazna, zone nema — pa traka ne dobija bezveze plocicu.
+ *
+ * Zona i sat nisu dva polja nego JEDNO. U XP-u je to jedna udubljena
+ * plocica koja drzi i ikone i sat, pa:
+ *   - rub nosi samo zona; sat ga nema, a preuzima ga kad je zona prazna
+ *   - rub je dvobojan, tamna pa svijetla linija — jedna izgleda kao
+ *     nacrtana, dvije kao urezana
+ *   - negativne margine gase `gap: 4px` sa .xp-traka, koji bi inace
+ *     provukao tamniju traku izmedju ikona i sata i razbio plocicu
+ */
+.xp-traka-zona {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 0 5px 0 8px;
+  background: linear-gradient(180deg, #2F8AE0 0%, #1D6FC9 45%, #1A62B8 100%);
+  border-left: 1px solid #16418C;
+  box-shadow: inset 1px 0 0 #5FA0F0;
+  margin-right: -4px;     /* gasi gap sa .xp-traka */
+}
+.xp-traka-zona:empty { display: none; }
+
+/* XP tray ikona nema okvir ni podlogu — samo ikona, 16px. */
+.xp-zona-dugme {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.xp-zona-dugme:hover .xp-zona-ikona {
+  background: #FFFFFF;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35);
+}
+.xp-zona-dugme:focus-visible { outline: 1px dotted #fff; outline-offset: 1px; }
+
+.xp-zona-ikona {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  color: #1D6FC9;
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-size: 10px;
+  font-weight: bold;
+  line-height: 15px;
+  text-align: center;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
+}
+
 /* --- sat --- */
 
 .xp-traka-sat {
   display: flex;
   align-items: center;
-  padding: 0 12px;
+  /* Lijevo je tijesno jer do njega stoje ikone iste plocice; rub i
+     siri razmak dolaze samo kad je zona prazna, pravilom ispod. */
+  padding: 0 12px 0 6px;
   font-size: 11px;
   color: #fff;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
   background: linear-gradient(180deg, #2F8AE0 0%, #1D6FC9 45%, #1A62B8 100%);
-  border-left: 1px solid #4A8AF4;
+  margin-right: -4px;     /* plocica ide do same ivice, kao u XP-u */
+}
+
+/* Nema ikona — sat je cijela plocica, pa on nosi rub i puni razmak. */
+.xp-traka-zona:empty + .xp-traka-sat {
+  padding-left: 12px;
+  border-left: 1px solid #16418C;
+  box-shadow: inset 1px 0 0 #5FA0F0;
 }
 
 /* Sadrzaj stranice ne smije zavrsiti ispod trake */

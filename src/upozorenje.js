@@ -24,7 +24,7 @@ const KLJUC = 'porez.upozorenje.v1';
 const ALT =
   'Upozorenje. Ovo nije službena stranica i nije povezana ni s jednom ' +
   'institucijom — privatni je projekat, napravljen da pomogne pri računanju. ' +
-  'Stope, računi i šifre općina upisani su ručno i mogu biti zastarjeli. ' +
+  'Stope, računi i šifre općina provjereni su kod Porezne uprave FBiH, ali se propisi mijenjaju. ' +
   'Prije uplate provjeri iznose kod Porezne uprave FBiH, u banci ili kod ' +
   'knjigovođe. Sve što upišeš ostaje u tvom browseru — ništa se ne šalje nigdje.';
 
@@ -37,7 +37,7 @@ const TEKST =
   '<div class="upoz-tekst">'
   + '<p><b>Ovo nije službena stranica</b> i nije povezana ni s jednom '
   + 'institucijom. Privatni je projekat, napravljen da pomogne pri računanju.</p>'
-  + '<p>Stope, računi i šifre općina upisani su ručno i mogu biti zastarjeli. '
+  + '<p>Stope, računi i šifre općina <b>provjereni su kod Porezne uprave FBiH</b>, ali se propisi mijenjaju. '
   + '<b>Prije uplate provjeri iznose</b> kod Porezne uprave FBiH, u banci ili '
   + 'kod knjigovođe.</p>'
   + '<p class="upoz-dobro">Sve što upišeš ostaje u tvom browseru — ništa se '
@@ -57,7 +57,17 @@ const SLIKA =
  * i morala se skrolati. 170px je otprilike naslovna traka, padding,
  * podnozje sa dugmetom i margine prozora.
  */
-const SIRINA = 'min(1476px, 94vw, calc((100dvh - 170px) * 1.2487))';
+/*
+ * Dvije vrijednosti, kao dva reda u CSS-u: browser koji ne zna `dvh`
+ * uzme prvu. Bez rezerve bi cijelo pravilo palo, prozor bi ostao bez
+ * zadate sirine, slika bi se razvukla i dugme "Razumijem" bi moglo
+ * zavrsiti ispod ivice — a podloga blokira i stranica se ne skrola.
+ * `prozor.css` isti obrazac vec koristi za visinu bocnog prozora.
+ */
+const SIRINA = [
+  'min(1476px, 94vw, calc((100vh - 170px) * 1.2487))',
+  'min(1476px, 94vw, calc((100dvh - 170px) * 1.2487))',
+];
 
 function vecVidjeno() {
   try {

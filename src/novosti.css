@@ -1,0 +1,160 @@
+/* ============================================================ */
+/* "Sta je novo" — balon dole desno i prozor sa izmjenama.      */
+/*                                                              */
+/* Balon namjerno ne pise sta je novo — samo javlja da ima.     */
+/* Sadrzaj je u prozoru, koji ostaje dostupan i kad se balon    */
+/* ugasi: ikona u traci, lijevo od sata, ne nestaje.            */
+/* ============================================================ */
+
+/* ---------- balon ---------- */
+
+.xp-balon {
+  position: fixed;
+  right: 12px;
+  /* Traka je 30px, a .xp-verzija sjedi na bottom:40px i visoka je
+     oko 14px. Balon krece iznad nje, pa mu rep (10px) staje u razmak
+     umjesto da prekrije oznaku verzije. */
+  bottom: 70px;
+  z-index: 9100;            /* iznad prozora i trake, ispod upozorenja */
+  width: 190px;
+  max-width: calc(100vw - 24px);
+  padding: 9px 10px 10px;
+  background: var(--xp-pazi-pod);
+  border: 1px solid var(--xp-pazi-crta);
+  border-radius: var(--xp-radijus);
+  box-shadow: 2px 3px 10px rgba(0, 0, 0, 0.35);
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+  font-size: var(--xp-slova);
+  line-height: 1.5;
+  color: var(--xp-pazi-tekst);
+
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 180ms ease-out, transform 180ms ease-out;
+}
+.xp-balon.vidljiv { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .xp-balon { transition: none; transform: none; }
+}
+
+/* Rep prema traci. Dva trougla: vanjski nosi boju okvira, unutrasnji
+   podlogu, pa rep ima istu liniju kao i sam balon. */
+.balon-rep,
+.balon-rep::after {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+}
+.balon-rep {
+  right: 26px;
+  bottom: -10px;
+  border-top: 10px solid var(--xp-pazi-crta);
+}
+.balon-rep::after {
+  content: "";
+  right: -8px;
+  bottom: 1px;
+  border-top: 10px solid var(--xp-pazi-pod);
+}
+
+.balon-naslov {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding-right: 18px;      /* mjesto za ✕ */
+  font-weight: bold;
+}
+
+.balon-ikona {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--xp-izbor);
+  color: #fff;
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 16px;
+  text-align: center;
+}
+
+.balon-otvori {
+  margin-top: 8px;
+  width: 100%;
+  height: var(--xp-visina-dugmeta);
+  padding: 0 12px;
+  border: 1px solid var(--xp-okvir-dugmeta);
+  border-radius: var(--xp-radijus);
+  background: linear-gradient(180deg, #FDFDFC 0%, #F1EFE4 46%, #E3DFCE 100%);
+  font-family: inherit;
+  font-size: var(--xp-slova);
+  font-weight: bold;
+  cursor: pointer;
+}
+.balon-otvori:hover {
+  border-color: var(--xp-narandzasta);
+  box-shadow: 0 0 0 1px var(--xp-narandzasta) inset;
+}
+.balon-otvori:active { background: linear-gradient(180deg, #DCD8C7, #EFEDE2); }
+
+.balon-x {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 17px;
+  height: 17px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  background: none;
+  color: var(--xp-pazi-tekst);
+  font-family: inherit;
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+}
+.balon-x:hover {
+  border-color: var(--xp-narandzasta);
+  background: #FFF1C2;
+}
+
+/* Traka je na telefonu visa, pa balon ide iznad nje. */
+@media screen and (max-width: 760px) {
+  .xp-balon { bottom: 56px; right: 8px; max-width: calc(100vw - 16px); }
+}
+
+/* ---------- prozor ---------- */
+
+.nv-prozor .xp-prozor-body { font-size: var(--xp-slova); line-height: 1.55; }
+
+.nv-verzija {
+  margin-bottom: 10px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--xp-crta-tabele);
+  font-size: var(--xp-slova-naslov);
+  font-weight: bold;
+  color: var(--xp-naslov);
+}
+
+.nv-spisak {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.nv-spisak li { margin: 0; }
+
+.nv-vazno {
+  margin: 14px 0 0;
+  padding: 8px 10px;
+  background: var(--xp-opasno-pod);
+  border: 1px solid var(--xp-opasno-crta);
+  border-radius: 2px;
+  color: var(--xp-opasno-tekst);
+}

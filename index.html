@@ -48,6 +48,9 @@
 <link rel="stylesheet" href="./src/podaci.css">
 <link rel="stylesheet" href="./src/postavke.css">
 <link rel="stylesheet" href="./src/pravno.css">
+<link rel="stylesheet" href="./src/biljeska.css">
+<link rel="stylesheet" href="./src/novosti.css">
+<link rel="stylesheet" href="./src/resursi.css">
 <link rel="stylesheet" href="./src/dugmad.css">
 <link rel="stylesheet" href="./src/mobilni.css">
 <link rel="stylesheet" href="./src/veliki.css">
@@ -112,9 +115,11 @@
       Pomoć
       <div class="dropdown">
         <div class="opt" data-action="uputstvo">Uputstvo za korištenje</div>
+        <div class="opt" data-action="resursi">Službeni resursi...</div>
         <div class="opt" data-action="upozorenje">Upozorenje...</div>
         <div class="opt" data-action="pravno">Pravno i privatnost...</div>
         <div class="sep"></div>
+        <div class="opt" data-action="novosti">Šta je novo</div>
         <div class="opt" data-action="oprogramu">O programu</div>
       </div>
     </div>
@@ -130,6 +135,13 @@
         <input type="text" id="osnovica" inputmode="decimal">
         <span class="curr-lbl">KM</span>
       </div>
+
+      <!-- Mijenja samo postotak priznatih rashoda: 20% za povremenu
+           djelatnost, 30% za autorsku naknadu. Opcije upisuje main.js
+           iz VRSTE_PRIHODA u config.js. -->
+      <label class="field vrsta-lbl" for="vrsta-prihoda">Vrsta prihoda</label>
+      <select id="vrsta-prihoda" class="xp-select"></select>
+      <div class="vrsta-opis" id="vrsta-opis"></div>
     </div>
 
     <div class="groupbox">

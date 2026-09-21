@@ -35,7 +35,7 @@ diff <(sed -n '8,175p' arhiva/izvorna-verzija.html) src/styles.css
 `arhiva/izvorna-verzija.html` je originalna jednofajlna verzija programa
 i stoji samo zbog ove provjere.
 
-### 2. Novac se računa u feningima, cijelim brojevima
+### 2. Novac se računa u feninzima, cijelim brojevima
 
 `src/calc.js` ne koristi decimale nigdje. Svaka stavka se zaokruži
 odmah, a izvedene se dobijaju **oduzimanjem od već zaokruženih** — zato
@@ -166,6 +166,51 @@ Umjesto toga se skalira na 0,79.
 
 ---
 
+## Dva repozitorija
+
+Ovaj radni repozitorij je **izvor istine**. U njemu se radi i u njega
+se spaja sve, pa i ono što neko pošalje kao pull request na javni.
+
+Javni repozitorij je **izdanje** — ono što ljudi preuzimaju. Ne radi se
+u njemu; on dobija gotove verzije odavde.
+
+Paket se pravi iz Gita, ne ručno, pa ne može procuriti ništa interno:
+
+```bash
+git -c core.autocrlf=false archive HEAD | tar -x -C ../putanja/do/paketa
+```
+
+`.gitattributes` označava šta se preskače (`export-ignore`) — sada
+`ZADACI.md`. Ko doda novi interni fajl, neka ga doda i tamo.
+
+`core.autocrlf=false` nije ukras: bez njega `git archive` na Windowsu
+pretvori sve u CRLF, pa javni repozitorij dobije CRLF u svakom fajlu.
+
+---
+
+## Kako se pravi obrazac AMS-1035
+
+Ne crta se rukom. `alati/izvuci-ams.py` skine službeni PDF, izvuče iz
+njega svaku crticu, natpis, veličinu i rez fonta, i upiše to u
+`src/ams-raspored.js`. `ams.js` onda crta po tim koordinatama, 1pt =
+1px.
+
+```bash
+pip install pymupdf
+python alati/izvuci-ams.py
+```
+
+`src/ams-raspored.js` je generisan — ne dira se rukom.
+
+Prvi put je obrazac slagan CSS tokom i ispao je **667px visok umjesto
+523**, sa obrnutim podebljanjima i osam kućica za datum umjesto šest.
+Širina je slučajno bila tačna, pa se nije vidjelo da je promašeno.
+
+Bosanska, hrvatska i srpska verzija obrasca su geometrijski identične —
+isti okvir, istih 155 pravougaonika. Razlikuje se samo tekst.
+
+---
+
 ## Provjere prije nego nešto pošalješ dalje
 
 ```bash
@@ -194,6 +239,9 @@ Kanonska adresa nije ukras: Cloudflare svakom deployu daje svoju javno
 dohvatljivu poddomenu sa istim sadržajem, pa ih pretraživač bez toga
 indeksira kao duplikate.
 
+Peto mjesto nosi adresu samog **repozitorija**, ne stranice:
+`.github/ISSUE_TEMPLATE/config.yml` upućuje na Discussions ovog projekta.
+
 Sve ostalo radi sa bilo koje adrese — `vite.config.js` gradi sa
 relativnim putanjama, pa program radi i iz podfoldera i otvoren direktno
 s diska.
@@ -202,11 +250,23 @@ s diska.
 
 ## Odakle dolaze brojke
 
-**Stope i računi** — javni izvori, nisu službeno potvrđeni. Stoji i u
-README-u i u samom programu.
+Sve provjereno kod Porezne uprave FBiH **21.09.2026**. Njihov sajt je
+Angular i običnim dohvatom vrati praznu ljusku — sadržaj stiže kroz API
+putanje ispod, pa se provjera da ponoviti i bez browsera.
 
-**Šifre općina** — dvije nezavisne liste koje se poklapaju, ne službeni
-Pravilnik.
+**Stope** — [pufbih.ba/freelanceri](https://pufbih.ba/freelanceri):
+porez 10%, zdravstveno 4%, priznati rashodi 20% — a **30% za autorske
+naknade**, što je rupa zapisana niže.
+
+**Uplatni računi** — `pufbih.ba/api/pages`, stavka sa slugom
+`uplatni-racuni`. Pišu ih sa crticama (`134-010-00000021-57`), pa ih
+pretraga po šesnaest cifara ne nalazi — skini crtice prije poređenja.
+
+**Šifre općina** — `pufbih.ba/api/municipality`, po kantonima, kao HTML
+tabele. Općina 132 se službeno piše `Doboj-Jug`, sa crticom.
+
+**Registar obrazaca** — `pufbih.ba/api/obrasci`; AMS-1035 stoji pod
+šifrom `AMS-1035`, sa bosanskom, hrvatskom i srpskom verzijom PDF-a.
 
 **Izgled obrasca AMS-1035** — iz službenog PDF-a Porezne uprave. Taj PDF
 nije skeniran nego ima pravi tekst, pa se iz njega mogu izvući tačne

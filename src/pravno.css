@@ -1,3 +1,15 @@
+/*
+ * Dokument je dug, a .xp-prozor dopusta skoro punu visinu ekrana —
+ * pa je prozor izlazio ogroman i dugme na dnu zavrsavalo na samoj
+ * ivici. Ovdje se stegne, a tijelo se skrola (vec ima overflow:auto).
+ * Dva reda zbog starijih browsera: vh prvi, dvh pobjedjuje ako ga
+ * browser razumije.
+ */
+.pv-prozor {
+  max-height: min(600px, calc(100vh - 96px));
+  max-height: min(600px, calc(100dvh - 96px));
+}
+
 /* ============================================================ */
 /* Pravno i privatnost — jedan dokument sa odjeljcima.           */
 /* ============================================================ */

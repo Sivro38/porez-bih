@@ -80,7 +80,21 @@ export function napraviProzor(cfg) {
 
   const prozor = document.createElement('div');
   prozor.className = 'xp-prozor ' + (pozicija !== 'centar' ? 'bocni ' : '') + klasa;
-  prozor.style.width = typeof sirina === 'number' ? sirina + 'px' : sirina;
+  /*
+   * `sirina` moze biti i niz. Vrijednosti se upisuju redom, a browser
+   * odbaci onu koju ne razumije i zadrzi zadnju ispravnu — isto kao
+   * dva reda u CSS-u:
+   *
+   *     height: calc(100vh - 20px);
+   *     height: calc(100dvh - 20px);
+   *
+   * Tako se daje rezerva za jedinice koje stariji browseri ne znaju.
+   * Bez toga bi jedna nepoznata jedinica srusila cijelo pravilo i
+   * prozor bi ostao bez zadate sirine.
+   */
+  (Array.isArray(sirina) ? sirina : [sirina]).forEach(v => {
+    prozor.style.width = typeof v === 'number' ? v + 'px' : v;
+  });
 
   const titlebar = document.createElement('div');
   titlebar.className = 'titlebar';

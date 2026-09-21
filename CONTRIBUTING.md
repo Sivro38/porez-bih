@@ -50,9 +50,24 @@ da provedeš veče na nečemu što neću spojiti.
 
 ## Kako se izmjena šalje
 
-1. Napravi fork i granu: `git checkout -b sifre-usk`
-2. Uradi izmjenu. Držeći se `RAZVOJ.md`, pogotovo pet pravila na vrhu.
-3. Provjeri da prolazi:
+**1. Napravi fork.** Dugme `Fork` gore desno na stranici repozitorija.
+Bez toga nema pisanja — klon ti ne daje pravo da gurneš granu, dobićeš
+`403`. To nije kvar nego kako GitHub radi sa javnim repozitorijima.
+
+**2. Kloniraj svoj fork i napravi granu.**
+
+```bash
+git clone https://github.com/TVOJ-NALOG/porez-bih.git
+cd porez-bih
+git remote add upstream https://github.com/Sivro38/porez-bih.git
+git checkout -b sifre-usk
+```
+
+`upstream` ti treba da kasnije sustigneš glavnu granu:
+`git fetch upstream && git rebase upstream/main`.
+
+**3. Uradi izmjenu**, držeći se `RAZVOJ.md`, pogotovo pet pravila na vrhu.
+**4. Provjeri da prolazi:**
 
 ```bash
 npm install
@@ -60,10 +75,17 @@ npm run build
 diff <(sed -n '8,175p' arhiva/izvorna-verzija.html) src/styles.css
 ```
 
-4. Otvori u browseru i **pogledaj svojim očima** ono što si dirao —
-   i na uskom ekranu (ispod 760px) i na štampi (Ctrl+P, pregled).
-5. Otvori pull request i opiši **šta** si promijenio i **zašto**, a za
-   brojke i izvor.
+**5. Otvori u browseru i pogledaj svojim očima** ono što si dirao — i na
+uskom ekranu (ispod 760px) i na štampi (Ctrl+P, pregled).
+
+**6. Gurni na svoj fork pa otvori pull request:**
+
+```bash
+git push -u origin sifre-usk
+```
+
+Git ispiše link. Opiši **šta** si promijenio i **zašto**, a za brojke i
+izvor.
 
 Isti build pokreće se i automatski na svakom pull requestu.
 
@@ -78,8 +100,18 @@ Drži se onoga oko sebe, ali ukratko:
 - **Poruke commita na bosanskom, bez dijakritike**, jedna linija, šta
   je urađeno: `Skala prati prozor i na AMS-u`.
 - Boje i mjere iz `src/tokens.css`, ne nove nijanse.
-- Novac u feningima, cijelim brojevima. Zašto — `RAZVOJ.md`, pravilo 2.
+- Novac u feninzima, cijelim brojevima. Zašto — `RAZVOJ.md`, pravilo 2.
 - Dva razmaka za uvlaku, tačka-zarez na kraju naredbe, navodnici jednostruki.
+
+## Gdje tvoj kod završi
+
+Ovaj repozitorij je izdanje — ono što ljudi preuzimaju i pokreću.
+Razvoj se vodi u mom radnom stablu, i tamo spajam sve što ovdje prođe.
+Za tebe se ništa ne mijenja: šalješ pull request ovdje, ja ga spojim, i
+tvoj commit ide dalje sa tvojim imenom na sebi.
+
+To znači i da izmjene ovdje ne stižu odmah — dođu u sljedećem izdanju,
+zajedno sa ostalim.
 
 ## Šta možeš očekivati
 
