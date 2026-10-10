@@ -20,9 +20,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: '18'
           cache: npm
@@ -32,6 +32,15 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      # Kontrolni broj svakog racuna, jedinstvene sifre opcina, tri reda
+      # primaoca najvise. Pogresno prepisan racun ovdje padne prije nego
+      # dodje na uplatnicu.
+      - name: Racuni i sifre opcina
+        run: node alati/provjeri-config.mjs
+
+      - name: Godisnji obracun
+        run: node alati/provjeri-godisnji.mjs
 
       - name: styles.css mora ostati netaknut
         shell: bash

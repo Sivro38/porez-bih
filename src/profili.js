@@ -1,17 +1,22 @@
 import { PROFILI_KEY, PROFILI_KEY_V2 } from './config.js';
 
 /**
- * Tri mjesta za profile licnih podataka.
+ * Mjesta za profile licnih podataka.
  *
  * Ranije je ovo bila lista imena sa padajucim izbornikom i tri dugmeta,
- * sto je za tri profila bilo previse koraka. Sada su tri fiksna mjesta:
+ * sto je za tri profila bilo previse koraka. Sada su fiksna mjesta:
  * prazno se klikom popuni, puno se klikom ucita.
  *
  * Mjesta su odvojena od tekuceg unosa: rad na podacima ne mijenja
  * snimljeni profil dok se izricito ne snimi.
+ *
+ * Bilo ih je tri. Otkad stoje u traci lijevo od forme, traka je duga
+ * koliko i forma, pa su tri plocice ostavljale pola stuba prazno — pet
+ * ga popuni. Zateceni profili se ne gube: `procitaj` puni ono sto je
+ * snimljeno u prazan niz nove duzine, pa visak dodje kao prazno mjesto.
  */
 
-export const BROJ_MJESTA = 3;
+export const BROJ_MJESTA = 5;
 
 const prazno = () => new Array(BROJ_MJESTA).fill(null);
 
@@ -32,7 +37,7 @@ function procitaj() {
   }
 }
 
-/** Preuzmi profile iz starog formata (imenovana lista) u prva tri mjesta. */
+/** Preuzmi profile iz starog formata (imenovana lista) u prva mjesta. */
 function prenesiStaro() {
   const m = prazno();
   try {
@@ -57,7 +62,7 @@ function upisi(m) {
   }
 }
 
-/** Sva tri mjesta; prazno mjesto je null. */
+/** Sva mjesta; prazno mjesto je null. */
 export function mjesta() {
   return procitaj();
 }

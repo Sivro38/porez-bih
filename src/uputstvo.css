@@ -137,6 +137,35 @@
   margin: 0 0 12px !important;
   color: #6b4400;
 }
+/*
+ * Crveni okvir: nista nije garantovano. Jaci od .up-oprez, jer je to
+ * najvaznija rečenica na stranici o računima. Crveni krug sa bijelim X
+ * je XP-ov znak za gresku, pa se odmah vidi da nije savjet nego granica.
+ */
+.up-negarancija {
+  position: relative;
+  background: #FDE8E8;
+  border: 1px solid #C62828;
+  border-radius: 3px;
+  padding: 8px 10px 8px 34px;
+  margin: 0 0 12px !important;
+  color: #7A0E0E;
+}
+.up-negarancija::before {
+  content: "✕";
+  position: absolute;
+  left: 9px;
+  top: 8px;
+  width: 17px;
+  height: 17px;
+  border: 1px solid #7F0000;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #FF8A80 0%, #E53935 45%, #B71C1C 100%);
+  color: #fff;
+  font: bold 10px/17px Tahoma, Verdana, sans-serif;
+  text-align: center;
+}
+.up-negarancija:last-child { margin: 12px 0 0 !important; }
 .up-crno { color: #000; }
 .up-bordo { color: #8a1c3a; }
 

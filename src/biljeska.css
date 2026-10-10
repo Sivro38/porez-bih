@@ -65,15 +65,6 @@
 /* Ono u sta nismo sigurni ne smije zvucati kao da jesmo. */
 .bilj-tise { font-weight: normal; color: #7A6A3F; }
 
-.bilj-koraci {
-  margin: 8px 0 0;
-  padding: 0 10px 0 26px;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-.bilj-koraci li { margin: 0; }
-.bilj-koraci b { font-weight: bold; }
 
 .bilj-dno {
   margin: 9px 10px 0;
@@ -81,6 +72,72 @@
   border-top: 1px dotted var(--xp-pazi-crta);
   font-size: var(--xp-slova-sitna);
 }
+
+
+/* --- stranice i listanje --- */
+
+.bilj-tijelo { padding-top: 8px; }
+
+.bilj-koraci,
+.bilj-spisak {
+  margin: 0;
+  padding: 0 10px 0 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.bilj-spisak { padding-left: 22px; }
+.bilj-koraci li,
+.bilj-spisak li { margin: 0; }
+
+.bilj-tekst { margin: 0 10px 7px; }
+.bilj-tekst:last-of-type { margin-bottom: 0; }
+
+.bilj-veza {
+  color: var(--xp-veza);
+  font-weight: bold;
+  text-decoration: underline;
+}
+.bilj-veza:hover { color: var(--xp-izbor); }
+
+/*
+ * Strelice stoje unutar <details>, pa im klik mora biti zaustavljen u
+ * JS-u — inace bi sklopile biljesku umjesto da okrenu stranicu.
+ */
+.bilj-listanje {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin: 9px 8px 0;
+  padding-top: 7px;
+  border-top: 1px dotted var(--xp-pazi-crta);
+}
+
+.bilj-strelica {
+  flex: none;
+  width: 20px;
+  height: 18px;
+  padding: 0;
+  border: 1px solid var(--xp-pazi-crta);
+  border-radius: 2px;
+  background: #FFF6CF;
+  color: var(--xp-pazi-tekst);
+  font-size: 9px;
+  line-height: 1;
+  cursor: pointer;
+}
+.bilj-strelica:hover { background: #FFE89B; border-color: var(--xp-narandzasta); }
+.bilj-strelica:focus-visible { outline: 1px dotted var(--xp-pazi-tekst); outline-offset: 1px; }
+
+.bilj-tacke { display: flex; gap: 4px; }
+.bilj-tacka {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--xp-pazi-crta);
+}
+.bilj-tacka.sada { background: var(--xp-pazi-tekst); }
 
 /*
  * Vidi se tek kad ima mjesta pored glavne kalkulacije.

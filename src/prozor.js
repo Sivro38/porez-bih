@@ -1,6 +1,7 @@
 import { omoguciPovlacenje } from './drag.js';
 import { omoguciPromjenuVelicine } from './resize.js';
 import * as traka from './traka.js';
+import { uMalom } from './ikone.js';
 
 /**
  * Mini XP prozor - jedna komponenta za sve dijaloge.
@@ -58,7 +59,12 @@ export function napraviProzor(cfg) {
     // Modalni prozor se ne minimizira — dok stoji, ionako blokira rad.
     // Nemodalni dobija dugme `_` i mjesto na donjoj traci.
     minimizirati = !modalno,
+    // Ikona prozora: na donjoj traci i, umanjena na 16px, u naslovnoj
+    // traci. Bez nje naslov nosi zuti kvadrat iz styles.css.
     ikona = '',
+    // Samo za naslovnu traku, ako treba drugacija od `ikona`. null znaci
+    // bez ikone — kratki dijalozi, kao poruke u XP-u, nemaju je.
+    ikonaNaslova,
     nazivNaTraci = null,
     // Promjena velicine se ukljucuje samo tamo gdje ima smisla —
     // kratke potvrde i unosi ostaju fiksni.
@@ -101,8 +107,12 @@ export function napraviProzor(cfg) {
   const dugmad_trake =
     (minimizirati ? '<span data-minimiziraj title="Minimiziraj">_</span>' : '') +
     (odbaciv ? '<span class="close" data-zatvori title="Zatvori">✕</span>' : '');
+  const naslovnaIkona = ikonaNaslova === undefined ? ikona : ikonaNaslova;
+  const icoHTML = naslovnaIkona === null ? ''
+    : naslovnaIkona ? '<span class="ico sa-ikonom">' + uMalom(naslovnaIkona) + '</span>'
+    : '<span class="ico"></span>';
   titlebar.innerHTML =
-    '<div class="titletext"><span class="ico"></span></div>' +
+    '<div class="titletext">' + icoHTML + '</div>' +
     (dugmad_trake ? '<div class="winbtns">' + dugmad_trake + '</div>' : '');
   titlebar.querySelector('.titletext').append(naslov);
 
@@ -267,6 +277,7 @@ export function pitajZaTekst({ naslov, poruka, zadano = '', potvrdi = 'U redu' }
 
     const p = napraviProzor({
       naslov,
+      ikonaNaslova: null,   // XP poruke nemaju ikonu u naslovu
       sirina: 340,
       sadrzaj:
         '<div style="margin-bottom:8px;">' + poruka + '</div>' +
@@ -307,6 +318,7 @@ export function pitajZaPotvrdu({ naslov, poruka, potvrdi = 'U redu' }) {
 
     const p = napraviProzor({
       naslov,
+      ikonaNaslova: null,   // XP poruke nemaju ikonu u naslovu
       sirina: 340,
       sadrzaj: '<div>' + poruka + '</div>',
       dugmad: [
@@ -332,6 +344,7 @@ export function pitajZaIzbor({ naslov, poruka, izbori }) {
 
     const p = napraviProzor({
       naslov,
+      ikonaNaslova: null,   // XP poruke nemaju ikonu u naslovu
       sirina: 340,
       sadrzaj: '<div class="xp-izbor-poruka">' + poruka + '</div>'
         + '<div class="xp-izbor-lista">'

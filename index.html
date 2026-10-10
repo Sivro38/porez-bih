@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>kalkulacija.exe — porez i doprinosi na freelance prihod (FBiH)</title>
+<title>Freelance Porez Kalkulator</title>
 
 <link rel="icon" type="image/png" sizes="32x32" href="./src/slike/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="./src/slike/favicon-16.png">
@@ -16,7 +16,7 @@
      i og:image, te u public/sitemap.xml. -->
 <link rel="canonical" href="https://porez.pages.dev/">
 
-<meta name="description" content="Računa porez i doprinose na freelance prihod iz inostranstva za Federaciju BiH (Zeničko-dobojski kanton) i popunjava tri uplatnice i obrazac AMS-1035. Sve ostaje u tvom browseru — ništa se nikuda ne šalje.">
+<meta name="description" content="Računa porez i doprinose na freelance prihod iz inostranstva za Federaciju BiH, svih deset kantona, i popunjava tri uplatnice, obrazac AMS-1035 i godišnju prijavu GPD-1051. Sve ostaje u tvom browseru — ništa se nikuda ne šalje.">
 <meta name="author" content="Emin Sivro">
 <meta name="theme-color" content="#245EDB">
 
@@ -26,7 +26,7 @@
 <meta property="og:locale" content="bs_BA">
 <meta property="og:site_name" content="kalkulacija_freelance.exe">
 <meta property="og:title" content="kalkulacija_freelance.exe">
-<meta property="og:description" content="Porez i doprinosi na freelance prihod iz inostranstva — FBiH, ZE-DO kanton. Uplatnice, AMS-1035, PDF i Excel. Sve ostaje u tvom browseru.">
+<meta property="og:description" content="Porez i doprinosi na freelance prihod iz inostranstva — FBiH, svih deset kantona. Uplatnice, AMS-1035, godišnja prijava, PDF i Excel. Sve ostaje u tvom browseru.">
 <meta property="og:url" content="https://porez.pages.dev/">
 <meta property="og:image" content="https://porez.pages.dev/og.png">
 <meta property="og:image:width" content="1200">
@@ -35,6 +35,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="./src/styles.css">
 <link rel="stylesheet" href="./src/tokens.css">
+<link rel="stylesheet" href="./src/glavni.css">
 <link rel="stylesheet" href="./src/pozadina.css">
 <link rel="stylesheet" href="./src/meni.css">
 <link rel="stylesheet" href="./src/prozor.css">
@@ -43,6 +44,8 @@
 <link rel="stylesheet" href="./src/uplatnice.css">
 <link rel="stylesheet" href="./src/uplatnice-prozor.css">
 <link rel="stylesheet" href="./src/ams.css">
+<link rel="stylesheet" href="./src/gpd.css">
+<link rel="stylesheet" href="./src/godisnji.css">
 <link rel="stylesheet" href="./src/upozorenje.css">
 <link rel="stylesheet" href="./src/uputstvo.css">
 <link rel="stylesheet" href="./src/podaci.css">
@@ -52,17 +55,43 @@
 <link rel="stylesheet" href="./src/novosti.css">
 <link rel="stylesheet" href="./src/resursi.css">
 <link rel="stylesheet" href="./src/dugmad.css">
+<link rel="stylesheet" href="./src/balon.css">
 <link rel="stylesheet" href="./src/mobilni.css">
 <link rel="stylesheet" href="./src/veliki.css">
 <link rel="stylesheet" href="./src/print.css">
+<link rel="stylesheet" href="./src/nojs.css">
+
+<!-- Bez JavaScripta se ne dobija prazna stranica nego mrtav prozor:
+     okvir, meniji i natpisi su u ovom fajlu, a tabela, kantoni i vrste
+     prihoda ih popunjava JS. Zato se prozor sakrije i javi sta ne valja.
+     Dva razlicita slucaja, pa dva mehanizma. -->
+<noscript><style>.window { display: none; } .xp-nojs { display: block; }</style></noscript>
+<script nomodule>document.documentElement.classList.add('bez-modula');</script>
 </head>
 <body>
+
+<!-- Vidi se samo kad program ne moze da se pokrene (vidi src/nojs.css). -->
+<div class="xp-nojs">
+  <div class="xp-nojs-okvir">
+    <div class="xp-nojs-traka"><span class="xp-nojs-znak">!</span>Program se ne može pokrenuti</div>
+    <div class="xp-nojs-tijelo">
+      <p>Ovaj kalkulator radi u potpunosti u vašem browseru, bez servera — a za to mu treba JavaScript.</p>
+      <ul>
+        <li>Ako ste <b>isključili JavaScript</b>, uključite ga za ovu stranicu.</li>
+        <li>Ako je browser <b>stariji</b>, program mu je prenov. Treba Chrome 61, Firefox 60, Safari 11 ili noviji.</li>
+      </ul>
+      <p>Dok to ne riješite, uplatnice možete popuniti rukom. Obrasci i uputstva su na stranicama
+        <a href="https://pufbih.ba/freelanceri" target="_blank" rel="noopener noreferrer">Porezne uprave FBiH</a>.</p>
+      <p>Ništa od onoga što upišete ne napušta vaš browser — ni sada, ni kada program proradi.</p>
+    </div>
+  </div>
+</div>
 
 <div class="window">
   <!-- Naziv prozora je namjerno u obliku imena datoteke: to je citav
        smisao XP izgleda, a ne zaostali interni naziv. -->
   <div class="titlebar">
-    <div class="titletext"><span class="ico"></span>kalkulacija_freelance.exe</div>
+    <div class="titletext"><span class="ico"></span>Kalkulator</div>
     <div class="winbtns"><span>_</span><span>▢</span><span class="close">✕</span></div>
   </div>
 
@@ -81,6 +110,7 @@
         </div>
         <div class="opt" data-action="ispis">Ispis uplatnica...</div>
         <div class="opt" data-action="ispis-ams">Ispis obrasca AMS-1035...</div>
+        <div class="opt" data-action="ispis-gpd">Ispis godišnje prijave GPD-1051...</div>
       </div>
     </div>
     <div class="menu-item" data-menu="uredi">
@@ -97,6 +127,7 @@
         <div class="opt" data-action="toggle-postotak"><span class="chk" id="chk-postotak">✓</span>Prikaži % kolonu</div>
         <div class="opt" data-action="toggle-uplatnice"><span class="chk" id="chk-uplatnice"> </span>Prikaži uplatnice</div>
         <div class="opt" data-action="toggle-ams"><span class="chk" id="chk-ams"> </span>Prikaži obrazac AMS-1035</div>
+        <div class="opt" data-action="toggle-gpd"><span class="chk" id="chk-gpd"> </span>Prikaži godišnju prijavu GPD-1051</div>
         <div class="sep"></div>
         <div class="opt" data-action="centriraj">Vrati prozor na sredinu</div>
         <div class="opt" data-action="osvjezi">Osvježi</div>
@@ -136,11 +167,20 @@
         <span class="curr-lbl">KM</span>
       </div>
 
-      <!-- Mijenja samo postotak priznatih rashoda: 20% za povremenu
-           djelatnost, 30% za autorsku naknadu. Opcije upisuje main.js
-           iz VRSTE_PRIHODA u config.js. -->
-      <label class="field vrsta-lbl" for="vrsta-prihoda">Vrsta prihoda</label>
-      <select id="vrsta-prihoda" class="xp-select"></select>
+      <!-- Dvije polovine. Lijevo kanton: od njega zavise primalac i racun
+           na prvoj i trecoj uplatnici, i spisak opcina u Moji podaci.
+           Desno vrsta prihoda: mijenja samo postotak priznatih rashoda.
+           Opcije upisuje main.js iz KANTONI i VRSTE_PRIHODA u config.js. -->
+      <div class="unos-izbori">
+        <div class="unos-pola">
+          <label class="field" for="kanton">Kanton</label>
+          <select id="kanton" class="xp-select"></select>
+        </div>
+        <div class="unos-pola" role="radiogroup" aria-labelledby="vrsta-lbl">
+          <div class="field" id="vrsta-lbl">Vrsta prihoda</div>
+          <div class="vrsta-izbor" id="vrsta-prihoda"></div>
+        </div>
+      </div>
       <div class="vrsta-opis" id="vrsta-opis"></div>
     </div>
 
@@ -152,7 +192,7 @@
     </div>
 
     <div class="clippy-note">
-      💡 Primalac, Svrha, Račun primaoca i Vrsta prihoda su fiksni po kantonu; poziv na broj i budžetska organizacija su uvijek nule. Svoje podatke upiši pod <b>Alati → Moji podaci</b> — sami se prepisuju na sve tri uplatnice i mogu se snimiti kao imenovani profil.
+      💡 Svoje podatke upiši pod <b>Alati → Moji podaci</b> — prepisuju se na sve tri uplatnice i mogu se snimiti kao profil. Primalac i račun zavise od kantona izabranog gore.
     </div>
 
   </div>

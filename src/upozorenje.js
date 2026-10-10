@@ -52,21 +52,32 @@ const SLIKA =
   + TEKST;
 
 /**
- * Sirina prozora. Slika je 738x591 (omjer 1.2487), pa se sirina veze i
- * za visinu ekrana - inace bi na nizim ekranima izasla iz vidnog polja
- * i morala se skrolati. 170px je otprilike naslovna traka, padding,
- * podnozje sa dugmetom i margine prozora.
- */
-/*
+ * Sirina prozora.
+ *
+ * Prozor treba da zauzme skoro cijeli ekran, ali nikad vise od njega:
+ * podloga blokira klikove i stranica se ne skrola, pa sve sto zavrsi
+ * ispod ivice — a to je uvijek dugme — vise nije dohvatljivo.
+ *
+ * Slika je 738x591 (omjer 1.2487) i zauzima cijelo tijelo, pa sirina
+ * prozora slijedi iz visine koja mu preostane. Tri granice:
+ *   96vw                    — skoro cijela sirina ekrana
+ *   (100dvh - 150) * 1.2487 — koliko stane u visinu
+ *   2400px                  — da na televizoru ne postane bilbord
+ *
+ * 150px je okvir oko slike, izmjeren a ne procijenjen: naslovna traka
+ * 30, tijelo 12+12, podnozje 1+10+46+10 = 67, ivice prozora 2 i razmak
+ * do ivice ekrana 20 — ukupno 143, plus nekoliko piksela zraka. Ako se
+ * promijeni visina dugmeta, mijenja se i ovaj broj (veliki.css ga ima
+ * svoj, jer tamo dugme raste).
+ *
  * Dvije vrijednosti, kao dva reda u CSS-u: browser koji ne zna `dvh`
  * uzme prvu. Bez rezerve bi cijelo pravilo palo, prozor bi ostao bez
- * zadate sirine, slika bi se razvukla i dugme "Razumijem" bi moglo
- * zavrsiti ispod ivice — a podloga blokira i stranica se ne skrola.
+ * zadate sirine i slika bi se razvukla.
  * `prozor.css` isti obrazac vec koristi za visinu bocnog prozora.
  */
 const SIRINA = [
-  'min(1476px, 94vw, calc((100vh - 170px) * 1.2487))',
-  'min(1476px, 94vw, calc((100dvh - 170px) * 1.2487))',
+  'min(2400px, 96vw, calc((100vh - 150px) * 1.2487))',
+  'min(2400px, 96vw, calc((100dvh - 150px) * 1.2487))',
 ];
 
 function vecVidjeno() {
@@ -87,12 +98,15 @@ function zapamti() {
  */
 export function napraviUpozorenje() {
   // Verzija za meni — obican dijalog sa ✕ i Escapeom.
+  /*
+   * Ne mijenja velicinu. Velicinu mu racuna SIRINA iz velicine ekrana i
+   * omjera slike, i to je jedina velicina u kojoj slika stane cijela i
+   * dugme ostane u vidnom polju. Hvatista su nudila da se to pokvari.
+   */
   const izMenija = napraviProzor({
     naslov: 'Upozorenje',
     sirina: SIRINA,
     klasa: 'upoz-prozor',
-    promjenjivo: true,
-    najmanjaSirina: 320,
     animacija: true,
     sadrzaj: SLIKA,
     dugmad: [{ tekst: 'Zatvori', primarno: true }],
@@ -104,8 +118,6 @@ export function napraviUpozorenje() {
       naslov: 'Upozorenje',
       sirina: SIRINA,
       klasa: 'upoz-prozor',
-    promjenjivo: true,
-    najmanjaSirina: 320,
       animacija: true,
       odbaciv: false,
       dugmad: [{

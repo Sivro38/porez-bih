@@ -1,6 +1,12 @@
-import { REDOVI, PRIMAOCI, punNaziv, punaSvrha } from './config.js';
+import { REDOVI, primaoci, punNaziv, punaSvrha, kantonOpcine, kantonPoKljucu } from './config.js';
 import { stope } from './stope.js';
 import { fmt, fmtPct } from './format.js';
+
+/**
+ * Kanton iz licnih podataka. Ovdje se ne uvozi storage.js (koji dira
+ * localStorage), da se modul i dalje moze testirati u Node-u.
+ */
+export const kantonIzPodataka = podaci => kantonOpcine(podaci && podaci.opcina) || kantonPoKljucu(null);
 
 /**
  * Priprema podataka za izvoz - cista logika, bez jsPDF-a, SheetJS-a i
@@ -57,10 +63,10 @@ export function aoaObracun(r) {
   return redovi;
 }
 
-/** List "Uplatnice" kao niz redova. */
-export function aoaUplatnice(r) {
+/** List "Uplatnice" kao niz redova, za kanton iz licnih podataka. */
+export function aoaUplatnice(r, podaci) {
   const redovi = [['#', 'Primalac', 'Račun primaoca', 'Vrsta prihoda', 'Svrha', 'Iznos (KM)']];
-  PRIMAOCI.forEach((p, i) => {
+  primaoci(kantonIzPodataka(podaci)).forEach((p, i) => {
     redovi.push([i + 1, punNaziv(p), p.acc, p.vrsta, punaSvrha(p), km(r[p.key])]);
   });
   redovi.push([]);
@@ -68,7 +74,8 @@ export function aoaUplatnice(r) {
   return redovi;
 }
 
-/** Redovi tabele uplatnica za PDF. */
-export function redoviUplatnicaPDF(r) {
-  return PRIMAOCI.map((p, i) => [String(i + 1), punNaziv(p), p.acc, p.vrsta, fmt(r[p.key])]);
+/** Redovi tabele uplatnica za PDF, za kanton iz licnih podataka. */
+export function redoviUplatnicaPDF(r, podaci) {
+  return primaoci(kantonIzPodataka(podaci))
+    .map((p, i) => [String(i + 1), punNaziv(p), p.acc, p.vrsta, fmt(r[p.key])]);
 }

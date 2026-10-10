@@ -132,13 +132,70 @@
 
 .nv-prozor .xp-prozor-body { font-size: var(--xp-slova); line-height: 1.55; }
 
-.nv-verzija {
+/*
+ * Vrh prozora: naziv verzije izmedju dvije strelice. Strelica unazad
+ * vodi u stariju verziju; na krajevima je ugasena, jer historija ima
+ * pocetak i kraj i vrtjeti je u krug bi lagalo.
+ */
+.nv-vrh {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   margin-bottom: 10px;
   padding-bottom: 5px;
   border-bottom: 1px solid var(--xp-crta-tabele);
+}
+
+.nv-verzija {
+  flex: 1;
   font-size: var(--xp-slova-naslov);
   font-weight: bold;
   color: var(--xp-naslov);
+}
+
+/* Kad se gleda nesto staro, to mora stajati uz naziv — inace izgleda
+   kao da je ta verzija tekuca. */
+.nv-staro {
+  font-size: var(--xp-slova-sitna);
+  font-weight: normal;
+  color: var(--xp-tekst-blijed);
+}
+
+.nv-strelica {
+  flex: none;
+  width: 21px;
+  height: 19px;
+  padding: 0;
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+  font-size: 10px;
+  line-height: 1;
+  color: #000;
+  border: 1px solid #003C74;
+  border-radius: 3px;
+  background:
+    linear-gradient(180deg,
+      #FFFFFF 0%,
+      #F6F5F0 46%,
+      #EAE8DD 47%,
+      #DAD5C6 100%);
+  box-shadow: inset 0 0 0 1px #FFFFFF;
+  cursor: pointer;
+}
+.nv-strelica:hover:not(:disabled) {
+  border-color: #E9A825;
+  box-shadow: inset 0 0 0 1px #FFF3C9, 0 0 3px rgba(233, 168, 37, 0.45);
+}
+.nv-strelica:active:not(:disabled) {
+  background: linear-gradient(180deg, #D2CEBF 0%, #E2DFD2 55%, #EFEDE4 100%);
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.22);
+}
+.nv-strelica:disabled {
+  color: #ACA899;
+  border-color: #ACA899;
+  background: linear-gradient(180deg, #F4F3EE, #E6E4D9);
+  box-shadow: inset 0 0 0 1px #FFFFFF;
+  text-shadow: 1px 1px 0 #FFFFFF;
+  cursor: default;
 }
 
 .nv-spisak {
@@ -158,3 +215,4 @@
   border-radius: 2px;
   color: var(--xp-opasno-tekst);
 }
+.nv-vazno + .nv-vazno { margin-top: 6px; }

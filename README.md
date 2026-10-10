@@ -1,18 +1,20 @@
 # kalkulacija_freelance.exe
 
-Kalkulator i pomoć pri popunjavanju i plaćanju poreza na freelance rad.
-Za sada Zeničko-dobojski kanton. Kroz sljedećih par verzija htio bih
-pokriti i ostatak Bosne.
+Kalkulator i pomoć pri popunjavanju i plaćanju poreza na freelance rad
+u Federaciji BiH. Od verzije 1.2 radi za svih deset kantona. Republika
+Srpska i Brčko distrikt imaju svoje propise i za sada nisu tu.
 
 **Uživo: [porez.pages.dev](https://porez.pages.dev)**
 
 > ⚠️ Ovo nije službena stranica i nije povezana ni sa jednom institucijom.
 >
-> Nisam knjigovođa ni pravnik. Porez plaćam sam, i to prvi put. Stope,
-> račune i šifre općina sam provjerio kod Porezne uprave, ali propisi se
-> mijenjaju i ja mogu pogriješiti. Provjerite iznose prije nego išta
-> uplatite: u banci, kod knjigovođe, ili na izvorima koje program nudi
-> pod `Pomoć → Službeni resursi`. Odgovornost za uplatu je na vama.
+> Nisam knjigovođa ni pravnik. Porez plaćam sam, i to prvi put. Račune i
+> šifre općina sam uzeo iz Pravilnika Porezne uprave i provjerio ih. Ipak,
+> niko ne može garantovati da su računi, šifre, navodi i citati iz
+> zakona tačni i važeći na dan vaše uplate. Propisi se mijenjaju, a ja
+> mogu pogriješiti. Prije uplate sve potvrdite u banci, kod knjigovođe ili
+> kod Porezne uprave. Izvori su u programu, pod ikonom **Resursi**.
+> Odgovornost za uplatu je na vama.
 
 ---
 
@@ -52,24 +54,36 @@ uplata.
 
 - **Obračun.** Rashodi, doprinosi, raspodjela na Kanton i Federaciju,
   porez na dohodak, ukupno za uplatu i ukupno za zadržati.
+- **Svih deset kantona.** Kanton se bira u glavnom prozoru, a zadan je
+  Zeničko-dobojski. Svaki kanton ima svoj račun budžeta i svoj zavod
+  zdravstvenog osiguranja, pa uplatnice idu po kantonu. Moji podaci
+  nude samo općine iz izabranog kantona.
 - **Tri uplatnice.** Replika naloga za uplatu javnih prihoda, spremne za
-  štampu. Na telefonu se pretvaraju u karticu iz koje se brojevi
+  štampu i popunjene po Pravilniku, sa periodom i vrstom uplate. Uz
+  svaki račun stoji „i” koje kaže odakle je račun i kad je provjeren.
+  Na telefonu se uplatnice pretvaraju u karticu iz koje se brojevi
   prepisuju u mobilnu banku.
 - **Obrazac AMS-1035.** „Akontacija poreza po odbitku na druge
   samostalne djelatnosti na prihod iz inostranstva”, na položenom A4.
   Crtan je po koordinatama iz službenog PDF-a Porezne uprave.
+- **Godišnja prijava GPD-1051.** Iznosi se upišu po mjesecima, a program
+  izračuna lični odbitak i ko kome duguje, vi Poreznoj ili ona vama. Onda
+  popuni obje stranice obrasca za štampu.
 - **Moji podaci.** Ime, adresa, račun, JMBG, općina i period se upišu
-  jednom pa se prepisuju svuda. Ima tri mjesta za profile.
+  jednom pa se prepisuju svuda. Ima pet mjesta za profile.
 - **Vrsta prihoda.** Povremena samostalna djelatnost nosi 20% priznatih
   rashoda, autorska naknada 30%.
 - **Postavke stopa.** Stope se mogu promijeniti ručno, iza potvrde.
-- **Pravno i privatnost.** Šta se čuva, gdje, i kako se briše.
+- **Pravno i privatnost.** Šta se čuva, gdje, i kako se briše. Tu je i
+  veza na izvorni kod, za one koji program žele pokrenuti kod sebe.
 - **Izvoz** u PDF i Excel.
-- **Uputstvo**, ugrađeno, u stilu XP Helpa.
+- **Uputstvo**, ugrađeno, u stilu XP Helpa. Ima i teme o računima i o
+  godišnjoj prijavi.
 
 Prozori se povlače, mijenjaju veličinu i minimiziraju na donju traku.
-Uplatnice, obrazac i Moji podaci rastu zajedno sa prozorom, pa ko
-slabije vidi samo poveća prozor.
+Uplatnice i obrasci rastu zajedno sa prozorom, pa ko slabije vidi samo
+poveća prozor. To su replike papira, kojima je geometrija stalna. Moji
+podaci se ne uvećavaju — tamo širina ide u polja.
 
 ## Kako se računa
 
@@ -96,20 +110,37 @@ Postotak priznatih rashoda propisuje
 - **stav 8** daje 30% za autorske naknade naučnika, umjetnika,
   stručnjaka i novinara, ili stvarni iznos troškova
 
-Bira se u polju Vrsta prihoda. Na sam obrazac AMS-1035 upisuje se već
-umanjeni iznos.
+Bira se u glavnom prozoru, pored kantona. Na sam obrazac AMS-1035
+upisuje se već umanjeni iznos.
 
 Sve se računa u feninzima, cijelim brojevima. Svaka stavka se zaokruži
 odmah, a Kanton nosi ostatak, pa tri uplatnice uvijek zbrajaju tačno na
 „Ukupno za uplatu”. Da se računalo u decimalama, znale bi promašiti za
 fening.
 
+### Godišnja prijava
+
+Prijava za prethodnu godinu predaje se do 31. marta. Godišnji porez se
+računa ponovo, od zbira cijele godine, i umanjuje za lični odbitak od
+3.600 KM. Ko izdržava članove porodice, ima veći odbitak. Ko je bio
+rezident samo dio godine, dobija ga za pune mjesece.
+
+Uzmimo dvanaest mjeseci po 1.000 KM. Uz AMS ste platili 921,60 KM
+poreza. Za godinu se od 9.216 KM oduzme 3.600 KM, i od ostatka ide 10%,
+dakle 561,60 KM. Razlika od 360,00 KM je preplata. Možete je tražiti
+nazad ili ostaviti kao akontaciju za sljedeću godinu.
+
+Porez plaćen uz AMS-1035 program upisuje kao uplaćenu akontaciju, u
+red 29. Da je to pravo mjesto, zaključio sam iz obrasca i propisa, ali
+službenu potvrdu nisam našao. Na konačan iznos to ne utiče, jer se i red
+28 i red 29 oduzimaju od poreza.
+
 ## Privatnost
 
 Nema servera, korisničkih naloga, analitike ni kolačića. Sve što
-upišete, dakle ime, JMBG, broj računa i adresa, ostaje u `localStorage`
-vašeg browsera i nikad ga ne napušta. Stranica je statična pa radi i bez
-mreže kad se jednom otvori.
+upišete, dakle ime, JMBG, broj računa, adresa i iznosi za godišnju
+prijavu, ostaje u `localStorage` vašeg browsera i nikad ga ne napušta.
+Stranica je statična pa radi i bez mreže kad se jednom otvori.
 
 `Alati → Obriši sve podatke` briše sve što je program zapamtio.
 `Pomoć → Pravno i privatnost` popisuje šta se tačno čuva.
@@ -139,27 +170,34 @@ XP izgled koji je ovdje tvrd uslov.
 
 - `src/styles.css` je doslovan izvorni stil i ne dira se. Svaki novi
   stil ide u zaseban fajl, a paleta je u `src/tokens.css`.
-- `src/config.js` je jedini izvor istine za primaoce, račune i šifre
-  općina. Zadane stope su tu, a ono što trenutno vrijedi čita se iz
-  `src/stope.js`.
-- Obračun je u `src/calc.js`, formatiranje brojeva u `src/format.js`.
-  Formatiranje je pisano ručno jer `toLocaleString('bs-BA')` nije
-  pouzdan između engina.
+- `src/config.js` je jedini izvor istine. Računi i šifre općina za
+  deset kantona stoje u `src/kantoni.json`, a ostatak programa ih uzima
+  preko config.js. Zadane stope su tu, a ono što trenutno vrijedi čita
+  se iz `src/stope.js`.
+- Obračun je u `src/calc.js`, godišnji u `src/godisnji.js`, a
+  formatiranje brojeva u `src/format.js`. Formatiranje je pisano ručno
+  jer `toLocaleString('bs-BA')` nije pouzdan između engina.
 - Prozori, povlačenje, promjena veličine i donja traka su u
   `src/prozor.js`, `drag.js`, `resize.js` i `traka.js`.
-- Raspored obrasca AMS-1035 generiše `alati/izvuci-ams.py` iz službenog
-  PDF-a. Ne crta se rukom.
+- Raspored obrazaca AMS-1035 i GPD-1051 generišu `alati/izvuci-ams.py`
+  i `alati/izvuci-gpd.py` iz službenih PDF-ova. Ne crtaju se rukom.
 - jsPDF i SheetJS se učitavaju tek kad zatrebaju, da se stranica otvara
   brzo.
 
-Verzije su prikovane zbog Node 18: Vite 5, jer Vite 6 i noviji traže
-noviji Node, i `wrangler@3` za deploy, jer wrangler 4 traži Node 22.
+Svaki pull request gradi projekat i provjerava kontrolni broj svakog
+računa i godišnji obračun. Dvaput sedmično `alati/provjeri-racune.py`
+poredi račune i šifre sa najnovijim Pravilnikom, i otvori issue ako nađe
+razliku. Sam ništa ne mijenja. Objava na Cloudflare ide kroz GitHub
+Actions, tek kad je odobrim.
+
+Gradi se na Node 18. Vite je na verziji 5, a `wrangler` na 3, jer
+wrangler 4 traži Node 22.
 
 ## Doprinos
 
-Prijedlozi i ispravke su dobrodošli. Najviše trebaju šifre općina i
-računi za ostale kantone, provjera stopa u službenom izvoru, i greške u
-obrascu AMS-1035.
+Prijedlozi i ispravke su dobrodošli. Najviše trebaju provjera računa i
+šifri za vaš kanton u službenom izvoru, provjera stopa, i greške u
+obrascima AMS-1035 i GPD-1051.
 
 Prije nego išta napišete pročitajte [CONTRIBUTING.md](CONTRIBUTING.md).
 Tu piše šta je najkorisnije, šta neće ući i kako se izmjena šalje.
@@ -194,11 +232,15 @@ Puna obavještenja o autorskim pravima su u
 
 ## Šta nije napravljeno
 
-- Brojke se ne provjeravaju same. Stope, račune i šifre općina sam
-  provjerio kod Porezne uprave 21.09.2026, ali propisi se mijenjaju.
-  Izvori su u programu, pod `Pomoć → Službeni resursi`.
-- Računi i šifre vrijede samo za Zeničko-dobojski kanton.
-- Obračun ne pokriva olakšice, lične odbitke ni godišnju prijavu.
+- Stope se ne provjeravaju same. Računi i šifre općina se porede sa
+  Pravilnikom dvaput sedmično, ali promjenu u program unosi čovjek, pa
+  može kasniti nekoliko dana. Provjereno zadnji put 05.10.2026.
+- Samo Federacija BiH. Republika Srpska i Brčko distrikt imaju svoje
+  propise, račune i obrasce.
+- Mjesečni obračun ne pokriva olakšice. Godišnja prijava računa lični
+  odbitak, a troškove liječenja i kamatu na stambeni kredit prima samo
+  ručno, bez provjere.
 - Za autorske naknade zakon dopušta i stvarni iznos troškova umjesto
   30%. To program ne računa, jer traži dokumentovane troškove.
-- Nema historije ranijih uplata.
+- Program ne pamti ranije uplate. Za godišnju prijavu iznose upisujete
+  sami, mjesec po mjesec.

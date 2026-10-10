@@ -58,7 +58,7 @@ export function stampaj({ klasa, naslov, desno }) {
   podnozje.className = 'ispis-podnozje';
   podnozje.innerHTML =
     '<span>' + NAPOMENA + '</span>'
-    + '<span class="ispis-desno">kalkulacija_freelance.exe ' + esc(VERZIJA)
+    + '<span class="ispis-desno">Kalkulator ' + esc(VERZIJA)
       + ' · ' + esc(danas()) + '</span>';
 
   document.body.append(zaglavlje, podnozje);

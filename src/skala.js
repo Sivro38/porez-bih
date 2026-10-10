@@ -9,10 +9,18 @@
  *
  * Dvije zamke, obje naucene na uplatnicama:
  *
- * Raspoloziva visina se NE cita iz sadrzaja. Da se cita, promjena skale
+ * RASPOLOZIVA visina se NE cita iz sadrzaja. Da se cita, promjena skale
  * bi promijenila visinu sadrzaja, to bi promijenilo skalu, i tako u
  * krug. Cita se iz podloge i iz zadate visine prozora — nista od toga
  * ne zavisi od skale.
+ *
+ * OVO JE ZA REPLIKE PAPIRA, ne za forme. Uplatnica i obrazac imaju
+ * stalnu geometriju: na papiru je polje tu i toliko, i jedini nacin da
+ * ih covjek vidi krupnije je da ih uveca cijele. Forma nema stalnu
+ * geometriju — njoj sirina treba da ode u polja, a ne u velicinu slova.
+ * Moji podaci su neko vrijeme stajali ovdje: sirenje prozora je sve
+ * uvecavalo kao da se vuce iz coska, pa su izvedeni odavde i prepusteni
+ * obicnom rasporedu.
  *
  * Zadata visina se uzima uz gornju granicu vidnog polja: `max-height` je
  * stegne, pa bi je racun inace precijenio i mislio da ima mjesta koliko

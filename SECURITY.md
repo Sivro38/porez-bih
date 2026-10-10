@@ -28,7 +28,7 @@ Idi na karticu **Security** ovog repozitorija → **Report a vulnerability**.
 To je privatna prijava, vidim je samo ja. Ako ti to ne radi, piši mi na
 [LinkedInu](https://www.linkedin.com/in/eminsivro/).
 
-Napiši šta si našao, kako se ponavlja i na kojem browseru. Odgovoriću
+Napiši šta si našao, kako se ponavlja i na kojem browseru. Odgovorit ću
 kad stignem — ovo je projekat iz slobodnog vremena, nemam dežurstvo.
 
 Kad popravim, u objavi ću te navesti ako to želiš.

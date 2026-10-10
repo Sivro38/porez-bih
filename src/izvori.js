@@ -9,8 +9,14 @@
  * Tekst stoji na jednom mjestu da se ne razidje izmedju prozora.
  */
 
+/*
+ * Uputa ide na IKONU "Resursi" na radnoj povrsini, ne na "Pomoc".
+ * Pomoc postoji dvaput — kao meni u glavnom prozoru i kao ikona koja
+ * otvara Uputstvo — a Sluzbeni resursi su samo u meniju. Ikona
+ * Resursi je jedna jedina i ne moze se pomijesati.
+ */
 const PUF = 'Izvor: Porezna uprava FBiH — pufbih.ba/freelanceri. '
-  + 'Otvori Pomoć → Službeni resursi.';
+  + 'Otvori ikonu Resursi na radnoj površini.';
 
 /** @param {string} opis sta tacno taj izvor potvrdjuje */
 function oznaka(opis) {

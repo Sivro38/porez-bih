@@ -1,3 +1,4 @@
+import { jedinstvena } from './ikone.js';
 /**
  * Donja traka sa prozorima — kao XP taskbar.
  *
@@ -79,7 +80,8 @@ export function dodajUZonu(element) {
 
 export function prijavi(naziv, api, ikona = '') {
   if (!traka) napraviTraku();
-  prijavljeni.push({ naziv, api, ikona, pokretac: false, pokreni: null });
+  // Ikona dobija vlastite id-jeve jednom, pri prijavi (vidi jedinstvena u ikone.js).
+  prijavljeni.push({ naziv, api, ikona: ikona ? jedinstvena(ikona) : '', pokretac: false, pokreni: null });
   osvjezi();
 }
 
@@ -87,8 +89,8 @@ export function prijavi(naziv, api, ikona = '') {
  * Oznaci prozore koji na traci stoje uvijek, i kad su zatvoreni.
  *
  * Na telefonu su precice na radnoj povrsini sakrivene — prozor ide do
- * vrha ekrana — pa je traka jedini nacin da se prozor otvori. Zato ta
- * cetiri dugmeta tamo stoje stalno, kao pokretaci. Na sirokom ekranu
+ * vrha ekrana — pa je traka jedini nacin da se prozor otvori. Zato sva
+ * dugmad iz `postaviPokretace` tamo stoje stalno, i kad su zatvorena. Na sirokom ekranu
  * ih CSS krije dok su zatvoreni, da traka ostane XP-ovska i pokazuje
  * samo otvorene prozore.
  *
@@ -99,7 +101,7 @@ export function postaviPokretace(spisak) {
     const stavka = prijavljeni.find(p => p.api === api);
     if (!stavka) return;
     stavka.pokretac = true;
-    if (ikona) stavka.ikona = ikona;
+    if (ikona) stavka.ikona = jedinstvena(ikona);
     if (pokreni) stavka.pokreni = pokreni;
   });
   osvjezi();

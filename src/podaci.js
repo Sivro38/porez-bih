@@ -1,11 +1,14 @@
-import { POLJA, ucitaj, snimi, obrisi, nazivOpcine } from './storage.js';
-import { OPCINE_ZEDO } from './config.js';
-import { napraviProzor, pitajZaTekst, pitajZaPotvrdu, pitajZaIzbor } from './prozor.js';
+import {
+  POLJA, ucitaj, snimi, obrisi, mjestoOpcine, mjestoJeAutomatsko, kantonPodataka,
+} from './storage.js';
+import { napraviProzor, pitajZaPotvrdu } from './prozor.js';
 import * as ikone from './ikone.js';
 import * as profili from './profili.js';
-import { pratiSkalu } from './skala.js';
 
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+
+/** Sve sto profil pamti — polja plus dva prekidaca. */
+const KLJUCEVI = POLJA.filter(f => f.key).map(f => f.key).concat(['autoDatum', 'potpis']);
 
 /** Datum -> "GGGG-MM-DD" (lokalno, bez UTC pomaka). */
 export function iso(d) {
@@ -53,8 +56,9 @@ function poljeHTML(f, p) {
       + ' placeholder="' + f.duzina + ' cifara" value="' + v + '">';
   }
   if (f.tip === 'izbor') {
+    const opcije = typeof f.opcije === 'function' ? f.opcije(p) : f.opcije;
     return '<select class="pd-input" data-key="' + f.key + '">'
-      + f.opcije.map(o =>
+      + opcije.map(o =>
           '<option value="' + esc(o.vrijednost) + '"'
           + (String(p[f.key]) === o.vrijednost ? ' selected' : '') + '>'
           + esc(o.tekst) + '</option>').join('')
@@ -64,65 +68,152 @@ function poljeHTML(f, p) {
 }
 
 /**
- * Tri mjesta za profile. Prazno se klikom popuni trenutnim podacima,
- * puno se klikom ucita. Dodatne radnje su iza dugmeta sa tri tacke, da
- * uobicajen slucaj ostane jedan klik.
+ * Mjesta za profile (koliko ih je, kaze BROJ_MJESTA u profili.js).
+ *
+ * Prazno se klikom popuni trenutnim podacima, puno se klikom ucita.
+ * Radnje nad punim profilom stoje tu, kao tri sitne ikone — ranije su
+ * bile iza tri tacke pa iza dijaloga sa izborom, sto je za preimenovanje
+ * bilo tri klika i jedan prozor previse.
+ *
+ * Stoje u traci lijevo, jedan ispod drugog. Dok su stajali u redu preko
+ * vrha, uzimali su osamdeset piksela visine cijelom panelu i dijelili
+ * formu na dvoje; u traci ne uzimaju nista, jer forma uz njih ionako
+ * ide nize nego oni.
  */
 function mjestaHTML(aktivno) {
-  return '<div class="pd-mjesta">' + profili.mjesta().map((p, i) =>
+  const alat = (akcija, ikona, opis, dodatno) =>
+    '<button type="button" class="pd-alat ' + (dodatno || '') + '"'
+    + ' data-pd-action="' + akcija + '" title="' + opis + '"'
+    + ' aria-label="' + opis + '">' + ikona + '</button>';
+
+  return '<div class="pd-okvir pd-stub">'
+    + '<div class="pd-okvir-vrh"><span class="pd-okvir-naslov">Profili</span></div>'
+    + '<div class="pd-mjesta">' + profili.mjesta().map((p, i) =>
     '<div class="pd-mjesto ' + (p ? 'puno' : 'prazno')
-      + (i === aktivno ? ' aktivno' : '') + '">'
+      + (i === aktivno ? ' aktivno' : '') + '" data-i="' + i + '">'
       + '<button type="button" class="pd-mjesto-glavno" data-pd-action="mjesto" data-i="' + i + '"'
       + ' title="' + (p ? 'Učitaj ' + esc(p.naziv) : 'Snimi trenutne podatke ovdje') + '">'
         + '<span class="pd-mjesto-ikona">' + (p ? ikone.KORISNIK : ikone.PRAZNO_MJESTO) + '</span>'
         + '<span class="pd-mjesto-naziv">' + (p ? esc(p.naziv) : 'Prazno') + '</span>'
       + '</button>'
-      + (p ? '<button type="button" class="pd-mjesto-uredi" data-pd-action="uredi-mjesto"'
-             + ' data-i="' + i + '" title="Radnje nad profilom">⋯</button>' : '')
-    + '</div>').join('') + '</div>';
+      + (p
+          ? '<div class="pd-alati">'
+            + alat('snimi-mjesto', ikone.SNIMI_16, 'Snimi izmjene u ovaj profil', 'pd-alat-snimi')
+            + alat('preimenuj-mjesto', ikone.PREIMENUJ_16, 'Preimenuj profil')
+            + alat('obrisi-mjesto', ikone.OBRISI_16, 'Obriši profil')
+            + '</div>'
+          : '')
+    + '</div>').join('') + '</div></div>';
+}
+
+/*
+ * Dugmad koja pripadaju jednom polju stoje UZ to polje, ne u zajednickom
+ * redu na dnu. "Danas" je radnja nad datumom uplate; dok je stajalo na
+ * dnu panela, trebalo je prvo pogoditi na koje od tri datumska polja se
+ * odnosi, pa je kraj njega morao stajati i natpis "Datum:".
+ */
+const UZ_POLJE = {
+  datum: () =>
+    '<button type="button" class="pd-btn pd-btn-uz" data-pd-action="danas">Danas</button>',
+};
+
+const ISPOD_POLJA = {
+  datum: p =>
+    '<label class="pd-prekidac pd-prekidac-sitni">'
+    + '<input type="checkbox" data-pd-auto' + (p.autoDatum ? ' checked' : '') + '>'
+    + 'uvijek današnji datum'
+    + '</label>',
+};
+
+/*
+ * Dugmad koja se ticu cijele grupe stoje u njenom naslovu, desno.
+ * "Ovaj mjesec" postavlja i Od i Do, dakle oba polja grupe — pod jednim
+ * od njih bi izgledalo kao da pripada samo tom polju. U kutiji
+ * "Porezni period" nema sta drugo, pa nema ni zabune na sta se odnosi.
+ */
+const UZ_GRUPU = {
+  'Porezni period':
+    '<button type="button" class="pd-btn pd-btn-uz" data-pd-action="ovaj-mjesec">Ovaj mjesec</button>'
+    + '<button type="button" class="pd-btn pd-btn-uz" data-pd-action="prosli-mjesec">Prošli mjesec</button>',
+};
+
+/** Naslov prve grupe; ostale nose svoj iz POLJA. */
+const PRVA_GRUPA = 'Poreski obveznik';
+
+/** Jedan red forme: natpis lijevo, polje desno, dugme uz polje. */
+function redHTML(f, p) {
+  // Opcine su suzene na kanton iz glavnog prozora; to se mora vidjeti
+  // ovdje, inace izgleda kao da pola opcina fali.
+  const dodatak = f.key === 'opcina'
+    ? ' <span class="pd-kanton" title="Kanton se bira u glavnom prozoru, ispod osnovice">'
+      + esc(kantonPodataka(p).kratko) + '</span>'
+    : '';
+  const uz = UZ_POLJE[f.key];
+  const ispod = ISPOD_POLJA[f.key];
+
+  return '<label class="pd-red' + (f.usko ? ' pd-usko' : '')
+    + (f.key === 'datum' && p.autoDatum ? ' pd-zakljucano' : '') + '">'
+    + '<span class="pd-lbl">' + esc(f.label) + dodatak + '</span>'
+    + '<span class="pd-polje">' + poljeHTML(f, p) + (uz ? uz(p) : '') + '</span>'
+    + '</label>'
+    + (ispod ? '<div class="pd-ispod">' + ispod(p) + '</div>' : '');
+}
+
+/**
+ * Forma, grupisana u okvire.
+ *
+ * Ranije je bila mreza od dvije kolone, sa natpisom IZNAD svakog polja.
+ * Cetrnaest polja puta jedan red natpisa je samo po sebi nosilo preko
+ * dvije stotine piksela visine, a oko je moralo skakati gore-dolje i
+ * lijevo-desno da spoji natpis s poljem.
+ *
+ * Sada natpis stoji lijevo od polja, kako XP i radi u svojim dijalozima.
+ * Natpisi su u jednoj koloni pa se forma cita odozgo nadolje, a svaka
+ * grupa nosi naslov koji kaze gdje ti podaci idu.
+ */
+function formaHTML(p) {
+  const grupe = [];
+  let tekuca = { naslov: PRVA_GRUPA, redovi: [] };
+  POLJA.forEach(f => {
+    if (f.grupa) {
+      if (tekuca.redovi.length) grupe.push(tekuca);
+      tekuca = { naslov: f.grupa, redovi: [] };
+      return;
+    }
+    tekuca.redovi.push(redHTML(f, p));
+  });
+  if (tekuca.redovi.length) grupe.push(tekuca);
+
+  return grupe.map(g =>
+    '<div class="pd-okvir">'
+    + '<div class="pd-okvir-vrh">'
+      + '<span class="pd-okvir-naslov">' + esc(g.naslov) + '</span>'
+      + (UZ_GRUPU[g.naslov] ? '<span class="pd-okvir-dugmad">' + UZ_GRUPU[g.naslov] + '</span>' : '')
+    + '</div>'
+    + '<div class="pd-okvir-tijelo">' + g.redovi.join('') + '</div>'
+    + '</div>').join('');
 }
 
 function sadrzajHTML(izabraniProfil) {
   const p = ucitaj();
 
   /*
-   * Sve stoji u omotacu, jer se na njega primjenjuje skala. Da skala ide
-   * na samo tijelo prozora, mjerenje njegove sirine bi vracalo vec
-   * umanjenu vrijednost i racun bi se vrtio u krug.
+   * Sve stoji u jednom omotacu, da podnozje (potpis, dugmad, napomena)
+   * ima nad cim da se poravna i da se razmaci racunaju na jednom
+   * mjestu.
    */
   return '<div class="pd-sadrzaj">' +
-    mjestaHTML(izabraniProfil) +
-
-    '<div class="pd-grid">' +
-      POLJA.map(f =>
-        f.grupa
-          ? '<div class="pd-grupa">' + esc(f.grupa) + '</div>'
-          : '<label class="pd-field'
-            + (f.key === 'datum' && p.autoDatum ? ' pd-zakljucano' : '')
-            + (f.siroko ? ' pd-siroko' : '') + '">'
-            + '<span class="pd-lbl">' + esc(f.label) + '</span>'
-            + poljeHTML(f, p)
-            + '</label>'
-      ).join('') +
+    '<div class="pd-dvije">' +
+      mjestaHTML(izabraniProfil) +
+      '<div class="pd-forma">' + formaHTML(p) + '</div>' +
     '</div>' +
-
-    '<label class="pd-prekidac">' +
-      '<input type="checkbox" data-pd-auto' + (p.autoDatum ? ' checked' : '') + '>' +
-      'Datum uplate = današnji datum (automatski)' +
-    '</label>' +
 
     '<label class="pd-prekidac">' +
       '<input type="checkbox" data-pd-potpis' + (p.potpis ? ' checked' : '') + '>' +
       'Označi mjesto potpisa sa <span class="pd-potpis-primjer">[TVOJ POTPIS]</span>' +
     '</label>' +
 
-    /* XP ne pise `=` u natpisu dugmeta; natpis stoji ispred grupe. */
     '<div class="pd-actions">' +
-      '<span class="pd-lbl-grupa">Datum:</span>' +
-      '<button type="button" class="pd-btn" data-pd-action="danas">Danas</button>' +
-      '<span class="pd-lbl-grupa">Period:</span>' +
-      '<button type="button" class="pd-btn" data-pd-action="ovaj-mjesec">Ovaj mjesec</button>' +
-      '<button type="button" class="pd-btn" data-pd-action="prosli-mjesec">Prošli mjesec</button>' +
       '<button type="button" class="pd-btn pd-desno" data-pd-action="obrisi-sve">Obriši unos</button>' +
     '</div>' +
     '<div class="pd-hint">Sve se čuva samo u ovom browseru — ništa se ne šalje nigdje.</div>' +
@@ -136,19 +227,39 @@ function sadrzajHTML(izabraniProfil) {
  */
 export function napraviPodatke(onPromjena, onZatvaranju) {
   let izabraniProfil = null;
-  let prilagodiSkalu = () => {};   // postavlja se nize, kad prozor postoji
 
   const prozor = napraviProzor({
     naslov: 'Moji podaci',
+    ikona: ikone.MOJI_PODACI,
     pozicija: 'desno',
-    sirina: 420,
+    /*
+     * Traka s profilima i forma stoje jedno uz drugo, pa panel treba
+     * sirinu za oboje — i jos malo preko toga, da polja imaju zraka.
+     * Sirina koju covjek povuce ide u polja, ne u velicinu slova: ovaj
+     * prozor se NE skalira (vidi `zoom` u podaci.css).
+     *
+     * Raste sa ekranom, jer veliki.css na velikim ekranima krupnjaje
+     * slova — a kolona natpisa i traka s profilima su u pikselima, pa
+     * bi pri stalnoj sirini polja ostala bez mjesta. 760 je donja
+     * vrijednost, 40vw je gornja, 94vw je zastita na uskom ekranu.
+     */
+    sirina: 'min(94vw, max(760px, 40vw))',
     klasa: 'pd-panel',
     promjenjivo: true,
-    najmanjaSirina: 320,
+    /*
+     * Racun za donju granicu: polje za datum treba 110px da se moze
+     * citati, plus koraci -/+ (46) i dugme "Danas" (55) daju red od
+     * 211; natpis 112 i razmak 8 cine okvir od 331, okvir trazi 355,
+     * traka i razmak jos 140, a tijelo prozora 30. Ukupno 525, pa je
+     * granica 530.
+     *
+     * Na telefonu mobilni.css slaze kolone jednu pod drugu, pa tamo
+     * ovaj racun ne vazi.
+     */
+    najmanjaSirina: 530,
     // Nemodalno: ostaje otvoren dok se radi u kalkulaciji
     modalno: false,
     sadrzaj: sadrzajHTML(null),
-    onPromjenaVelicine: () => prilagodiSkalu(),
     naZatvaranje: () => onZatvaranju && onZatvaranju(),
   });
 
@@ -166,12 +277,46 @@ export function napraviPodatke(onPromjena, onZatvaranju) {
     return p;
   };
 
-  const sacuvajIObavijesti = () => { snimi(izForme()); onPromjena(); };
+  /**
+   * Koja se polja razlikuju od onoga sto je snimljeno u profilu.
+   * Vraca null kad nijedan profil nije ucitan — tada se nema s cim
+   * porediti, pa se nista ne oznacava.
+   */
+  function razlike() {
+    if (izabraniProfil === null) return null;
+    const prof = profili.naMjestu(izabraniProfil);
+    if (!prof) return null;
+    const sad = izForme();
+    const skup = new Set();
+    KLJUCEVI.forEach(k => {
+      if (String(prof.podaci[k] ?? '') !== String(sad[k] ?? '')) skup.add(k);
+    });
+    return skup;
+  }
+
+  /** Oboji izmijenjena polja i upali disketu na profilu. */
+  function osvjeziRazlike() {
+    const skup = razlike();
+    tijelo.querySelectorAll('.pd-input').forEach(el => {
+      el.classList.toggle('pd-izmijenjen', !!skup && skup.has(el.dataset.key));
+    });
+    const ima = !!skup && skup.size > 0;
+    tijelo.querySelectorAll('.pd-mjesto').forEach(el => {
+      el.classList.toggle('izmijenjen', ima && Number(el.dataset.i) === izabraniProfil);
+    });
+  }
+
+  const sacuvajIObavijesti = () => {
+    snimi(izForme());
+    osvjeziRazlike();
+    onPromjena();
+  };
 
   /** Ponovo iscrtaj cijeli sadrzaj (nakon ucitavanja profila i sl.). */
   const precrtaj = () => {
     tijelo.innerHTML = sadrzajHTML(izabraniProfil);
     primijeniAutoDatum();
+    osvjeziRazlike();
   };
 
   /** Ako je automatski datum ukljucen, drzi polje na danasnjem i zakljucano. */
@@ -180,9 +325,9 @@ export function napraviPodatke(onPromjena, onZatvaranju) {
     const polje = tijelo.querySelector('[data-key="datum"]');
     if (!chk || !polje) return;
     polje.disabled = chk.checked;
-    polje.closest('.pd-field').classList.toggle('pd-zakljucano', chk.checked);
+    polje.closest('.pd-red').classList.toggle('pd-zakljucano', chk.checked);
     // i koraci se gase — inace bi mijenjali polje koje je zakljucano
-    polje.closest('.pd-field').querySelectorAll('.pd-korak')
+    polje.closest('.pd-red').querySelectorAll('.pd-korak')
       .forEach(b => { b.disabled = chk.checked; });
     if (chk.checked) polje.value = iso(new Date());
   }
@@ -203,6 +348,44 @@ export function napraviPodatke(onPromjena, onZatvaranju) {
     sacuvajIObavijesti();
   }
 
+  /**
+   * Preimenovanje na licu mjesta: naziv se zamijeni poljem za unos.
+   * Enter potvrdi, Escape odustane, klik izvan potvrdi. Bez dijaloga —
+   * preimenovanje je sitna radnja i ne zasluzuje prozor.
+   */
+  function preimenujNaMjestu(mj) {
+    const tile = tijelo.querySelector('.pd-mjesto[data-i="' + mj + '"]');
+    const naziv = tile && tile.querySelector('.pd-mjesto-naziv');
+    const postojeci = profili.naMjestu(mj);
+    if (!naziv || !postojeci) return;
+
+    const unos = document.createElement('input');
+    unos.type = 'text';
+    unos.className = 'pd-mjesto-unos';
+    unos.value = postojeci.naziv;
+    unos.maxLength = 24;
+    naziv.replaceWith(unos);
+    unos.focus();
+    unos.select();
+
+    let zavrseno = false;
+    const zavrsi = potvrdi => {
+      if (zavrseno) return;
+      zavrseno = true;
+      const novi = unos.value.trim();
+      if (potvrdi && novi && novi !== postojeci.naziv) profili.preimenuj(mj, novi);
+      precrtaj();
+    };
+
+    unos.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); zavrsi(true); }
+      if (e.key === 'Escape') { e.preventDefault(); zavrsi(false); }
+    });
+    unos.addEventListener('blur', () => zavrsi(true));
+    // klik u polje ne smije pokrenuti ucitavanje profila
+    unos.addEventListener('click', e => e.stopPropagation());
+  }
+
   tijelo.addEventListener('input', e => {
     const el = e.target.closest('.pd-input');
     if (!el) return;
@@ -213,10 +396,7 @@ export function napraviPodatke(onPromjena, onZatvaranju) {
     // biranje opcine popuni i mjesto uplate - ali ne gazi rucni unos
     if (el.dataset.key === 'opcina') {
       const mjestoEl = tijelo.querySelector('[data-key="mjesto"]');
-      const nazivi = OPCINE_ZEDO.map(o => o.naziv);
-      if (!mjestoEl.value.trim() || nazivi.includes(mjestoEl.value.trim())) {
-        mjestoEl.value = nazivOpcine(el.value);
-      }
+      if (mjestoJeAutomatsko(mjestoEl.value)) mjestoEl.value = mjestoOpcine(el.value);
     }
     sacuvajIObavijesti();
   });
@@ -237,6 +417,7 @@ export function napraviPodatke(onPromjena, onZatvaranju) {
 
     const btn = e.target.closest('[data-pd-action]');
     if (!btn) return;
+    const mj = Number(btn.closest('.pd-mjesto')?.dataset.i);
 
     switch (btn.dataset.pdAction) {
       case 'danas':
@@ -258,14 +439,18 @@ export function napraviPodatke(onPromjena, onZatvaranju) {
           potvrdi: 'Obriši',
         })) return;
         obrisi();
+        izabraniProfil = null;
         precrtaj();
         onPromjena();
         return;
       }
 
-      /* Klik na mjesto: puno se ucitava, prazno se popunjava. */
+      /*
+       * Klik na mjesto: puno se ucitava, prazno se popunjava odmah i
+       * odmah nudi preimenovanje. Ranije se tu otvarao dijalog za naziv;
+       * ovako je snimanje jedan klik, a ime se popravi na mjestu.
+       */
       case 'mjesto': {
-        const mj = Number(btn.dataset.i);
         const postojeci = profili.naMjestu(mj);
 
         if (postojeci) {
@@ -276,61 +461,40 @@ export function napraviPodatke(onPromjena, onZatvaranju) {
           return;
         }
 
-        const naziv = await pitajZaTekst({
-          naslov: 'Novi profil',
-          poruka: 'Kako da nazovem ovaj profil?',
-          zadano: tijelo.querySelector('[data-key="ime"]').value.trim(),
-          potvrdi: 'Snimi',
-        });
-        if (!naziv) return;
-        profili.snimi(mj, naziv, izForme());
+        const ime = tijelo.querySelector('[data-key="ime"]').value.trim();
+        profili.snimi(mj, ime || 'Profil ' + (mj + 1), izForme());
+        izabraniProfil = mj;
+        precrtaj();
+        preimenujNaMjestu(mj);
+        return;
+      }
+
+      case 'snimi-mjesto': {
+        const postojeci = profili.naMjestu(mj);
+        if (!postojeci) return;
+        /*
+         * Na aktivnom profilu je ovo snimanje izmjena koje se vide
+         * obojene, pa ne treba pitanje. Na tudjem profilu je prepisivanje
+         * i tu se pita.
+         */
+        if (mj !== izabraniProfil && !await pitajZaPotvrdu({
+          naslov: 'Prepiši profil',
+          poruka: 'Prepisati „' + esc(postojeci.naziv) + '” trenutno upisanim podacima?',
+          potvrdi: 'Prepiši',
+        })) return;
+        profili.snimi(mj, postojeci.naziv, izForme());
         izabraniProfil = mj;
         precrtaj();
         return;
       }
 
-      /* Rjedje radnje su iza tri tacke, da ucitavanje ostane jedan klik. */
-      case 'uredi-mjesto': {
-        const mj = Number(btn.dataset.i);
+      case 'preimenuj-mjesto':
+        preimenujNaMjestu(mj);
+        return;
+
+      case 'obrisi-mjesto': {
         const postojeci = profili.naMjestu(mj);
         if (!postojeci) return;
-
-        const radnja = await pitajZaIzbor({
-          naslov: 'Profil: ' + postojeci.naziv,
-          poruka: 'Šta želiš uraditi s ovim profilom?',
-          izbori: [
-            { kljuc: 'prepisi', tekst: 'Prepiši trenutnim podacima', primarno: true },
-            { kljuc: 'preimenuj', tekst: 'Preimenuj' },
-            { kljuc: 'obrisi', tekst: 'Obriši profil' },
-          ],
-        });
-        if (!radnja) return;
-
-        if (radnja === 'prepisi') {
-          if (!await pitajZaPotvrdu({
-            naslov: 'Prepiši profil',
-            poruka: 'Prepisati „' + esc(postojeci.naziv) + '” trenutno upisanim podacima?',
-            potvrdi: 'Prepiši',
-          })) return;
-          profili.snimi(mj, postojeci.naziv, izForme());
-          izabraniProfil = mj;
-          precrtaj();
-          return;
-        }
-
-        if (radnja === 'preimenuj') {
-          const naziv = await pitajZaTekst({
-            naslov: 'Preimenuj profil',
-            poruka: 'Novi naziv:',
-            zadano: postojeci.naziv,
-            potvrdi: 'Preimenuj',
-          });
-          if (!naziv) return;
-          profili.preimenuj(mj, naziv);
-          precrtaj();
-          return;
-        }
-
         if (!await pitajZaPotvrdu({
           naslov: 'Obriši profil',
           poruka: 'Obrisati „' + esc(postojeci.naziv) + '”? Trenutni unos ostaje netaknut.',
@@ -350,17 +514,12 @@ export function napraviPodatke(onPromjena, onZatvaranju) {
   if (ucitaj().autoDatum) snimi(izForme());
 
   /*
-   * Panel se moze samo uvecati, nikad umanjiti: donja granica je 1. Na
-   * telefonu bi racun inace ispao ispod 1 i stegnuo polja, a tamo je
-   * vec podeseno da sve stane bez skrolanja.
+   * Spolja se podaci mijenjaju kad se u glavnom prozoru izabere drugi
+   * kanton (opcina skace na sjediste). Panel se tada precrta da pokaze
+   * nove opcine — inace bi stari izbor ostao na ekranu i pri sljedecoj
+   * izmjeni se vratio u storage.
    */
-  prilagodiSkalu = pratiSkalu(prozor, {
-    svojstvo: '--pd-skala',
-    sirina: 379,
-    visina: 532,
-    najmanja: 1,
-    najveca: 1.8,
-  });
+  prozor.osvjezi = () => precrtaj();
 
   return prozor;
 }

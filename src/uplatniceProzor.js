@@ -1,9 +1,7 @@
 import { napraviProzor } from './prozor.js';
+import * as ikone from './ikone.js';
 import { IZVOR_ROKOVI } from './izvori.js';
-import { PRIMAOCI } from './config.js';
 import { pratiSkalu } from './skala.js';
-
-const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
 
 /* Prava velicina jednog obrasca pri skali 1: sirina je iz styles.css
    (`.real-form { max-width: 900px }`), visina je izmjerena. */
@@ -21,13 +19,16 @@ const OBRAZAC = { sirina: 900, visina: 300 };
  * print.css).
  */
 export function napraviUplatniceProzor(onZatvaranju) {
-  const tabovi = PRIMAOCI.map((p, i) =>
+  // Natpisi tabova zavise od kantona, pa se upisuju poslije svakog
+  // crtanja obrazaca (vidi osvjeziAktivnu), iz samih naslova uplatnica.
+  const tabovi = [0, 1, 2].map(i =>
     '<button type="button" class="upl-tab' + (i === 0 ? ' aktivan' : '') + '"'
-    + ' data-upl-tab="' + i + '" title="' + esc(p.caption) + '">' + (i + 1) + '</button>'
+    + ' data-upl-tab="' + i + '">' + (i + 1) + '</button>'
   ).join('');
 
   const prozor = napraviProzor({
     naslov: 'Uplatnice — Nalog za uplatu javnih prihoda',
+    ikona: ikone.UPLATNICE,
     nazivNaTraci: 'Uplatnice',
     sirina: 740,   // 900px obrasca * 0.75 + okvir
     modalno: false,
@@ -99,10 +100,14 @@ export function napraviUplatniceProzor(onZatvaranju) {
     }
   });
 
-  /** Nakon svakog precrtavanja obrazaca vrati aktivnu stavku. */
+  /** Nakon svakog precrtavanja obrazaca vrati aktivnu stavku i natpise tabova. */
   prozor.osvjeziAktivnu = () => {
     const aktivan = tijelo.querySelector('.upl-tab.aktivan');
     postaviTab(aktivan ? Number(aktivan.dataset.uplTab) : 0);
+    const naslovi = tijelo.querySelectorAll('.upl-stavka .form-caption');
+    tijelo.querySelectorAll('.upl-tab').forEach((b, i) => {
+      b.title = naslovi[i] ? naslovi[i].textContent : '';
+    });
   };
 
   // Pri svakom otvaranju prozor se uklopi u sadrzaj i vidno polje

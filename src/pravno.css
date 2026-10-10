@@ -72,8 +72,9 @@
   color: var(--xp-dobro-tekst);
 }
 
-/* Odricanje odgovornosti nosi drugu boju — to nije dobra vijest */
-.pv-odjeljak:nth-of-type(6) .pv-istaknuto {
+/* Odricanje odgovornosti nosi drugu boju — to nije dobra vijest.
+   Klasa, a ne redni broj odjeljka: novi odjeljak ne smije pomjeriti boju. */
+.pv-istaknuto.pv-pazi {
   background: var(--xp-pazi-pod);
   border-color: var(--xp-pazi-crta);
   color: var(--xp-pazi-tekst);
@@ -128,3 +129,11 @@
 /* Napomena uz tabelu biblioteka */
 .pv-sitno { font-size: var(--xp-slova-sitna); color: var(--xp-tekst-blijed); margin-top: 6px; }
 .pv-dokument a { color: var(--xp-veza); }
+.pv-istaknuto a { color: inherit; font-weight: bold; }
+
+/* Odjeljak na koji se doslo iz balona "i" — kratko zasvijetli */
+.pv-odjeljak.pv-oznacen { animation: pv-oznaka 1.6s ease-out; }
+@keyframes pv-oznaka {
+  0%, 30% { background: #FFF3B0; }
+  100% { background: transparent; }
+}

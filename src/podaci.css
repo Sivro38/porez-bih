@@ -35,6 +35,28 @@
   cursor: not-allowed;
 }
 
+/* --- raspored: traka s profilima lijevo, forma desno --- */
+
+/*
+ * Profili su stajali u redu preko vrha panela i uzimali osamdeset
+ * piksela visine. U traci lijevo ne uzimaju nista: forma uz njih je
+ * visoka petsto piksela, a tri plocice dvjesta, pa ostatak trake
+ * ostaje prazan — i to je u redu, traka i treba tako da izgleda.
+ *
+ * `align-items: start` je bitan: bez njega bi se okvir trake rastegao
+ * do dna forme i nacrtao prazan okvir preko pola panela.
+ */
+.pd-dvije {
+  display: grid;
+  grid-template-columns: var(--pd-stub) 1fr;
+  align-items: start;
+  gap: 12px;
+}
+
+.pd-stub { min-width: 0; }
+.pd-forma { min-width: 0; }
+
+
 /* --- profili: tri mjesta --- */
 
 /*
@@ -43,14 +65,11 @@
  * klikom popuni, puno se klikom ucita. Rjedje radnje idu iza tri tacke.
  */
 
+/* Jedan ispod drugog. Crtu odvajanja je preuzeo okvir "Profili". */
 .pd-mjesta {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr;
   gap: 6px;
-  padding-bottom: 10px;
-  margin-bottom: 12px;
-  border-bottom: 1px solid #ACA899;
-  box-shadow: 0 1px 0 #fff;
 }
 
 .pd-mjesto { position: relative; min-width: 0; }
@@ -59,9 +78,16 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 4px;
   width: 100%;
-  padding: 7px 3px 6px;
+  /*
+   * Sve plocice su jednako visoke, i prazne i pune. Visinu zadaje puna
+   * — ikona, naziv i red alatki — pa prazna dobija istu kroz
+   * `min-height`. Bez toga bi se traka nazubila, jer prazna nema alatke.
+   */
+  min-height: 85px;
+  padding: 7px 6px 7px;
   font-family: Tahoma, Verdana, Arial, sans-serif;
   font-size: 11px;
   color: #000;
@@ -79,8 +105,26 @@
 }
 .pd-mjesto-glavno:active { background: #D8E6F8; }
 
-.pd-mjesto.prazno .pd-mjesto-glavno { color: var(--xp-tekst-blijed); background: #F7F6F1; }
-.pd-mjesto.prazno .pd-mjesto-glavno:hover { background: #EAF1FB; color: #000; }
+/*
+ * Prazno mjesto nije plocica nego rupa za plocicu: isprekidana ivica i
+ * nista unutra sto vuce pogled. Pet jednakih bijelih kvadrata jedan
+ * ispod drugog izgleda kao da je sve vec zauzeto, a nije.
+ */
+.pd-mjesto.prazno .pd-mjesto-naziv { margin-bottom: 0; }
+.pd-mjesto.prazno .pd-mjesto-glavno {
+  color: var(--xp-tekst-blijed);
+  border-style: dashed;
+  border-color: #BFBCB0;
+  background: none;
+}
+.pd-mjesto.prazno .pd-mjesto-ikona { opacity: 0.45; }
+.pd-mjesto.prazno .pd-mjesto-glavno:hover {
+  border-style: solid;
+  border-color: #316AC5;
+  background: #EAF1FB;
+  color: #000;
+}
+.pd-mjesto.prazno .pd-mjesto-glavno:hover .pd-mjesto-ikona { opacity: 1; }
 
 /*
  * Izabrano mjesto: puna XP plava sa bijelim tekstom. To je potpis
@@ -97,46 +141,230 @@
 .pd-mjesto-ikona svg { display: block; }
 
 .pd-mjesto-naziv {
+  /* Red alatki stoji ispod, 4px od dna i visok 20px; naziv mu ostavlja
+     mjesta, uz nekoliko piksela zraka izmedju. */
+  margin-bottom: 22px;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.pd-mjesto-uredi {
+
+/* --- radnje nad profilom --- */
+
+/*
+ * Tri sitne ikone: snimi, preimenuj, obrisi. Ranije je tu stajalo "⋯"
+ * koje je otvaralo dijalog sa izborom, pa je preimenovanje bilo tri
+ * klika i jedan prozor. Mjesta ima napretek, pa radnje stoje odmah.
+ *
+ * Samo ikone, bez natpisa — natpis bi na plocici od 128px pojeo naziv
+ * profila. Objasnjenje nosi `title` i `aria-label`.
+ *
+ * Stoje u svom redu na dnu plocice, ne u gornjem uglu: tamo su sjedile
+ * preko same ikone profila i grizle je. Plocica je zato visa za taj
+ * red.
+ */
+.pd-alati {
   position: absolute;
-  top: 2px;
-  right: 2px;
-  width: 18px;
-  height: 16px;
+  left: 0;
+  right: 0;
+  bottom: 4px;
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+}
+
+/*
+ * Alatka je pravo sitno dugme, ne prozirna ikona. Dok je bila prozirna
+ * preko `opacity`, na bijeloj plocici se jedva vidjela, a na plavoj se
+ * gubila sasvim — pa se nije ni vidjelo da se tu moze kliknuti.
+ * Preliv i obrub su isti kao na ostaloj dugmadi (dugmad.css).
+ */
+.pd-alat {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 23px;
+  height: 20px;
   padding: 0;
-  font-family: Tahoma, Verdana, Arial, sans-serif;
-  font-size: 12px;
-  line-height: 1;
-  color: #333;
-  border: 1px solid transparent;
-  border-radius: 2px;
-  background: none;
+  border: 1px solid #9A968A;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #FFFFFF 0%, #F4F2EA 52%, #E6E3D7 100%);
   cursor: pointer;
 }
-.pd-mjesto-uredi:hover {
+.pd-alat svg { display: block; width: 13px; height: 13px; }
+
+.pd-alat:hover {
+  border-color: #E9A825;
+  background: linear-gradient(180deg, #FFFFFF 0%, #FFF8E4 52%, #FFEFC4 100%);
+  box-shadow: 0 0 3px rgba(233, 168, 37, 0.45);
+}
+.pd-alat:active {
+  background: linear-gradient(180deg, #D2CEBF 0%, #E2DFD2 55%, #EFEDE4 100%);
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.22);
+}
+.pd-alat:focus-visible { outline: 1px dotted var(--xp-naslov); outline-offset: 1px; }
+
+/* Na aktivnoj (plavoj) plocici dugmad trebaju tamniju ivicu da se odvoje. */
+.pd-mjesto.aktivno .pd-alat { border-color: #0A246A; }
+
+/*
+ * Kad se nesto promijenilo u odnosu na snimljeni profil, disketa se
+ * upali. To je jedino mjesto gdje se te izmjene mogu snimiti, pa ne
+ * smije biti blijeda kao ostale.
+ */
+.pd-mjesto.izmijenjen .pd-alat-snimi {
+  border-color: var(--xp-narandzasta);
+  background: linear-gradient(180deg, #FFFDF5 0%, #FFF3D6 52%, #FFE9B8 100%);
+}
+
+/* Preimenovanje na licu mjesta — polje zamijeni naziv. */
+.pd-mjesto-unos {
+  width: 100%;
+  margin-top: 1px;
+  /*
+   * Isti razmak koji nosi `.pd-mjesto-naziv` na cije mjesto dolazi.
+   * Bez njega red alatki sjedne preko polja bas dok se u njega kuca.
+   */
+  margin-bottom: 22px;
+  padding: 1px 3px;
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+  font-size: 11px;
+  text-align: center;
   color: #000;
-  border-color: #316AC5;
-  background: #FFFFFF;
+  border: 1px solid var(--xp-okvir-polja);
+  background: #FFFFF0;
+  outline: none;
 }
-.pd-mjesto.aktivno .pd-mjesto-uredi { color: #E8F0FC; }
-.pd-mjesto.aktivno .pd-mjesto-uredi:hover { color: #000; }
 
-/* --- polja --- */
+/* --- izmijenjena polja --- */
 
-.pd-grid {
+/*
+ * Polje koje se razlikuje od snimljenog profila dobija narandzastu
+ * ivicu. Narandzasta je vec jezik ovog programa za "pazi na ovo" i ne
+ * sudara se sa plavom koja oznacava fokus.
+ */
+.pd-input.pd-izmijenjen,
+.pd-panel .pd-input.pd-izmijenjen {
+  border-color: var(--xp-narandzasta);
+  background: #FFFBF0;
+}
+
+
+/* --- grupe polja --- */
+
+/*
+ * Okvir i naslov su isti kao `.groupbox` u glavnom prozoru (styles.css):
+ * ivica #ACA899 sa svijetlom gornjom i lijevom stranom, naslov plav i
+ * uvucen. Panel i glavni prozor stoje jedan uz drugi na ekranu, pa ne
+ * smiju grupisati na dva razlicita nacina.
+ */
+.pd-okvir {
+  position: relative;
+  padding: 6px 9px 8px;
+  margin-bottom: 9px;
+  border: 1px solid #ACA899;
+  border-top-color: #fff;
+  border-left-color: #fff;
+  border-radius: 3px;
+}
+
+/*
+ * Vrh okvira: naslov lijevo, dugmad koja se ticu cijele grupe desno.
+ *
+ * Visinu zada sadrzaj. Jednaka visina za sve okvire bi kostala deset
+ * praznih piksela u svakom od tri koja dugmadi nemaju, a poravnavati
+ * se nema s cim: okviri stoje jedan ispod drugog, ne jedan pored
+ * drugog. Jedino "Profili" i prvi okvir forme stoje u istom redu, i
+ * oba su bez dugmadi, pa su ionako iste visine.
+ */
+.pd-okvir-vrh {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.pd-okvir-naslov {
+  margin-left: 2px;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 1;
+  color: #003399;
+}
+
+.pd-okvir-dugmad { display: flex; gap: 5px; }
+
+.pd-okvir-tijelo { display: flex; flex-direction: column; gap: 4px; }
+
+/* --- red: natpis lijevo, polje desno --- */
+
+/*
+ * Natpis je stajao IZNAD polja, u mrezi od dvije kolone. Cetrnaest
+ * puta po jedan red natpisa je bilo preko dvije stotine piksela, a oko
+ * je moralo skakati i gore-dolje i lijevo-desno da spoji natpis s
+ * poljem. Sada natpisi stoje u jednoj koloni lijevo, kao u XP
+ * dijalozima: cita se odozgo nadolje, jedno po jedno.
+ */
+.pd-red {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px 12px;
+  grid-template-columns: var(--pd-natpis) 1fr;
+  align-items: center;
+  gap: 0 8px;
 }
-.pd-field { display: flex; flex-direction: column; gap: 3px; }
-.pd-lbl { font-size: 11px; color: #000; }
+
+.pd-lbl {
+  font-size: 11px;
+  line-height: 1.25;
+  color: #000;
+}
+
+/* Kanton uz "Opcina": spisak je suzen na njega, i to se mora vidjeti */
+.pd-kanton { color: var(--xp-tekst-blijed); cursor: help; }
 .pd-zakljucano .pd-lbl { color: var(--xp-tekst-mirni); }
+
+.pd-polje { display: flex; align-items: center; gap: 5px; min-width: 0; }
+
+/*
+ * Usko polje stoji na svojoj mjeri, a ostatak reda ostaje prazan.
+ * Polje za JMBG rastegnuto preko cijele sirine obecava trideset cifara
+ * umjesto trinaest.
+ *
+ * `min-width: 0` je ovdje bitan. Bez njega flex stavka ne smije ispod
+ * svoje najmanje sadrzajne sirine, a za <input> je to sirina po
+ * atributu `size` — koja za monospace JMBG ispadne veca nego za Tahoma
+ * telefon. Rezultat je bio da dva "jednako uska" polja zavrse na
+ * razlicitim mjestima, dvadesetak piksela jedno od drugog.
+ *
+ * Mora nadjacati `.pd-panel input[type=text]` (0,2,1) odozgo, koji daje
+ * `flex: none; width: 100%`.
+ */
+.pd-panel .pd-usko .pd-polje > .pd-input,
+.pd-panel .pd-usko .pd-polje > .pd-datum {
+  flex: 0 1 170px;
+  width: auto;
+  min-width: 0;
+}
+
+/*
+ * Dugme uz polje se NE steze. Kad prostora nema, steze se polje — ono
+ * ostaje upotrebljivo i uze, a dugme kojem se odsijece natpis ne.
+ */
+.pd-panel .pd-btn.pd-btn-uz { flex: none; }
+
+/*
+ * Red ispod polja (prekidac za datum, dugmad za period) pocinje tamo
+ * gdje i polje iznad njega, pa se vidi na sta se odnosi.
+ */
+.pd-ispod {
+  margin-left: calc(var(--pd-natpis) + 8px);
+  padding-top: 1px;
+}
+
+/* Dugme uz polje je sitnije od onih u podnozju — radnja, ne odluka. */
+.pd-panel .pd-btn.pd-btn-uz { padding: 0 8px; }
 
 .pd-panel .pd-cifre {
   font-family: "Courier New", Courier, monospace;
@@ -160,6 +388,9 @@
   cursor: pointer;
 }
 .pd-prekidac input { margin: 0; }
+
+/* Prekidac koji visi ispod svog polja ne pocinje novu misao. */
+.pd-prekidac-sitni { margin-top: 0; color: var(--xp-tekst-mirni); }
 
 /* Isti plavi ton kao [TVOJ POTPIS] na uplatnici, da se veza vidi */
 .pd-potpis-primjer {
@@ -243,10 +474,6 @@
 
 .pd-hint { font-size: var(--xp-slova-sitna); color: var(--xp-tekst-blijed); margin-top: 10px; }
 
-@media screen and (max-width: 560px) {
-  .pd-grid { grid-template-columns: 1fr; }
-}
-
 /* --- visina bocnog prozora --- */
 /* Nizi od pune visine ekrana; sadrzaj se skroluje unutar njega. */
 /*
@@ -255,11 +482,23 @@
  * zastita da prozor ne preraste ekran.
  */
 /*
- * Skalu racuna podaci.js iz velicine prozora — ko hoce krupnija slova,
- * poveca panel. Samo navise: donja granica je 1, pa se zateceni izgled
- * ne moze smanjiti.
+ * OVAJ PROZOR SE NE SKALIRA.
+ *
+ * Neko vrijeme jeste: `zoom` je rastao s velicinom prozora, pa je
+ * sirenje panela uvecavalo sve — slova, polja, ikone — kao da se vuce
+ * iz coska. To ima smisla za uplatnicu i obrazac, koji su replike
+ * papira i imaju stalnu geometriju. Forma je nema: njoj sirina treba da
+ * ode u polja, da ima gdje disati, a slova da ostanu ista.
+ *
+ * Krupnija slova na velikim ekranima rjesava veliki.css, upitom o
+ * velicini ekrana, a ne velicinom prozora.
  */
-.pd-panel .pd-sadrzaj { zoom: var(--pd-skala, 1); }
+.pd-panel .pd-sadrzaj {
+  /* Sirina kolone natpisa; `.pd-ispod` racuna uvlaku iz nje. */
+  --pd-natpis: 112px;
+  /* Traka s profilima: 32px ikona, naziv pod njom i red alatki. */
+  --pd-stub: 128px;
+}
 
 .xp-prozor.pd-panel {
   height: auto;
@@ -267,44 +506,26 @@
   max-height: calc(100dvh - 20px);
 }
 
-/* Stegnuti razmaci, da panel stane bez skrolanja */
-.pd-panel .pd-grid { gap: 5px 10px; }
-.pd-panel .pd-field { gap: 2px; }
+/*
+ * Razmaci: ZBIJENO po visini, PROSTRANO po sirini.
+ *
+ * Zrak dolazi od sirine — polja su duga i imaju gdje disati. Visina je
+ * ono cega nema: ekran je siri nego sto je visok, a panel mora stati
+ * bez skrolanja. Zato su okomiti razmaci stegnuti kao u glavnom
+ * prozoru (vidi glavni.css), a vodoravni nisu.
+ */
+.pd-panel .pd-okvir-tijelo { gap: 4px; }
+.pd-panel .pd-okvir { padding: 7px 11px 8px; margin-bottom: 8px; }
+.pd-panel .pd-okvir-vrh { margin-bottom: 5px; }
+.pd-panel .pd-stub { padding-bottom: 8px; }
+.pd-panel .pd-mjesta { gap: 6px; }
 .pd-panel input[type=text],
 .pd-panel input[type=date],
-.pd-panel select { padding: 2px 5px; }
+.pd-panel select { padding: 2px 6px; }
 .pd-panel select { height: 23px; }
-.pd-panel .pd-mjesta { padding-bottom: 8px; margin-bottom: 9px; }
-.pd-panel .pd-prekidac { margin-top: 9px; }
-.pd-panel .pd-actions { margin-top: 9px; padding-top: 8px; }
+.pd-panel .pd-prekidac { margin-top: 10px; }
+.pd-panel .pd-actions { margin-top: 10px; padding-top: 9px; }
 .pd-panel .pd-hint { margin-top: 7px; }
 .pd-panel .xp-prozor-body { padding: 12px; }
 
-/* Natpis ispred grupe dugmadi, kao u XP dijalozima */
-.pd-lbl-grupa {
-  font-size: 11px;
-  color: #000;
-  margin-right: 1px;
-  align-self: center;
-}
 .pd-actions .pd-desno { margin-left: auto; }
-
-
-/* --- naslov sekcije --- */
-
-/*
- * Isplatilac se tice samo obrasca AMS-1035, pa stoji odvojen od podataka
- * koji idu na uplatnice. Naslov uzima cijeli red mreze; polje sa
- * `pd-siroko` isto.
- */
-.pd-grupa {
-  grid-column: 1 / -1;
-  margin-top: 3px;
-  padding-bottom: 2px;
-  font-size: 10px;
-  font-weight: bold;
-  color: #0A246A;
-  border-bottom: 1px solid #ACA899;
-  box-shadow: 0 1px 0 #fff;
-}
-.pd-siroko { grid-column: 1 / -1; }

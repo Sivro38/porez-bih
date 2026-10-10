@@ -35,7 +35,8 @@ export async function pitajPaObrisi() {
   const potvrdjeno = await pitajZaPotvrdu({
     naslov: 'Obriši sve podatke',
     poruka: 'Ovo briše sve što je program zapamtio u ovom browseru: lične '
-      + 'podatke, sva tri profila, unesenu osnovicu i izmijenjene stope. '
+      + 'podatke, sve profile, unesenu osnovicu, vrstu prihoda, unos '
+      + 'godišnje prijave i izmijenjene stope. '
       + 'Vraća i početno upozorenje.\n\n'
       + 'Ne može se vratiti. Nastaviti?',
     potvrdi: 'Obriši sve',

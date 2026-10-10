@@ -1,0 +1,96 @@
+# Objava na Cloudflare Pages (porez.pages.dev).
+#
+# Pokrece se na svaki push u main, dakle kad se spoji pull request, ili
+# rucno: Actions > Objava > Run workflow. Ceka odobrenje u okruzenju
+# "produkcija", pa nista ne ide uzivo dok vlasnik ne klikne "Approve and
+# deploy".
+#
+# Projekat "porez" je Direct Upload i ne moze se spojiti na Git. Zato
+# ovaj workflow radi isto sto se do sada kucalo rucno: build, pa wrangler
+# salje dist. Ne koristi se cloudflare/wrangler-action, jer pravila
+# repozitorija pustaju samo GitHubove akcije; obicni npx tu radi.
+#
+# Tajne stoje u okruzenju "produkcija", ne u repou, pa ih dobije samo
+# posao koji je odobren:
+#   CLOUDFLARE_API_TOKEN   dozvola Account / Cloudflare Pages / Edit
+#   CLOUDFLARE_ACCOUNT_ID  ID Cloudflare naloga
+#
+# --branch=master: Cloudflare po tom imenu odlucuje da li je deployment
+# produkcija ili pregled. Produkcijska grana projekta je "master", ime
+# iz vremena kad se slalo sa racunara, i nema veze sa granom main ovdje.
+
+name: Objava
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Jedna objava u isto vrijeme. Ako ih vise ceka odobrenje, ostaje
+# najnovija.
+concurrency:
+  group: objava
+  cancel-in-progress: false
+
+jobs:
+  objava:
+    name: Cloudflare Pages
+    # Fork nema ni tajne ni okruzenje; tamo se posao ni ne pokrece
+    if: github.repository == 'Sivro38/porez-bih'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: produkcija
+      url: https://porez.pages.dev
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '18'
+          cache: npm
+
+      - name: Instalacija
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      # Isto sto i provjera na pull requestu. Pogresan racun ne smije
+      # uzivo ni kad je neko zaobisao zastitu grane.
+      - name: Racuni i godisnji obracun
+        run: |
+          node alati/provjeri-config.mjs
+          node alati/provjeri-godisnji.mjs
+
+      # wrangler 3 radi na Node 18; 4 trazi Node 22. Verzija je
+      # prikovana da objava ne zavisi od toga sta je izaslo preko noci.
+      - name: Slanje na Cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WRANGLER_SEND_METRICS: 'false'
+        run: npx --yes wrangler@3.114.17 pages deploy dist --project-name=porez --branch=master
+
+      # Mjeri, ne pretpostavljaj: ime bundlea na sajtu mora biti ono iz
+      # ovog builda. Cloudflareu zna trebati pola minute.
+      - name: Provjera uzivo
+        shell: bash
+        run: |
+          ocekivano=$(grep -o 'index-[A-Za-z0-9_-]*\.js' dist/index.html | head -n 1)
+          for i in 1 2 3 4 5 6 7 8; do
+            sleep 15
+            uzivo=$(curl -fsSL -H 'Cache-Control: no-cache' "https://porez.pages.dev/?provjera=$GITHUB_RUN_ID" \
+              | grep -o 'index-[A-Za-z0-9_-]*\.js' | head -n 1 || true)
+            if [ "$uzivo" = "$ocekivano" ]; then
+              echo "Uzivo je $uzivo, isto kao build."
+              exit 0
+            fi
+            echo "Pokusaj $i: uzivo je '$uzivo', a build je '$ocekivano'."
+          done
+          echo "::error::Ni poslije dva minuta porez.pages.dev ne servira ovaj build."
+          exit 1

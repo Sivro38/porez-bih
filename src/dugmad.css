@@ -171,11 +171,16 @@
 }
 .izvor:focus-visible { outline: 1px dotted var(--xp-naslov); outline-offset: 1px; }
 
-/* Rok u alatnoj traci prozora — zuto, kao i svako drugo upozorenje. */
+/*
+ * Rok u alatnoj traci prozora — zuto, kao i svako drugo upozorenje.
+ *
+ * `inline-block`, NE `inline-flex`: flex kontejner obrise razmake oko
+ * svoje djece, pa se "najkasnije" i "<b>naredni dan</b>" spoje u
+ * "najkasnijenaredni dan".
+ */
 .upl-rok,
 .ams-rok {
-  display: inline-flex;
-  align-items: center;
+  display: inline-block;
   padding: 2px 7px;
   background: var(--xp-pazi-pod);
   border: 1px solid var(--xp-pazi-crta);
@@ -213,10 +218,78 @@
   background: #FFFFF0;
 }
 
-.vrsta-lbl { margin-top: 10px; }
+/* ============================================================ */
+/* Kanton i vrsta prihoda, jedno uz drugo, po pola sirine        */
+/*                                                              */
+/* Na uskom ekranu polovine padnu jedna ispod druge (flex-wrap), */
+/* jer bi kanton u 170px bio odsjecen usred naziva.             */
+/* ============================================================ */
+
+.unos-izbori {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px 14px;
+  margin-top: 10px;
+}
+.unos-pola { flex: 1 1 0; min-width: 170px; }
+.unos-pola > .field { display: block; font-size: 11px; color: #000; margin-bottom: 5px; }
+
+.vrsta-izbor { display: flex; flex-direction: column; gap: 4px; padding-top: 1px; }
 
 .vrsta-opis {
-  margin-top: 4px;
+  margin-top: 6px;
   font-size: var(--xp-slova-sitna);
   color: var(--xp-tekst-blijed);
+}
+
+/* ============================================================ */
+/* XP radio dugme (Luna)                                         */
+/*                                                              */
+/* Pravi <input type="radio">, samo nacrtan: krug sa tamnoplavom */
+/* ivicom i sivim prelivom, zelena tacka kad je izabran, i       */
+/* narandzasti obod pod misem, kao u XP-u. Tastatura i citac     */
+/* ekrana rade kao sa obicnim radio dugmetom.                   */
+/* ============================================================ */
+
+.xp-radio {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+  font-size: 11px;
+  color: #000;
+  line-height: 16px;
+  cursor: pointer;
+  user-select: none;
+}
+.xp-radio input[type="radio"] {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: none;
+  display: grid;
+  place-content: center;
+  width: 13px;
+  height: 13px;
+  margin: 0;
+  border: 1px solid #1C5180;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #DCDCD7 0%, #F4F4F1 55%, #FFFFFF 100%);
+  cursor: pointer;
+}
+.xp-radio input[type="radio"]::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #B8F2B5 0%, #4CC649 45%, #1C8A1A 100%);
+  transform: scale(0);
+}
+.xp-radio input[type="radio"]:checked::before { transform: scale(1); }
+.xp-radio:hover input[type="radio"] {
+  box-shadow: inset 0 0 0 1px #FEDF9C, inset 0 0 0 2px #F8B636;
+}
+.xp-radio input[type="radio"]:focus-visible {
+  outline: 1px dotted #000;
+  outline-offset: 2px;
 }

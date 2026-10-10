@@ -51,7 +51,7 @@ da provedeš veče na nečemu što neću spojiti.
 ## Kako se izmjena šalje
 
 **1. Napravi fork.** Dugme `Fork` gore desno na stranici repozitorija.
-Bez toga nema pisanja — klon ti ne daje pravo da gurneš granu, dobićeš
+Bez toga nema pisanja — klon ti ne daje pravo da gurneš granu, dobit ćeš
 `403`. To nije kvar nego kako GitHub radi sa javnim repozitorijima.
 
 **2. Kloniraj svoj fork i napravi granu.**
@@ -115,10 +115,10 @@ zajedno sa ostalim.
 
 ## Šta možeš očekivati
 
-Odgovoriću kad stignem, ne uvijek isti dan. Svaki pull request gledam
+Odgovorit ću kad stignem, ne uvijek isti dan. Svaki pull request gledam
 lično i spajam ga sam — i tvoj i svoj kod prolazi kroz isti pregled.
 
-Ako nešto odbijem, napisaću zašto. To nije protiv tebe nego protiv
+Ako nešto odbijem, napisat ću zašto. To nije protiv tebe nego protiv
 toga da program postane nešto drugo nego što jeste.
 
 ## Licenca
