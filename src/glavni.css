@@ -1,0 +1,62 @@
+/* ============================================================ */
+/* Glavni prozor — zbijanje da stane bez skrolanja.             */
+/*                                                              */
+/* Sve mjere ispod stoje i u styles.css, ali taj fajl se NE     */
+/* dira (pravilo 1 u RAZVOJ.md). Ovaj se ucitava poslije njega  */
+/* i nadjacava ga istim selektorom, pa pobjedjuje po redoslijedu*/
+/* a ne po specificnosti.                                       */
+/*                                                              */
+/* Racun: prozor je bio oko 840px visok, a tipican laptop ima   */
+/* 700-760px vidljivog. Visak je bio u razmacima, ne u sadrzaju:*/
+/* tabela od trinaest redova nosi vecinu, pa je i najveca       */
+/* usteda tamo.                                                 */
+/* ============================================================ */
+
+.content { padding: 10px 14px 12px; }
+
+.groupbox {
+  padding: 9px 11px 10px;
+  margin-bottom: 10px;
+}
+
+/* Polje osnovice je bilo 20px; i dalje je najkrupnije na ekranu. */
+input[type=text]#osnovica { font-size: 17px; padding: 4px 8px; }
+
+/*
+ * Tabela nosi najvise visine: trinaest redova puta cetiri piksela je
+ * preko pedeset piksela samo na razmacima u celijama.
+ */
+table.xp-table th,
+table.xp-table td { padding: 3px 8px; }
+
+tr.xp-section td { padding: 3px 8px; }
+
+tr.xp-total td,
+tr.xp-total th { font-size: 13px; }
+
+/* Red "Ostaje tebi" ostaje najkrupniji, ali ne 19px sa 12px razmaka. */
+tr.xp-net td,
+tr.xp-net th { font-size: 16px; padding: 7px 8px; }
+
+/* Napomena na dnu — kraci tekst i tjesnji okvir. */
+.clippy-note {
+  padding: 6px 9px;
+  margin-top: 9px;
+  line-height: 1.4;
+}
+
+/* Traka je visoka 30px; 54px razmaka je bilo vise nego sto treba. */
+body { padding-bottom: 42px; }
+
+/*
+ * Na telefonu se ne zbija dodatno — tamo prozor ionako ide preko
+ * cijelog ekrana i skrolanje je normalno.
+ */
+@media screen and (max-width: 760px) {
+  .content { padding: 12px 12px 14px; }
+  .groupbox { padding: 12px 12px 14px; margin-bottom: 12px; }
+  table.xp-table th,
+  table.xp-table td { padding: 5px 8px; }
+  tr.xp-net td,
+  tr.xp-net th { font-size: 18px; padding: 10px 8px; }
+}

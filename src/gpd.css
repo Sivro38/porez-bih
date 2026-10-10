@@ -1,0 +1,58 @@
+/* ============================================================ */
+/* Obrazac GPD-1051 — replika papira, dvije stranice A4.         */
+/*                                                               */
+/* Isti postupak kao AMS (ams.css): sve apsolutno postavljeno po */
+/* koordinatama iz gpd-raspored.js, 1pt = 1px, bez paddinga u    */
+/* stranici, jer bi padding pomjerio svu djecu.                  */
+/* ============================================================ */
+
+.gpd-papir {
+  /* Skalu racuna godisnjiProzor.js iz sirine prozora (pratiSkalu). */
+  zoom: var(--gpd-skala, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.gpd-stranica {
+  position: relative;
+  flex: none;
+  /* Mjere upisuje gpd.js iz podataka; ovdje nista tvrdo. */
+  background: #fff;
+  box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.3);
+  color: #000;
+  overflow: hidden;
+}
+
+/* Crte i plohe: tanki pravougaonici, boja iz podataka (gpd.js). */
+.gpd-c { position: absolute; }
+
+/* Odstampani natpisi. U ovom PDF-u je svuda Arial; Liberation Sans je
+   njegov slobodan blizanac istih mjera. `line-height: 1` i nowrap su
+   obavezni, inace tekst klizne sa svoje koordinate. */
+.gpd-n {
+  position: absolute;
+  font-family: Arial, "Liberation Sans", Helvetica, sans-serif;
+  line-height: 1;
+  white-space: nowrap;
+}
+.gpd-deb { font-weight: bold; }
+.gpd-kurz { font-style: italic; }
+
+/* --- nase vrijednosti: plavo, kao rukom upisano --- */
+
+.gpd-v {
+  position: absolute;
+  font-family: Arial, "Liberation Sans", Helvetica, sans-serif;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  color: var(--xp-potpis, #1A3A9C);
+}
+.gpd-upis { font-size: 10px; text-overflow: ellipsis; }
+.gpd-kucica { font-size: 10px; text-align: center; }
+.gpd-cifra { font-size: 10px; font-weight: bold; text-align: center; }
+.gpd-iznos { font-size: 10px; text-align: right; }
+.gpd-x { font-size: 9px; font-weight: bold; text-align: center; }
+.gpd-potpis { font-size: 10px; font-weight: bold; }

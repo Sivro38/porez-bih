@@ -1,4 +1,5 @@
 import { napraviProzor } from './prozor.js';
+import * as ikone from './ikone.js';
 import { fmt } from './format.js';
 import { datumCifre, ucitaj } from './storage.js';
 import { stampaj, periodTekst } from './ispis.js';
@@ -87,8 +88,19 @@ let statickiHTML = null;
 function staticki() {
   if (statickiHTML !== null) return statickiHTML;
 
-  const crte = LINIJE.concat(KUTIJE).map(([x, y, w, h]) =>
-    '<i class="ams-c" style="' + stil({ left: x, top: y, width: w, height: h }) + '"></i>'
+  /*
+   * Plohe prvo, crte preko njih. U PDF-u je redoslijed izmijesan, ali
+   * ovako je sigurno da crta nikad ne zavrsi ispod plohe.
+   *
+   * Peti clan je boja ispune. Kad ga nema, ploha je crna — tako je i u
+   * originalu, osim osam svijetlosivih: dvije gore desno i sest u
+   * zaglavlju tabele. Bez citanja boje zaglavlje Dijela 3 ispadne kao
+   * crna traka preko pola obrasca.
+   */
+  const crte = KUTIJE.concat(LINIJE).map(([x, y, w, h, boja]) =>
+    '<i class="ams-c" style="'
+    + stil({ left: x, top: y, width: w, height: h, background: boja || '#000' })
+    + '"></i>'
   ).join('');
 
   const natpisi = TEKST.map(t =>
@@ -216,6 +228,7 @@ function renderAMS(r, p) {
 export function napraviAMSProzor(dajObracun, onZatvaranju) {
   const prozor = napraviProzor({
     naslov: 'AMS-1035 — Akontacija poreza na prihod iz inostranstva',
+    ikona: ikone.OBRAZAC,
     nazivNaTraci: 'AMS-1035',
     sirina: 900,
     modalno: false,

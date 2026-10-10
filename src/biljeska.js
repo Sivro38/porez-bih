@@ -1,7 +1,9 @@
 /**
- * Biljeska "Kako platiti" — gore desno na radnoj povrsini.
+ * Biljeska na radnoj povrsini — tri stranice, listaju se strelicama.
  *
- * Postupak je onaj stvarni, za Zenicu, ne uopsteno uputstvo.
+ * Postupak je onaj stvarni, kako ga je autor prosao u Zenici. Koraci se
+ * slazu s Pravilnikom (clan 57.), osim "u dva primjerka" i mjesta
+ * predaje, sto je zenicka praksa — otud "(za Zenicu)" uz naslov.
  *
  * Sklapa se i rasklapa. Radjeno preko <details>, ne preko dugmeta i
  * klase: tako se otvara i tastaturom, citac ekrana zna da je sklopivo,
@@ -14,6 +16,9 @@
  */
 
 const KLJUC = 'porez.biljeska.v1';
+const KLJUC_STRANICE = 'porez.biljeska.stranica.v1';
+
+const VODIC = 'https://pufbih.ba/freelanceri';
 
 /* Cioda je crtana kao pixel art — crispEdges gasi zagladjivanje, pa
    kvadratici ostaju ostri u svakoj velicini i zumu. */
@@ -25,19 +30,51 @@ const CIODA =
   + '<rect x="6" y="7" width="2" height="6" fill="#8A8A7A"/>'
   + '</svg>';
 
-const KORACI = [
-  'Popuni <b>tri uplatnice</b>',
-  'Uplati ih u <b>banci ili na pošti</b>',
-  'Popuni <b>AMS-1035</b> — u <b>dva primjerka</b>',
-  'Odnesi ih u <b>Poreznu upravu</b>',
-];
+const tise = t => '<span class="bilj-tise">' + t + '</span>';
 
-/*
- * Za Zenicu je poznato i tacno mjesto predaje — prvi sprat, druga
- * vrata desno, kancelarija 11 ili 12. Namjerno NIJE upisano: broj
- * kancelarije nije potvrdjen, a poslati covjeka na pogresna vrata je
- * gore nego ne reci nista. Vrati tek kad neko provjeri na licu mjesta.
+/**
+ * Stranice. `uz` ide u zagradu uz naslov i nosi ogradu — ono sto vrijedi
+ * za Zenicu, a ne nuzno svuda.
  */
+const STRANICE = [
+  {
+    naslov: 'Kako platiti',
+    uz: 'za Zenicu',
+    sadrzaj:
+      '<ol class="bilj-koraci">'
+      + '<li>Popuni <b>tri uplatnice</b></li>'
+      + '<li>Uplati ih u <b>banci ili na pošti</b></li>'
+      + '<li>Popuni <b>AMS-1035</b>, u <b>dva primjerka</b></li>'
+      + '<li>Odnesi ih u <b>Poreznu upravu</b> '
+        + tise('(prvi sprat, kancelarija 11, pokucati i predati)') + '</li>'
+      + '</ol>'
+      + '<div class="bilj-dno">Prije uplate provjeri iznose.</div>',
+  },
+  {
+    naslov: 'Rokovi',
+    sadrzaj:
+      '<ul class="bilj-spisak">'
+      + '<li><b>Porez</b> — najkasnije <b>naredni dan</b> od primitka dohotka</li>'
+      + '<li><b>AMS-1035</b> — u roku od <b>5 dana</b> od primitka</li>'
+      + '<li><b>Godišnja prijava</b> — do <b>31. marta</b> za prethodnu godinu</li>'
+      + '</ul>'
+      + '<div class="bilj-dno">'
+      + '<a class="bilj-veza" href="' + VODIC + '" target="_blank" rel="noopener noreferrer">'
+      + 'Vodič Porezne uprave ↗</a>'
+      + '</div>',
+  },
+  {
+    naslov: 'Godišnja prijava',
+    sadrzaj:
+      '<p class="bilj-tekst">Obrazac <b>GPD-1051</b> se predaje <b>do 31. marta</b> '
+      + 'za prethodnu godinu. U njega ide zbir svega uplaćenog tokom godine, '
+      + 'ne jedna uplata.</p>'
+      + '<p class="bilj-tekst">Otvara se ikonom <b>Godišnja prijava</b> na radnoj '
+      + 'površini.</p>'
+      + '<div class="bilj-dno">Iznose uplata upisuješ sam, po mjesecima — '
+      + 'zbir i obrazac program izračuna.</div>',
+  },
+];
 
 function bioOtvoren() {
   try { return localStorage.getItem(KLJUC) !== 'sklopljeno'; } catch { return true; }
@@ -49,24 +86,66 @@ function zapamti(otvoren) {
   } catch { /* svejedno, samo nece prezivjeti zatvaranje */ }
 }
 
+function zadnjaStranica() {
+  try {
+    const n = Number(localStorage.getItem(KLJUC_STRANICE));
+    return Number.isInteger(n) && n >= 0 && n < STRANICE.length ? n : 0;
+  } catch { return 0; }
+}
+
+function zapamtiStranicu(i) {
+  try { localStorage.setItem(KLJUC_STRANICE, String(i)); } catch { /* svejedno */ }
+}
+
 /**
  * Zalijepi biljesku na radnu povrsinu.
  * @returns {HTMLElement} element biljeske
  */
 export function napraviBiljesku() {
+  let i = zadnjaStranica();
+
   const bilj = document.createElement('details');
   bilj.className = 'xp-biljeska no-print';
   bilj.open = bioOtvoren();
   bilj.innerHTML =
-    '<summary class="bilj-vrh">' + CIODA
-    + '<span>Kako platiti <span class="bilj-tise">(za Zenicu)</span></span>'
-    + '</summary>'
-    + '<ol class="bilj-koraci">'
-    + KORACI.map(k => '<li>' + k + '</li>').join('')
-    + '</ol>'
-    + '<div class="bilj-dno">Prije uplate provjeri iznose.</div>';
+    '<summary class="bilj-vrh">' + CIODA + '<span class="bilj-naslov"></span></summary>'
+    + '<div class="bilj-tijelo"></div>'
+    + '<div class="bilj-listanje">'
+      + '<button type="button" class="bilj-strelica" data-smjer="-1"'
+      + ' aria-label="Prethodna stranica">◀</button>'
+      + '<span class="bilj-tacke" aria-hidden="true"></span>'
+      + '<button type="button" class="bilj-strelica" data-smjer="1"'
+      + ' aria-label="Sljedeća stranica">▶</button>'
+    + '</div>';
+
+  const naslovEl = bilj.querySelector('.bilj-naslov');
+  const tijeloEl = bilj.querySelector('.bilj-tijelo');
+  const tackeEl = bilj.querySelector('.bilj-tacke');
+
+  function crtaj() {
+    const s = STRANICE[i];
+    naslovEl.innerHTML = s.naslov + (s.uz ? ' ' + tise('(' + s.uz + ')') : '');
+    tijeloEl.innerHTML = s.sadrzaj;
+    tackeEl.innerHTML = STRANICE
+      .map((_, k) => '<span class="bilj-tacka' + (k === i ? ' sada' : '') + '"></span>')
+      .join('');
+  }
+
+  bilj.querySelectorAll('.bilj-strelica').forEach(dugme => {
+    dugme.addEventListener('click', e => {
+      // Strelice stoje unutar <details>, ali ne smiju ga sklapati.
+      e.preventDefault();
+      e.stopPropagation();
+      const smjer = Number(dugme.dataset.smjer);
+      i = (i + smjer + STRANICE.length) % STRANICE.length;
+      zapamtiStranicu(i);
+      crtaj();
+    });
+  });
 
   bilj.addEventListener('toggle', () => zapamti(bilj.open));
+
+  crtaj();
 
   // Na pocetak tijela, kao i precice — prozori u prirodnom redoslijedu
   // ostaju iznad.

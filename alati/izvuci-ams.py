@@ -71,15 +71,29 @@ def main():
                 })
 
     # ---- vektori ----
+    # Obrazac je crtan iskljucivo ispunjenim pravougaonicima; tanki su
+    # crte, debeli su plohe. BOJA SE MORA CITATI: osam ploha (dvije gore
+    # desno i sest u zaglavlju tabele) su svijetlosive, ne crne. Bez toga
+    # zaglavlje Dijela 3 ispadne kao crna traka preko pola obrasca.
+    def uboji(f):
+        if not f:
+            return None
+        r, g, b = (max(0, min(255, round(v * 255))) for v in f[:3])
+        if (r, g, b) == (0, 0, 0):
+            return None                      # crna je zadana, ne pise se
+        return "#%02x%02x%02x" % (r, g, b)
+
     linije, kutije = [], []
     for c in st.get_drawings():
+        boja = uboji(c.get("fill"))
         for stavka in c["items"]:
             if stavka[0] != "re":
                 continue
             q = stavka[1]
             x, y = round(q.x0 - X0, 1), round(q.y0 - Y0, 1)
             w, h = round(q.x1 - q.x0, 1), round(q.y1 - q.y0, 1)
-            (linije if (w <= PRAG_LINIJE or h <= PRAG_LINIJE) else kutije).append([x, y, w, h])
+            zapis = [x, y, w, h] + ([boja] if boja else [])
+            (linije if (w <= PRAG_LINIJE or h <= PRAG_LINIJE) else kutije).append(zapis)
 
     # I linije i kutije ulaze u mjeru: donja ivica okvira je debela
     # 2,3pt pa je razvrstana u kutije, a bez nje bi obrazac ispao niz

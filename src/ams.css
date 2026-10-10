@@ -73,6 +73,11 @@
      krupniji. 0,86 je polazna, za slucaj da racun jos nije prosao. */
   zoom: var(--ams-skala, 0.86);
   position: relative;
+  /* Okvir oko cijelog lista. `content-box` je nuzan: globalni
+     `border-box` bi okvir uvukao unutra i pomjerio sve koordinate za
+     piksel. Ovako okvir stoji izvan mjere, a raspored ostaje tacan. */
+  box-sizing: content-box;
+  border: 1px solid #000;
   /* Mjere upisuje ams.js iz OKVIR-a; ovdje nista tvrdo, da se ne
      raziđu kad se raspored ponovo izvuce iz PDF-a. */
   margin: 0 auto;
@@ -89,9 +94,21 @@
  * su i ovdje pravougaonici. Debljina dolazi iz podataka, ne iz
  * `border`, da ostane ista i kad se obrazac umanji.
  */
+/*
+ * Boju upisuje ams.js: crna kad je nema, inace iz podataka.
+ *
+ * Najtanje crte u originalu su 0,4pt. Kad ih `zoom` pomnozi, znaju
+ * ispasti ispod pola piksela i browser ih tada jednostavno ne nacrta —
+ * pa su na vecim skalama nestajale pojedine crte u Dijelu 1.
+ *
+ * Granica je zato vezana za samu skalu: 1px podijeljen skalom znaci da
+ * se poslije mnozenja uvijek dobije tacno jedan piksel, koliko god da
+ * je obrazac uvecan ili umanjen.
+ */
 .ams-c {
   position: absolute;
-  background: #000;
+  min-width: calc(1px / var(--ams-skala, 0.86));
+  min-height: calc(1px / var(--ams-skala, 0.86));
 }
 
 /* --- odstampani natpisi --- */

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ZADANA_OSNOVICA, VERZIJA, VRSTE_PRIHODA, ZADANA_VRSTA } from './config.js';
+import { ZADANA_OSNOVICA, VERZIJA, VRSTE_PRIHODA, ZADANA_VRSTA, KANTONI } from './config.js';
 import { obracun } from './calc.js';
 import { parseInput, fmt } from './format.js';
 import { renderTabela, popuniTabelu } from './tabela.js';
@@ -24,13 +24,15 @@ import { renderUplatnice, popuniIznose } from './uplatnice.js';
 import { napraviPodatke } from './podaci.js';
 import { napraviUplatniceProzor } from './uplatniceProzor.js';
 import { napraviAMSProzor } from './ams.js';
+import { napraviGodisnjiProzor } from './godisnjiProzor.js';
 import { napraviPostavke } from './postavke.js';
 import { pitajPaObrisi } from './brisanje.js';
 import { stampaj, periodTekst } from './ispis.js';
 import { napraviUpozorenje } from './upozorenje.js';
 import { napraviUputstvo } from './uputstvo.js';
 import { napraviPravno } from './pravno.js';
-import { ucitaj } from './storage.js';
+import { ucitaj, snimi, promijeniKanton, kantonPodataka } from './storage.js';
+import { postaviBalonVeze } from './balon.js';
 import { poveziMenije, napraviStatus, toggleKvacica } from './ui.js';
 import { napraviProzor, podigniNaVrh } from './prozor.js';
 import { omoguciPovlacenje } from './drag.js';
@@ -49,7 +51,21 @@ const VRSTA_KEY = 'porez.vrsta.v1';
 const $ = id => document.getElementById(id);
 const osnovicaEl = $('osnovica');
 const vrstaEl = $('vrsta-prihoda');
+const kantonEl = $('kanton');
 const glavniProzor = document.querySelector('.window');
+
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+
+/** Izabrana vrsta prihoda (kljuc iz VRSTE_PRIHODA). */
+let vrsta = ZADANA_VRSTA;
+
+/*
+ * Uputstvo se pravi nize, a osvjezava se i prije toga. Funkcija se
+ * zamijeni kad uputstvo postoji; `typeof` nad jos neinicijalizovanim
+ * `const` bi bacio ReferenceError (ista zamka kao kod amsProzor).
+ */
+let osvjeziUputstvo = () => {};
+let osvjeziGodisnju = () => {};
 
 /* ---------- glavni prozor na donjoj traci ---------- */
 
@@ -74,8 +90,18 @@ const glavniApi = {
     traka.postaviAktivni(glavniApi);
   },
 };
-traka.prijavi('kalkulacija_freelance.exe', glavniApi);
+traka.prijavi('Kalkulator', glavniApi);
 traka.postaviAktivni(glavniApi);
+
+/*
+ * Ikona glavnog prozora u naslovnoj traci: kalkulator, isti kao favikona
+ * u kartici (KALKULACIJA_16 — crtan za 16px, pa ostaje ostar).
+ */
+{
+  const ico = glavniProzor.querySelector('.titletext .ico');
+  ico.classList.add('sa-ikonom');
+  ico.innerHTML = ikone.KALKULACIJA_16;
+}
 
 /* ---------- pocetno crtanje ---------- */
 
@@ -95,7 +121,7 @@ let prikaziPostotak = true;
  * vraca rucno jer je nosi inline stil, koji precrtavanje obrise.
  */
 function precrtajTabelu() {
-  $('obracun-body').innerHTML = renderTabela(vrstaEl.value);
+  $('obracun-body').innerHTML = renderTabela(vrsta);
   document.querySelectorAll('.pct-col').forEach(el => {
     el.style.display = prikaziPostotak ? '' : 'none';
   });
@@ -103,6 +129,7 @@ function precrtajTabelu() {
 
 precrtajTabelu();
 renderUplatnice($('forms-mount'), ucitaj());
+uplatniceProzor.osvjeziAktivnu();   // natpisi tabova nose naziv primaoca
 
 /* ---------- obracun ---------- */
 
@@ -117,7 +144,7 @@ let zadnjiObracun = null;
 let amsProzor = null;
 
 function preracunaj() {
-  const r = obracun(parseInput(osnovicaEl.value), vrstaEl.value);
+  const r = obracun(parseInput(osnovicaEl.value), vrsta);
   zadnjiObracun = r;
   popuniTabelu(r);
   popuniIznose(r);
@@ -136,27 +163,54 @@ function zapamtiOsnovicu() {
  * ne samo popuniti: postotak stoji u samom HTML-u kolone "%", pa bi
  * inace ostao stari broj uz nove iznose.
  */
-vrstaEl.innerHTML = VRSTE_PRIHODA.map(v =>
-  '<option value="' + v.key + '">' + v.label + '</option>').join('');
-vrstaEl.value = ZADANA_VRSTA;
+/*
+ * Radio dugmad, ne padajuci izbor: izbora su samo dva, pa se oba vide
+ * odjednom, a pola sirine ostaje za kanton.
+ */
 try {
   const spremljena = localStorage.getItem(VRSTA_KEY);
-  if (spremljena && VRSTE_PRIHODA.some(v => v.key === spremljena)) vrstaEl.value = spremljena;
+  if (spremljena && VRSTE_PRIHODA.some(v => v.key === spremljena)) vrsta = spremljena;
 } catch { /* storage nedostupan */ }
 
+vrstaEl.innerHTML = VRSTE_PRIHODA.map(v =>
+  '<label class="xp-radio" title="' + esc(v.label + ' — ' + v.opis) + '">'
+  + '<input type="radio" name="vrsta-prihoda" value="' + v.key + '"'
+  + (v.key === vrsta ? ' checked' : '') + '>'
+  + esc(v.kratko) + '</label>').join('');
+
 function opisVrste() {
-  const v = VRSTE_PRIHODA.find(x => x.key === vrstaEl.value);
-  $('vrsta-opis').textContent = v ? v.opis : '';
+  const v = VRSTE_PRIHODA.find(x => x.key === vrsta);
+  $('vrsta-opis').textContent = v ? v.label + ': ' + v.opis : '';
 }
 opisVrste();
 
-vrstaEl.addEventListener('change', () => {
+vrstaEl.addEventListener('change', e => {
+  const izabrano = e.target.closest('input[name="vrsta-prihoda"]');
+  if (!izabrano) return;
+  vrsta = izabrano.value;
   opisVrste();
   precrtajTabelu();
   preracunaj();
-  try { localStorage.setItem(VRSTA_KEY, vrstaEl.value); } catch { /* svejedno */ }
-  setStatus('Vrsta prihoda: ' + vrstaEl.options[vrstaEl.selectedIndex].text);
+  try { localStorage.setItem(VRSTA_KEY, vrsta); } catch { /* svejedno */ }
+  const v = VRSTE_PRIHODA.find(x => x.key === vrsta);
+  setStatus('Vrsta prihoda: ' + (v ? v.label : vrsta));
 });
+
+/* ---------- kanton ---------- */
+
+/*
+ * Kanton se ne pamti posebno: izvodi se iz opcine u Moji podaci (vidi
+ * storage.js). Izbor ovdje zato mijenja opcinu — skoci na sjediste novog
+ * kantona — a uplatnice, panel i obrazac se precrtaju.
+ */
+kantonEl.innerHTML = KANTONI.map(k =>
+  '<option value="' + k.key + '">' + esc(k.kratko) + '</option>').join('');
+
+/** Postavi izbor kantona prema trenutnim podacima. */
+function prikaziKanton() {
+  kantonEl.value = kantonPodataka(ucitaj()).key;
+}
+prikaziKanton();
 
 osnovicaEl.addEventListener('input', () => { preracunaj(); zapamtiOsnovicu(); });
 
@@ -184,18 +238,47 @@ amsProzor = napraviAMSProzor(
   () => { $('chk-ams').textContent = ' '; }
 );
 
+/* ---------- godisnja prijava GPD-1051 ---------- */
+
+/*
+ * Ne zavisi od osnovice u glavnom prozoru: ima svoj unos po mjesecima.
+ * Iz Moji podaci uzima samo ime, JMB, adresu, telefon i racun.
+ */
+const godisnjiProzor = napraviGodisnjiProzor(() => { $('chk-gpd').textContent = ' '; });
+osvjeziGodisnju = () => godisnjiProzor.osvjezi();
+
 /* ---------- licni podaci -> uplatnice ---------- */
 
+/**
+ * Sve sto zavisi od licnih podataka: uplatnice, obrazac, izbor kantona i
+ * tabela primalaca u uputstvu. Zove se poslije svake izmjene podataka,
+ * odakle god da dodje.
+ */
+function osvjeziPoPodacima() {
+  renderUplatnice($('forms-mount'), ucitaj());
+  uplatniceProzor.osvjeziAktivnu(); // precrtavanje resetuje izabranu stavku
+  preracunaj();                     // iznosi se moraju vratiti u nove obrasce
+  amsProzor.osvjezi();              // i obrazac nosi iste licne podatke
+  prikaziKanton();                  // ucitan profil moze biti iz drugog kantona
+  osvjeziUputstvo();                // tabela primalaca je za izabrani kanton
+  osvjeziGodisnju();                // obrazac GPD nosi ime, JMB, adresu i racun
+}
+
 const podaciProzor = napraviPodatke(
-  () => {
-    renderUplatnice($('forms-mount'), ucitaj());
-    uplatniceProzor.osvjeziAktivnu(); // precrtavanje resetuje izabranu stavku
-    preracunaj();                     // iznosi se moraju vratiti u nove obrasce
-    amsProzor.osvjezi();              // i obrazac nosi iste licne podatke
-  },
+  osvjeziPoPodacima,
   // prozor se moze zatvoriti i svojim ✕ — kvacica u meniju to mora pratiti
   () => { $('chk-podaci').textContent = ' '; }
 );
+
+kantonEl.addEventListener('change', () => {
+  const { p, opcina } = promijeniKanton(ucitaj(), kantonEl.value);
+  snimi(p);
+  podaciProzor.osvjezi();
+  osvjeziPoPodacima();
+  // Pogresna opcina je tiha greska na uplatnici, pa se kaze glasno.
+  setStatus('Kanton: ' + kantonPodataka(p).naziv + '. Općina je postavljena na '
+    + opcina.naziv + ' — promijeni je u Moji podaci ako živiš drugdje.');
+});
 
 /* ---------- meniji ---------- */
 
@@ -254,11 +337,12 @@ function prebaciMaksimiziranje() {
 
 const oProgramu = napraviProzor({
   naslov: 'O programu',
+  ikonaNaslova: ikone.KALKULACIJA_16,
   sirina: 300,
   centrirano: true,
   sadrzaj:
-    '<div class="ico-big"></div>' +
-    '<div style="font-weight:bold; margin-bottom:4px;">Kalkulacija freelance prihoda</div>' +
+    '<div class="ico-big sa-ikonom">' + ikone.KALKULACIJA + '</div>' +
+    '<div style="font-weight:bold; margin-bottom:4px;">Kalkulator</div>' +
     '<div style="color:#555;">Verzija ' + VERZIJA + ' (build XP)</div>' +
     '<div style="margin-top:8px; color:#555;">Obračun doprinosa i poreza, plus replika obrasca za uplatu javnih prihoda.</div>',
   dugmad: [{ tekst: 'U redu', primarno: true }],
@@ -270,6 +354,7 @@ const postavkeProzor = napraviPostavke(
     precrtajTabelu();
     preracunaj();
     uputstvo.osvjezi();
+    godisnjiProzor.osvjezi();         // godisnji obracun koristi iste stope
     setStatus('Stope su promijenjene');
   },
   () => { $('chk-postavke').textContent = ' '; }
@@ -279,6 +364,16 @@ const uputstvo = napraviUputstvo();
 const pravno = napraviPravno();
 const resursi = napraviResurse();
 const novosti = napraviNovosti();
+osvjeziUputstvo = () => uputstvo.osvjezi();
+
+/*
+ * Balon "i" uz racune na uplatnicama vodi u Pomoc i Pravno. Balon ne zna
+ * za prozore, pa mu se ovdje kaze kako ih otvoriti.
+ */
+postaviBalonVeze({
+  pomoc: tema => uputstvo.otvoriTemu(tema),
+  pravno: odjeljak => pravno.otvoriOdjeljak(odjeljak),
+});
 
 // Pravi se zadnje da bi, pri prvom otvaranju, stajalo iznad svega ostalog.
 const upozorenje = napraviUpozorenje();
@@ -303,24 +398,34 @@ const upozorenje = napraviUpozorenje();
 const otvoriPodatke = () => { podaciProzor.otvori(); $('chk-podaci').textContent = '✓'; };
 const otvoriUplatnice = () => { uplatniceProzor.otvori(); $('chk-uplatnice').textContent = '✓'; };
 const otvoriAMS = () => { amsProzor.otvori(); $('chk-ams').textContent = '✓'; };
+const otvoriGodisnju = () => { godisnjiProzor.otvori(); $('chk-gpd').textContent = '✓'; };
 const otvoriUputstvo = () => uputstvo.otvori();
 const otvoriPravno = () => pravno.otvori();
 const otvoriResurse = () => resursi.otvori();
 
 /*
- * Dvije grupe, razdvojene proredom: prvo ono cime se radi, pa ono sto
- * se cita. Kalkulacija je prva jer je glavni prozor — ne moze se
- * zatvoriti, pa je klik vraca naprijed umjesto da je otvara.
+ * Mreza po redovima, sa praznim redom izmedju grupa: prvo racunanje i
+ * licni podaci, pa papiri koji se nose u banku i Poreznu, pa ono sto se
+ * cita. Kalkulacija je prva jer je glavni prozor — ne moze se zatvoriti,
+ * pa je klik vraca naprijed umjesto da je otvara.
  */
 napraviPrecice([
-  { naziv: 'Kalkulacija', ikona: ikone.KALKULACIJA,  otvori: () => glavniApi.vrati() },
-  { naziv: 'Moji podaci', ikona: ikone.MOJI_PODACI,  otvori: otvoriPodatke },
-  { naziv: 'Uplatnice',   ikona: ikone.UPLATNICE,    otvori: otvoriUplatnice },
-  { naziv: 'AMS-1035',    ikona: ikone.OBRAZAC,      otvori: otvoriAMS },
-  { razmak: true },
-  { naziv: 'Pomoć',       ikona: ikone.POMOC,        otvori: otvoriUputstvo },
-  { naziv: 'Resursi',     ikona: ikone.RESURSI,      otvori: otvoriResurse },
-  { naziv: 'Pravno',      ikona: ikone.PRAVNO,       otvori: otvoriPravno },
+  [
+    { naziv: 'Kalkulator',  ikona: ikone.KALKULACIJA, otvori: () => glavniApi.vrati() },
+    { naziv: 'Moji podaci', ikona: ikone.MOJI_PODACI, otvori: otvoriPodatke },
+  ],
+  [],
+  [
+    { naziv: 'Uplatnice',   ikona: ikone.UPLATNICE,   otvori: otvoriUplatnice },
+    { naziv: 'AMS-1035',    ikona: ikone.OBRAZAC,     otvori: otvoriAMS },
+    { naziv: 'Godišnja prijava', ikona: ikone.GODISNJA, otvori: otvoriGodisnju },
+  ],
+  [],
+  [
+    { naziv: 'Pomoć',       ikona: ikone.POMOC,       otvori: otvoriUputstvo },
+    { naziv: 'Pravno',      ikona: ikone.PRAVNO,      otvori: otvoriPravno },
+    { naziv: 'Resursi',     ikona: ikone.RESURSI,     otvori: otvoriResurse },
+  ],
 ]);
 
 /* Papiric gore desno; stoji na radnoj povrsini, iza prozora. */
@@ -337,6 +442,7 @@ traka.postaviPokretace([
   { api: podaciProzor,    ikona: ikone.MOJI_PODACI, pokreni: otvoriPodatke },
   { api: uplatniceProzor, ikona: ikone.UPLATNICE,   pokreni: otvoriUplatnice },
   { api: amsProzor,       ikona: ikone.OBRAZAC,     pokreni: otvoriAMS },
+  { api: godisnjiProzor,  ikona: ikone.GODISNJA,    pokreni: otvoriGodisnju },
   { api: uputstvo,        ikona: ikone.POMOC,       pokreni: otvoriUputstvo },
   { api: pravno,          ikona: ikone.PRAVNO,      pokreni: otvoriPravno },
   { api: resursi,         ikona: ikone.RESURSI,     pokreni: otvoriResurse },
@@ -405,7 +511,7 @@ document.addEventListener('click', e => {
       // Uplatnice se stampaju i ako su sakrivene — print.css ih forsira.
       stampaj({
         klasa: 'print-uplatnice',
-        naslov: 'Nalog za uplatu javnih prihoda — Zeničko-dobojski kanton',
+        naslov: 'Nalog za uplatu javnih prihoda — ' + kantonPodataka(ucitaj()).naziv,
         desno: periodTekst(ucitaj()),
       });
       break;
@@ -451,6 +557,19 @@ document.addEventListener('click', e => {
         desno: periodTekst(ucitaj()),
       });
       break;
+
+    case 'ispis-gpd':
+      // Obrazac GPD se stampa i kad je prozor zatvoren, kao AMS.
+      godisnjiProzor.stampaj();
+      break;
+
+    case 'toggle-gpd': {
+      godisnjiProzor.prebaci();
+      const otvoren = godisnjiProzor.jeOtvoren();
+      $('chk-gpd').textContent = otvoren ? '✓' : ' ';
+      setStatus(otvoren ? 'Godišnja prijava otvorena' : 'Godišnja prijava zatvorena');
+      break;
+    }
 
     case 'toggle-podaci': {
       podaciProzor.prebaci();

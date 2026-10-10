@@ -1,0 +1,149 @@
+/* ============================================================ */
+/* Balon — XP oblacic sa objasnjenjem (balon.js)                 */
+/*                                                              */
+/* Izgled je XP-ov balon iz sistemske trake: blijedozuta podloga, */
+/* tanka crna ivica, zaobljeni uglovi, rep prema onome na sta se */
+/* odnosi, plavo "i" i malo ✕ gore desno.                       */
+/* ============================================================ */
+
+/* "i" uz racun — plavi krug sa bijelim slovom, kao XP-ova ikona za
+   informaciju u malom. */
+.ib-i {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 15px;
+  height: 15px;
+  padding: 0;
+  margin: 0 0 0 4px;
+  border: 1px solid #0B3A9C;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #8FB8FF 0%, #3A78EA 45%, #1546B8 100%);
+  color: #fff;
+  font: bold 10px/1 Georgia, 'Times New Roman', serif;
+  font-style: italic;
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.4);
+  cursor: help;
+  vertical-align: middle;
+}
+.ib-i:hover { filter: brightness(1.12); }
+.ib-i:focus-visible { outline: 1px dotted #000; outline-offset: 2px; }
+.ib-i[aria-expanded="true"] { box-shadow: 0 0 0 2px #FEDF9C; }
+
+.ib-balon {
+  position: fixed;
+  z-index: 100000;          /* iznad svakog prozora, i nemodalnog */
+  box-sizing: border-box;
+  padding: 7px 9px 9px;
+  background: #FFFFE1;
+  border: 1px solid #000;
+  border-radius: 7px;
+  box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.35);
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #000;
+  text-align: left;
+}
+.ib-balon[hidden] { display: none; }
+
+/* Rep: crni trokut pa zuti preko njega, pomaknut za piksel — tako i
+   rep dobije ivicu kao ostatak balona. */
+.ib-rep,
+.ib-rep::after {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+.ib-rep {
+  top: -11px;
+  left: calc(var(--rep-x, 24px) - 10px);
+  border-width: 0 10px 11px 10px;
+  border-color: transparent transparent #000 transparent;
+}
+.ib-rep::after {
+  content: "";
+  top: 1px;
+  left: -9px;
+  border-width: 0 9px 10px 9px;
+  border-color: transparent transparent #FFFFE1 transparent;
+}
+.ib-balon.iznad .ib-rep {
+  top: auto;
+  bottom: -11px;
+  border-width: 11px 10px 0 10px;
+  border-color: #000 transparent transparent transparent;
+}
+.ib-balon.iznad .ib-rep::after {
+  top: -11px;
+  border-width: 10px 9px 0 9px;
+  border-color: #FFFFE1 transparent transparent transparent;
+}
+
+.ib-vrh {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 5px;
+}
+.ib-ikona {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border: 1px solid #0B3A9C;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #8FB8FF 0%, #3A78EA 45%, #1546B8 100%);
+  color: #fff;
+  font: italic bold 11px/1 Georgia, 'Times New Roman', serif;
+}
+.ib-naslov { flex: 1; font-size: 11px; }
+.ib-x {
+  flex: none;
+  width: 15px;
+  height: 15px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  background: none;
+  color: #000;
+  font-size: 9px;
+  line-height: 13px;
+  cursor: pointer;
+}
+.ib-x:hover { border-color: #7F9DB9; background: #fff; }
+
+.ib-tijelo p { margin: 0 0 6px; }
+.ib-tijelo .ib-racun {
+  font-family: 'Lucida Console', Consolas, monospace;
+  font-size: 11px;
+  white-space: nowrap;
+}
+.ib-tijelo .ib-oprez { color: #8a1c3a; }
+
+/* Veze kao XP hiperveze: plavo i podvuceno. Dugmad unutra (Pomoc,
+   Pravno) izgledaju isto, jer za korisnika i jesu veze. */
+.ib-veze {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  margin-top: 2px;
+}
+.ib-veze a,
+.ib-veze button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #0033CC;
+  font: inherit;
+  text-decoration: underline;
+  text-align: left;
+  cursor: pointer;
+}
+.ib-veze a:hover,
+.ib-veze button:hover { color: #FF6600; }

@@ -24,6 +24,21 @@
 
 .rf-val-inline.upisano { color: #000; }
 .rf-digitgrid.upisano .box { color: #000; }
+
+/* Vrsta uplate: nula u kucici, tamnocrveno kao ostale fiksne vrijednosti.
+   Kucica je iz styles.css (.rf-checkbox), ovdje se samo centrira cifra. */
+.rf-checkbox.rf-vrsta-uplate {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: 700 10px/1 Verdana, sans-serif;
+  color: #8a1c3a;
+}
+
+/* Napomena kad porezni period nije upisan — samo na ekranu */
+.rf-period-hint { padding: 0 8px 3px; text-align: right; }
+
+.rf-acc-row .ib-i { margin-left: 2px; }
 .rf-digit.upisano { color: #000; }
 
 /* Iznos je najpromjenjiviji podatak na nalogu — mijenja se sa svakim

@@ -1,0 +1,613 @@
+{
+  "opis": "Racuni primalaca i sifre opcina po kantonima FBiH. Izvor je Pravilnik o nacinu uplate, pripadnosti i raspodjele javnih prihoda u FBiH. Provjerava ih alati/provjeri-racune.py; oblik i kontrolne brojeve provjerava alati/provjeri-config.mjs. Ne mijenjati bez provjere kod izvora.",
+  "provjereno": "2026-10-05",
+  "pravilnik": "SN 54/20 ... 11/26 i 48/26 (preciscen tekst od 01.07.2026)",
+  "zadnjaIzmjena": "48/26",
+  "izvor": "https://pufbih.ba/v1/public/upload/zakoni/01072026%20PRECISCENI%20Pravilnik%20o%20na%C4%8Dinu%20uplate%20pripadnosti%20i%20raspodjele%20javnih%20prihoda%20u%20FBiH%20NOVI%20PRECICENI%2048-26.pdf",
+  "federacija": {
+    "acc": "1020500000064018",
+    "banka": "Union banka d.d.",
+    "primalac": [
+      "Zavod zdravstvenog osiguranja",
+      "i reosiguranja Federacije",
+      "Bosne i Hercegovine"
+    ],
+    "kratko": "Fond solidarnosti FBiH",
+    "web": "https://www.zzofbih.ba/"
+  },
+  "kantoni": [
+    {
+      "key": "usk",
+      "rb": 1,
+      "naziv": "Unsko-sanski kanton",
+      "kratko": "Unsko-sanski",
+      "budzet": {
+        "acc": "3380002210005877",
+        "banka": "UniCredit Bank d.d.",
+        "primalac": [
+          "Budžet Unsko-sanskog kantona"
+        ]
+      },
+      "zavod": {
+        "acc": "3385002275166153",
+        "banka": "UniCredit Bank d.d.",
+        "primalac": [
+          "Zavod zdravstvenog osiguranja",
+          "Unsko-sanskog kantona"
+        ],
+        "kratko": "ZZO USK",
+        "web": "https://www.zzousk.ba/"
+      },
+      "zadanaOpcina": "003",
+      "opcine": [
+        {
+          "naziv": "Bihać",
+          "sifra": "003"
+        },
+        {
+          "naziv": "Bosanska Krupa",
+          "sifra": "008"
+        },
+        {
+          "naziv": "Bosanski Petrovac",
+          "sifra": "011"
+        },
+        {
+          "naziv": "Cazin",
+          "sifra": "019"
+        },
+        {
+          "naziv": "Ključ",
+          "sifra": "048"
+        },
+        {
+          "naziv": "Sanski Most",
+          "sifra": "076"
+        },
+        {
+          "naziv": "Velika Kladuša",
+          "sifra": "097"
+        },
+        {
+          "naziv": "Bužim",
+          "sifra": "124"
+        }
+      ]
+    },
+    {
+      "key": "pos",
+      "rb": 2,
+      "naziv": "Posavski kanton",
+      "kratko": "Posavski",
+      "budzet": {
+        "acc": "3380002210457121",
+        "banka": "UniCredit Bank d.d.",
+        "primalac": [
+          "Budžet Posavskog kantona"
+        ]
+      },
+      "zavod": {
+        "acc": "1610800002640020",
+        "banka": "Raiffeisen Bank d.d. BiH",
+        "primalac": [
+          "Zavod zdravstvenog osiguranja",
+          "Županije Posavske"
+        ],
+        "kratko": "ZZO ŽP",
+        "web": "http://www.zzozp.ba/"
+      },
+      "zadanaOpcina": "068",
+      "opcine": [
+        {
+          "naziv": "Orašje",
+          "sifra": "068"
+        },
+        {
+          "naziv": "Odžak",
+          "sifra": "066"
+        },
+        {
+          "naziv": "Domaljevac-Šamac",
+          "sifra": "012"
+        }
+      ]
+    },
+    {
+      "key": "tk",
+      "rb": 3,
+      "naziv": "Tuzlanski kanton",
+      "kratko": "Tuzlanski",
+      "budzet": {
+        "acc": "1321000256000080",
+        "banka": "NLB Banka d.d.",
+        "primalac": [
+          "Budžet Tuzlanskog kantona"
+        ]
+      },
+      "zavod": {
+        "acc": "3384402212469166",
+        "banka": "UniCredit Bank d.d.",
+        "primalac": [
+          "Zavod zdravstvenog osiguranja",
+          "Tuzlanskog kantona"
+        ],
+        "kratko": "ZZO TK",
+        "web": "https://zzotk.ba/"
+      },
+      "zadanaOpcina": "094",
+      "opcine": [
+        {
+          "naziv": "Banovići",
+          "sifra": "001"
+        },
+        {
+          "naziv": "Gračanica",
+          "sifra": "035"
+        },
+        {
+          "naziv": "Gradačac",
+          "sifra": "036"
+        },
+        {
+          "naziv": "Kalesija",
+          "sifra": "044"
+        },
+        {
+          "naziv": "Kladanj",
+          "sifra": "047"
+        },
+        {
+          "naziv": "Čelić",
+          "sifra": "056"
+        },
+        {
+          "naziv": "Lukavac",
+          "sifra": "057"
+        },
+        {
+          "naziv": "Srebrenik",
+          "sifra": "085"
+        },
+        {
+          "naziv": "Tuzla",
+          "sifra": "094"
+        },
+        {
+          "naziv": "Živinice",
+          "sifra": "106"
+        },
+        {
+          "naziv": "Doboj-Istok",
+          "sifra": "128"
+        },
+        {
+          "naziv": "Sapna",
+          "sifra": "138"
+        },
+        {
+          "naziv": "Teočak",
+          "sifra": "142"
+        }
+      ]
+    },
+    {
+      "key": "zdk",
+      "rb": 4,
+      "naziv": "Zeničko-dobojski kanton",
+      "kratko": "Zeničko-dobojski",
+      "budzet": {
+        "acc": "1340100000001672",
+        "banka": "ASA Banka d.d.",
+        "primalac": [
+          "Budžet Zeničko-dobojskog kantona"
+        ]
+      },
+      "zavod": {
+        "acc": "1340100000002157",
+        "banka": "ASA Banka d.d.",
+        "primalac": [
+          "Zavod zdravstvenog osiguranja",
+          "Zeničko-dobojskog kantona"
+        ],
+        "kratko": "ZZO ZDK",
+        "web": "http://www.zzozedo.ba/"
+      },
+      "zadanaOpcina": "103",
+      "opcine": [
+        {
+          "naziv": "Breza",
+          "sifra": "016"
+        },
+        {
+          "naziv": "Kakanj",
+          "sifra": "043"
+        },
+        {
+          "naziv": "Maglaj",
+          "sifra": "060"
+        },
+        {
+          "naziv": "Olovo",
+          "sifra": "067"
+        },
+        {
+          "naziv": "Tešanj",
+          "sifra": "090"
+        },
+        {
+          "naziv": "Vareš",
+          "sifra": "096"
+        },
+        {
+          "naziv": "Visoko",
+          "sifra": "098"
+        },
+        {
+          "naziv": "Zavidovići",
+          "sifra": "102"
+        },
+        {
+          "naziv": "Zenica",
+          "sifra": "103"
+        },
+        {
+          "naziv": "Žepče",
+          "sifra": "105"
+        },
+        {
+          "naziv": "Doboj-Jug",
+          "sifra": "132"
+        },
+        {
+          "naziv": "Usora",
+          "sifra": "025"
+        }
+      ]
+    },
+    {
+      "key": "bpk",
+      "rb": 5,
+      "naziv": "Bosansko-podrinjski kanton Goražde",
+      "kratko": "Bosansko-podrinjski",
+      "budzet": {
+        "acc": "1011400078226394",
+        "banka": "Privredna banka Sarajevo d.d.",
+        "primalac": [
+          "Budžet Bosansko-podrinjskog",
+          "kantona Goražde"
+        ]
+      },
+      "zavod": {
+        "acc": "1346201008266897",
+        "banka": "ASA Banka d.d.",
+        "primalac": [
+          "Zavod zdravstvenog osiguranja",
+          "Bosansko-podrinjskog kantona",
+          "Goražde"
+        ],
+        "kratko": "ZZO BPK",
+        "web": "https://www.zzobpk.ba/"
+      },
+      "zadanaOpcina": "033",
+      "opcine": [
+        {
+          "naziv": "Goražde",
+          "sifra": "033"
+        },
+        {
+          "naziv": "Foča-Ustikolina",
+          "sifra": "134",
+          "pravilnik": "Foča"
+        },
+        {
+          "naziv": "Pale-Prača",
+          "sifra": "136",
+          "pravilnik": "Pale"
+        }
+      ]
+    },
+    {
+      "key": "sbk",
+      "rb": 6,
+      "naziv": "Srednjobosanski kanton",
+      "kratko": "Srednjobosanski",
+      "budzet": {
+        "acc": "1341130360000194",
+        "banka": "ASA Banka d.d.",
+        "primalac": [
+          "Budžet Srednjobosanskog kantona"
+        ]
+      },
+      "zavod": {
+        "acc": "1344811008243153",
+        "banka": "ASA Banka Naša i snažna d.d. Sarajevo",
+        "primalac": [
+          "Zavod za zdravstveno osiguranje",
+          "Srednjobosanskog kantona"
+        ],
+        "kratko": "ZZO SBK/KSB",
+        "web": "https://zzo-ksbsbk.com.ba/"
+      },
+      "zadanaOpcina": "091",
+      "opcine": [
+        {
+          "naziv": "Bugojno",
+          "sifra": "017"
+        },
+        {
+          "naziv": "Busovača",
+          "sifra": "018"
+        },
+        {
+          "naziv": "Donji Vakuf",
+          "sifra": "026"
+        },
+        {
+          "naziv": "Dobretići",
+          "sifra": "050",
+          "pravilnik": "Dobrezići"
+        },
+        {
+          "naziv": "Fojnica",
+          "sifra": "030"
+        },
+        {
+          "naziv": "Gornji Vakuf-Uskoplje",
+          "sifra": "034",
+          "pravilnik": "Gornji Vakuf"
+        },
+        {
+          "naziv": "Jajce",
+          "sifra": "042"
+        },
+        {
+          "naziv": "Kiseljak",
+          "sifra": "046"
+        },
+        {
+          "naziv": "Kreševo",
+          "sifra": "051"
+        },
+        {
+          "naziv": "Novi Travnik",
+          "sifra": "065"
+        },
+        {
+          "naziv": "Travnik",
+          "sifra": "091"
+        },
+        {
+          "naziv": "Vitez",
+          "sifra": "100"
+        }
+      ]
+    },
+    {
+      "key": "hnk",
+      "rb": 7,
+      "naziv": "Hercegovačko-neretvanski kanton",
+      "kratko": "Hercegovačko-neretvanski",
+      "budzet": {
+        "acc": "1342090360000146",
+        "banka": "ASA Banka d.d.",
+        "primalac": [
+          "Budžet Hercegovačko-neretvanskog",
+          "kantona"
+        ]
+      },
+      "zavod": {
+        "acc": "5550900069475156",
+        "banka": "Nova Banka a.d.",
+        "primalac": [
+          "Zavod zdravstvenog osiguranja",
+          "Hercegovačko-neretvanskog",
+          "kantona"
+        ],
+        "kratko": "ZZO HNŽ/K",
+        "web": "https://www.zzo.ba/"
+      },
+      "zadanaOpcina": "180",
+      "opcine": [
+        {
+          "naziv": "Čapljina",
+          "sifra": "021"
+        },
+        {
+          "naziv": "Čitluk",
+          "sifra": "023"
+        },
+        {
+          "naziv": "Grad Mostar",
+          "sifra": "180",
+          "mjesto": "Mostar"
+        },
+        {
+          "naziv": "Jablanica",
+          "sifra": "041"
+        },
+        {
+          "naziv": "Konjic",
+          "sifra": "049"
+        },
+        {
+          "naziv": "Neum",
+          "sifra": "107"
+        },
+        {
+          "naziv": "Prozor-Rama",
+          "sifra": "073"
+        },
+        {
+          "naziv": "Ravno",
+          "sifra": "207"
+        },
+        {
+          "naziv": "Stolac",
+          "sifra": "086"
+        }
+      ]
+    },
+    {
+      "key": "zhk",
+      "rb": 8,
+      "naziv": "Zapadnohercegovački kanton",
+      "kratko": "Zapadnohercegovački",
+      "budzet": {
+        "acc": "3380002200004013",
+        "banka": "UniCredit Bank d.d.",
+        "primalac": [
+          "Budžet Zapadnohercegovačkog",
+          "kantona"
+        ]
+      },
+      "zavod": {
+        "acc": "1028740000000362",
+        "banka": "Union banka d.d.",
+        "primalac": [
+          "Zavod za zdravstveno osiguranje",
+          "Županije Zapadnohercegovačke"
+        ],
+        "kratko": "ZZO ZHŽ",
+        "web": "https://zzozzh.com/"
+      },
+      "zadanaOpcina": "054",
+      "opcine": [
+        {
+          "naziv": "Široki Brijeg",
+          "sifra": "054"
+        },
+        {
+          "naziv": "Grude",
+          "sifra": "037"
+        },
+        {
+          "naziv": "Ljubuški",
+          "sifra": "059"
+        },
+        {
+          "naziv": "Posušje",
+          "sifra": "070"
+        }
+      ]
+    },
+    {
+      "key": "ks",
+      "rb": 9,
+      "naziv": "Kanton Sarajevo",
+      "kratko": "Kanton Sarajevo",
+      "budzet": {
+        "acc": "1411965320008475",
+        "banka": "Bosna Bank International d.d.",
+        "primalac": [
+          "Budžet Kantona Sarajevo"
+        ]
+      },
+      "zavod": {
+        "acc": "1549212014617245",
+        "banka": "IntesaSanPaolo Bank d.d. BiH",
+        "primalac": [
+          "Zavod zdravstvenog osiguranja",
+          "Kantona Sarajevo"
+        ],
+        "kratko": "ZZO KS",
+        "web": "https://www.kzzosa.ba/"
+      },
+      "zadanaOpcina": "077",
+      "opcine": [
+        {
+          "naziv": "Hadžići",
+          "sifra": "038"
+        },
+        {
+          "naziv": "Ilijaš",
+          "sifra": "040"
+        },
+        {
+          "naziv": "Centar Sarajevo",
+          "sifra": "077",
+          "pravilnik": "Centar",
+          "mjesto": "Sarajevo"
+        },
+        {
+          "naziv": "Ilidža",
+          "sifra": "078"
+        },
+        {
+          "naziv": "Novo Sarajevo",
+          "sifra": "079",
+          "mjesto": "Sarajevo"
+        },
+        {
+          "naziv": "Vogošća",
+          "sifra": "080"
+        },
+        {
+          "naziv": "Novi Grad Sarajevo",
+          "sifra": "108",
+          "pravilnik": "Novi Grad",
+          "mjesto": "Sarajevo"
+        },
+        {
+          "naziv": "Stari Grad Sarajevo",
+          "sifra": "109",
+          "pravilnik": "Stari Grad",
+          "mjesto": "Sarajevo"
+        },
+        {
+          "naziv": "Trnovo",
+          "sifra": "093"
+        }
+      ]
+    },
+    {
+      "key": "k10",
+      "rb": 10,
+      "naziv": "Kanton 10",
+      "kratko": "Kanton 10",
+      "budzet": {
+        "acc": "1610200033560061",
+        "banka": "Raiffeisen bank d.d. BiH",
+        "primalac": [
+          "Budžet Kantona 10"
+        ]
+      },
+      "zavod": {
+        "acc": "1549212004824610",
+        "banka": "IntesaSanPaolo d.d.",
+        "primalac": [
+          "Zavod za zdravstveno osiguranje",
+          "Hercegbosanske županije"
+        ],
+        "kratko": "ZZO HBŽ",
+        "web": "http://www.zzohbz.ba/"
+      },
+      "zadanaOpcina": "055",
+      "opcine": [
+        {
+          "naziv": "Livno",
+          "sifra": "055"
+        },
+        {
+          "naziv": "Tomislavgrad",
+          "sifra": "028"
+        },
+        {
+          "naziv": "Kupres",
+          "sifra": "052"
+        },
+        {
+          "naziv": "Glamoč",
+          "sifra": "032"
+        },
+        {
+          "naziv": "Bosansko Grahovo",
+          "sifra": "013"
+        },
+        {
+          "naziv": "Drvar",
+          "sifra": "027"
+        }
+      ]
+    }
+  ]
+}

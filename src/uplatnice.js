@@ -1,6 +1,43 @@
-import { PRIMAOCI, FIKSNE_NULE, punNaziv, punaSvrha } from './config.js';
+import {
+  primaoci, FIKSNE_NULE, punNaziv, punaSvrha,
+  RACUNI_PROVJERENO, RACUNI_IZVOR, racunKaoUPravilniku,
+} from './config.js';
 import { fmt } from './format.js';
-import { datumCifre } from './storage.js';
+import { datumCifre, datumSestCifara, ucitaj, kantonPodataka } from './storage.js';
+import { iDugme, registrujBalon } from './balon.js';
+
+/** "2026-10-05" -> "05.10.2026." */
+const datumTacke = iso => {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '');
+  return m ? m[3] + '.' + m[2] + '.' + m[1] + '.' : iso;
+};
+
+/*
+ * Balon uz racun primaoca: kratko, odakle je racun i da se mora
+ * provjeriti, sa vezama na puno objasnjenje (Pomoc), odricanje od
+ * odgovornosti (Pravno) i sam Pravilnik. Gradi se pri otvaranju, pa
+ * uvijek pokazuje racun trenutno izabranog kantona.
+ */
+registrujBalon('racun', el => {
+  const k = kantonPodataka(ucitaj());
+  const p = primaoci(k).find(x => x.key === el.dataset.primalac) || primaoci(k)[0];
+  return {
+    naslov: 'Odakle je ovaj račun',
+    html:
+      '<p><b>' + esc(punNaziv(p)) + '</b><br>'
+      + '<span class="ib-racun">' + racunKaoUPravilniku(p.acc) + '</span> · ' + esc(p.banka) + '</p>'
+      + '<p>Prepisan iz <b>Pravilnika o načinu uplate, pripadnosti i raspodjele javnih prihoda u FBiH</b>'
+      + ' (prečišćen tekst do SN 48/26), provjeren ' + datumTacke(RACUNI_PROVJERENO) + '</p>'
+      + '<p class="ib-oprez"><b>Ovo nije službena stranica.</b> Računi se mijenjaju, a izmjene izlaze '
+      + 'svaka tri mjeseca. Prije uplate uporedi broj sa Pravilnikom, ili pitaj banku ili Poreznu upravu.</p>'
+      + '<div class="ib-veze">'
+        + '<button type="button" data-balon-veza="pomoc:racuni">Zašto i kako provjeriti (Pomoć)</button>'
+        + '<button type="button" data-balon-veza="pravno:odgovornost">Odricanje od odgovornosti (Pravno)</button>'
+        + '<a href="' + esc(RACUNI_IZVOR) + '" target="_blank" rel="noopener noreferrer">'
+        + 'Pravilnik, službeni PDF ↗</a>'
+      + '</div>',
+  };
+});
 
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
 
@@ -25,11 +62,16 @@ function datumKucice(iso, digitClass) {
     + '</div>';
 }
 
+/*
+ * Porezni period ima SEST kucica: dd/mm/gg. Tako ga propisuje Pravilnik o
+ * nacinu uplate (tacka 10.2, polja 12 i 13), i tako ga banka prenosi —
+ * sest cifara. Do 1.2 su ovdje stajale osam (godina sa cetiri cifre).
+ */
 function periodKucice(podaci) {
   const red = iso => {
-    const d = datumCifre(iso);
+    const d = datumSestCifara(iso);
     let s = '';
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 6; i++) {
       s += '<span class="rf-digit upisano">' + esc(d[i] || '') + '</span>';
       if (i === 1 || i === 3) s += '/';
     }
@@ -50,9 +92,9 @@ function periodKucice(podaci) {
  * onim sto se stvarno kuca, citljivo i sa dugmetom za kopiranje.
  */
 function sazetakHTML(cfg, p) {
-  const red = (naziv, vrijednost, mono, kopija) =>
+  const red = (naziv, vrijednost, mono, kopija, dodatak) =>
     '<div class="upl-red">'
-    + '<span class="upl-red-naziv">' + esc(naziv) + '</span>'
+    + '<span class="upl-red-naziv">' + esc(naziv) + (dodatak || '') + '</span>'
     + '<span class="upl-red-vrijednost' + (mono ? ' mono' : '') + '">' + esc(vrijednost)
     + (kopija ? '<button type="button" class="upl-kopiraj" data-kopiraj="'
         + esc(vrijednost) + '" title="Kopiraj">Kopiraj</button>' : '')
@@ -63,10 +105,14 @@ function sazetakHTML(cfg, p) {
       + '<div class="upl-sazetak-naslov">' + esc(punNaziv(cfg)) + '</div>'
       + '<div class="upl-sazetak-iznos"><span class="js-km-val">–</span> KM</div>'
     + '</div>'
-    + red('Račun primaoca', cfg.acc, true, true)
+    + red('Račun primaoca', cfg.acc, true, true, iDugme('racun', 'Odakle je ovaj račun', { primalac: cfg.key }))
     + red('Vrsta prihoda', cfg.vrsta, true, false)
     + red('Svrha', punaSvrha(cfg), false, false)
     + red('Općina', p.opcina || '—', true, false)
+    + red('Vrsta uplate', FIKSNE_NULE.vrstaUplate + ' (redovna)', true, false)
+    + red('Porezni period',
+        p.periodOd && p.periodDo ? datumTacke(p.periodOd) + ' – ' + datumTacke(p.periodDo)
+          : '— upiši u Moji podaci —', false, false)
     + red('Poziv na broj', FIKSNE_NULE.poziv, true, false)
     + red('Budžetska organizacija', FIKSNE_NULE.organizacija, true, false)
     + (p.obveznik ? red('Broj poreznog obveznika', p.obveznik, true, false) : '')
@@ -141,6 +187,7 @@ function renderForm(cfg, p) {
       '<div class="rf-acc-row">' +
         '<span class="rf-lbl-block">Račun primatelja/primaoca</span>' +
         cifre(cfg.acc, 16, '') +
+        iDugme('racun', 'Odakle je ovaj račun', { primalac: cfg.key }) +
       '</div>' +
 
       '<div class="rf-km-row">' +
@@ -156,7 +203,9 @@ function renderForm(cfg, p) {
           '<div class="rf-jp-row-flat">' +
             '<span class="rf-lbl-block" style="flex-basis:150px;">Broj poreznog obveznika</span>' +
             cifre(p.obveznik, 13, 'small upisano') +
-            '<div class="rf-jp-checkbox-wrap"><span class="rf-lbl-inline">Vrsta uplate</span><span class="rf-checkbox"></span></div>' +
+            '<div class="rf-jp-checkbox-wrap"><span class="rf-lbl-inline">Vrsta uplate</span>'
+              + '<span class="rf-checkbox rf-vrsta-uplate" title="0 = redovna uplata (Pravilnik, tačka 10.2)">'
+              + FIKSNE_NULE.vrstaUplate + '</span></div>' +
           '</div>' +
         '</div>' +
 
@@ -168,6 +217,11 @@ function renderForm(cfg, p) {
             '</div>' +
             periodKucice(p) +
           '</div>' +
+          // Od 01.01.2025. banka odbija nalog za doprinose bez pravilnog
+          // perioda (Pravilnik, tacka 6.1.9) — pa se prazan period kaze.
+          (p.periodOd && p.periodDo ? '' :
+            '<span class="rf-fill-hint rf-period-hint no-print">— upiši porezni period u „Moji podaci”; '
+            + 'bez njega banka odbija nalog za doprinose —</span>') +
         '</div>' +
 
         '<div class="rf-jp-row">' +
@@ -201,7 +255,8 @@ function renderForm(cfg, p) {
  * prikazati zasebno, zajedno sa svojim naslovom.
  */
 export function renderUplatnice(mount, podaci) {
-  mount.innerHTML = PRIMAOCI.map((cfg, i) =>
+  // Primaoci i racuni su za kanton kojem pripada izabrana opcina.
+  mount.innerHTML = primaoci(kantonPodataka(podaci)).map((cfg, i) =>
     '<div class="upl-stavka' + (i === 0 ? ' aktivna' : '') + '" data-idx="' + i + '">'
     + sazetakHTML(cfg, podaci)
     + renderForm(cfg, podaci)

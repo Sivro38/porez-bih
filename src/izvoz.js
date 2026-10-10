@@ -1,7 +1,7 @@
-import { FIKSNE_NULE } from './config.js';
+import { FIKSNE_NULE, RACUNI_PROVJERENO } from './config.js';
 import { fmt } from './format.js';
 import {
-  nazivFajla, redoviObracuna, redoviUplatnicaPDF,
+  nazivFajla, redoviObracuna, redoviUplatnicaPDF, kantonIzPodataka,
   aoaObracun, aoaUplatnice,
 } from './izvoz-podaci.js';
 import fontUrl from './fontovi/DejaVuSans.ttf?url';
@@ -81,7 +81,7 @@ export async function izvoziPDF(r, podaci) {
   doc.setFontSize(15);
   doc.text('Obračun doprinosa i poreza na dohodak', 14, 18);
   doc.setFontSize(9);
-  doc.text('Samostalna djelatnost — Zeničko-dobojski kanton', 14, 24);
+  doc.text('Samostalna djelatnost — ' + kantonIzPodataka(podaci).naziv, 14, 24);
 
   autoTable(doc, {
     startY: 30,
@@ -107,7 +107,7 @@ export async function izvoziPDF(r, podaci) {
   autoTable(doc, {
     startY: doc.lastAutoTable.finalY + 8,
     head: [['Uplatnica', 'Primalac', 'Račun primaoca', 'Vrsta prihoda', 'Iznos (KM)']],
-    body: redoviUplatnicaPDF(r),
+    body: redoviUplatnicaPDF(r, podaci),
     foot: [['', '', '', 'Ukupno', fmt(r.ukupno)]],
     theme: 'grid',
     styles: { font: 'DejaVu', fontSize: 8 },
@@ -119,8 +119,11 @@ export async function izvoziPDF(r, podaci) {
   doc.setFontSize(7.5);
   doc.setTextColor(110);
   doc.text(
-    'Poziv na broj ' + FIKSNE_NULE.poziv + ' · budžetska organizacija ' + FIKSNE_NULE.organizacija
-    + '. Stope i računi vrijede za ZE-DO kanton — provjeriti prije uplate.',
+    'Vrsta uplate ' + FIKSNE_NULE.vrstaUplate + ' · poziv na broj ' + FIKSNE_NULE.poziv
+    + ' · budžetska organizacija ' + FIKSNE_NULE.organizacija + '. Računi: '
+    + kantonIzPodataka(podaci).naziv + ', prema Pravilniku o načinu uplate, pripadnosti i raspodjele '
+    + 'javnih prihoda u FBiH, provjereno ' + RACUNI_PROVJERENO.split('-').reverse().join('.') + '. '
+    + 'Ovo nije službeni dokument — prije uplate provjeri iznose i račune kod izvora.',
     14, doc.lastAutoTable.finalY + 7, { maxWidth: 180 }
   );
 
@@ -141,7 +144,7 @@ export async function izvoziExcel(r, podaci) {
   list1['!cols'] = [{ wch: 34 }, { wch: 10 }, { wch: 14 }];
   XLSX.utils.book_append_sheet(kw, list1, 'Obračun');
 
-  const list2 = XLSX.utils.aoa_to_sheet(aoaUplatnice(r));
+  const list2 = XLSX.utils.aoa_to_sheet(aoaUplatnice(r, podaci));
   list2['!cols'] = [{ wch: 4 }, { wch: 32 }, { wch: 20 }, { wch: 14 }, { wch: 40 }, { wch: 14 }];
   XLSX.utils.book_append_sheet(kw, list2, 'Uplatnice');
 

@@ -24,6 +24,21 @@
   flex: none;
 }
 
+/*
+ * Ikona prozora u naslovnoj traci (16x16). styles.css:26 crta zuti
+ * kvadrat za `.titletext .ico` i ne dira se — ovdje se, kao i u
+ * upozorenje.css:34, za prozor koji ima svoju ikonu kvadrat gasi.
+ * Vazi i za glavni prozor, kojem ikonu upisuje main.js.
+ */
+.titletext .ico.sa-ikonom {
+  display: inline-flex;
+  flex: none;
+  background: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+.titletext .ico.sa-ikonom svg { display: block; width: 16px; height: 16px; }
+
 .xp-prozor-body {
   padding: 16px;
   font-size: 12px;
@@ -35,6 +50,15 @@
   min-height: 0;
 }
 .xp-prozor-body.centrirano { text-align: center; }
+
+/* "O programu" nosi ikonu programa, kao XP-ovi prozori "O programu" */
+.xp-prozor-body .ico-big.sa-ikonom {
+  width: 48px;
+  height: 48px;
+  background: none;
+  box-shadow: none;
+}
+.xp-prozor-body .ico-big.sa-ikonom svg { display: block; }
 
 /* Ikona iz "O programu" — ostaje dostupna kroz komponentu */
 .xp-prozor-body .ico-big {
@@ -90,6 +114,25 @@
   height: calc(100dvh - 20px);
   max-height: calc(100vh - 20px);
   max-height: calc(100dvh - 20px);
+}
+
+/*
+ * Podloga se skroluje ako prozor ikad preraste ekran.
+ *
+ * `.xp-prozor` je ogranicen na `100dvh - 20px`, pa u pravilu ne moze —
+ * ali stariji mobilni browser zna da `100vh` racuna bez URL trake, i
+ * tada vrh prozora zavrsi iznad vidljivog. Bez ovoga se do njega ne bi
+ * moglo doci: podloga hvata klikove i stranica se ne skrola.
+ *
+ * `safe center` je bitan uz `overflow`. Obicno `center` (iz styles.css)
+ * pri prelijevanju odsijeca vrh i taj se dio ne moze doskrolati, jer
+ * skrol ide samo u jednom smjeru. `safe` centrira dok sadrzaj staje, a
+ * kad ne stane poravna na pocetak. Browser koji tu rijec ne zna odbaci
+ * cijelu deklaraciju i ostane na `center`, dakle kao i do sada.
+ */
+.modal-overlay {
+  overflow: auto;
+  align-items: safe center;
 }
 
 /* --- nemodalni prozor --- */
@@ -195,21 +238,29 @@
 
 /*
  * Koliko visine pojede sve oko prozora. styles.css daje `padding: 24px`
- * i html-u i body-ju — dakle 24+24 gore — a traka.css jos 30px trake i
- * razmak u body-ju, ukupno 54 dolje. Zbir: 48 + (54+24) = 126.
+ * i html-u i body-ju — dakle 24+24 gore — a glavni.css jos 42px razmaka
+ * u body-ju za donju traku. Zbir: 48 + (42+24) = 114.
  *
  * Stoji kao promjenjiva jer se na velikim ekranima traka i razmaci
  * mijenjaju, pa bi se inace isti racun prepisivao na cetiri mjesta i
  * negdje zaostao. Tako je i bilo: maksimiziran prozor je racunao 78
  * umjesto 126 i virio 48px ispod ekrana.
  */
-:root { --okvir-visina: 126px; }
+:root { --okvir-visina: 114px; }
 
 .window {
   width: 480px;
-  height: 700px;
-  /* Bez ovoga prozor od 700px trazi ekran visok 826px, pa se na
-     obicnom laptopu cijela stranica pocne skrolati. */
+  /*
+   * Visina prati sadrzaj. Prije je stajalo 700px, pa je prozor ostao
+   * te visine i kad su razmaci u njemu stegnuti — ispod obracuna je
+   * visilo prazno polje. `max-height` je i dalje tu da prozor ne
+   * preraste ekran; tada se skroluje `.content`, ne cijela stranica.
+   *
+   * Uz ovo i dvoklik na hvatiste radi ono sto obecava: `uklopi()`
+   * brise inline visinu, pa se prozor vrati na visinu sadrzaja umjesto
+   * na onih 700px.
+   */
+  height: auto;
   max-height: calc(100vh - var(--okvir-visina));
   max-height: calc(100dvh - var(--okvir-visina));
 }

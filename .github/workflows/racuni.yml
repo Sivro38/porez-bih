@@ -1,0 +1,122 @@
+# Racuni i sifre opcina prema Pravilniku Porezne uprave FBiH.
+#
+# Dvaput sedmicno skine Pravilnik sa pufbih.ba i uporedi ga sa
+# src/kantoni.json (alati/provjeri-racune.py). Tri ishoda:
+#
+#   ISTO          nista se ne desava; ako je od ranije otvoren issue
+#                 "racuni", zatvori se uz komentar
+#   PROMJENA      otvori se issue sa oznakom "racuni", ili se dopuni
+#                 otvoreni: sta se razlikuje, stara i nova vrijednost,
+#                 i veza na izvor
+#   NEPREPOZNATO  isto tako, sa razlogom zbog kojeg provjera nije prosla
+#
+# Isti izvjestaj se ne prijavljuje dvaput. Svaki nosi otisak, pa novi
+# komentar ide samo kad se nesto stvarno promijenilo. Tada posao zavrsi
+# crveno, pa GitHub posalje i mail o neuspjelom pokretanju.
+#
+# Workflow nista ne mijenja u kodu. Racun na uplatnici mijenja covjek, u
+# radnom repou, tek poslije provjere kod izvora.
+#
+# U javnom repou GitHub sam gasi zakazane workflowe poslije 60 dana bez
+# ikakve aktivnosti. O tome stigne mail, a ponovo se ukljucuju u
+# Actions > Provjera racuna > Enable workflow.
+
+name: Provjera racuna
+
+on:
+  schedule:
+    # ponedjeljkom i cetvrtkom u 05:23 UTC, sto je 07:23 po ljetnom
+    # vremenu; neokrugla minuta, jer GitHub kasni kad svi krenu u :00
+    - cron: '23 5 * * 1,4'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: provjera-racuna
+  cancel-in-progress: false
+
+jobs:
+  racuni:
+    name: Racuni prema Pravilniku
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+
+      # Ista verzija s kojom je skripta provjerena; nova se uvodi tek
+      # kad se provjeri da tabele cita isto
+      - name: PyMuPDF
+        run: pip install pymupdf==1.27.2.3
+
+      - name: Poredjenje sa Pravilnikom
+        id: provjera
+        shell: bash
+        run: |
+          set +e
+          python alati/provjeri-racune.py --izvjestaj izvjestaj.md
+          echo "kod=$?" >> "$GITHUB_OUTPUT"
+          if [ -s izvjestaj.md ]; then cat izvjestaj.md >> "$GITHUB_STEP_SUMMARY"; fi
+
+      - name: Issue
+        id: issue
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          KOD: ${{ steps.provjera.outputs.kod }}
+          VLASNIK: ${{ github.repository_owner }}
+          POKRETANJE: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          OZNAKA=racuni
+
+          gh label create "$OZNAKA" --color B60205 \
+            --description 'Racuni ili sifre opcina se razlikuju od Pravilnika' 2>/dev/null || true
+          broj=$(gh issue list --state open --label "$OZNAKA" --limit 1 --json number --jq '.[0].number // empty')
+
+          if [ "$KOD" = "0" ]; then
+            if [ -n "$broj" ]; then
+              gh issue close "$broj" --comment "Sad je opet ISTO: svi računi i šifre općina slažu se sa Pravilnikom. Zatvoreno automatski. Pokretanje: $POKRETANJE"
+            fi
+            exit 0
+          fi
+
+          # Skripta je pala prije nego sto je napisala izvjestaj
+          if [ ! -s izvjestaj.md ]; then
+            printf '# Provjera računa\n\nNEPREPOZNATO. Skripta je stala prije izvještaja (izlazni kod %s). Razlog je u logu pokretanja.\n\n<!-- otisak: pad-%s -->\n' \
+              "$KOD" "$KOD" > izvjestaj.md
+          fi
+          otisak=$(grep -o 'otisak: [a-z0-9-]*' izvjestaj.md | head -n 1 | cut -d' ' -f2 || true)
+          otisak=${otisak:-$(sha256sum izvjestaj.md | cut -c1-16)}
+
+          if [ -z "$broj" ]; then
+            { cat izvjestaj.md; printf '\nPokretanje: %s\n\n@%s\n' "$POKRETANJE" "$VLASNIK"; } > tijelo.md
+            gh issue create --title 'Provjera računa traži pažnju' --label "$OZNAKA" --body-file tijelo.md
+            echo "novo=da" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Prvo u varijablu: grep -q u cijevi zna prekinuti gh usred
+          # pisanja, a uz pipefail bi to izgledalo kao "nije nadjeno"
+          dosad=$(gh issue view "$broj" --json body,comments --jq '.body, .comments[].body')
+          if grep -qF "otisak: $otisak" <<< "$dosad"; then
+            echo "Isti izvještaj je već prijavljen u issueu #$broj."
+          else
+            { cat izvjestaj.md; printf '\nPokretanje: %s\n' "$POKRETANJE"; } > tijelo.md
+            gh issue comment "$broj" --body-file tijelo.md
+            echo "novo=da" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Novi izvjestaj
+        if: steps.issue.outputs.novo == 'da'
+        run: |
+          echo "::error::Provjera računa je našla nešto novo. Pogledaj issue sa oznakom racuni."
+          exit 1

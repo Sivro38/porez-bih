@@ -32,7 +32,7 @@ Piši mi na [LinkedInu](https://www.linkedin.com/in/eminsivro/) ili
 kroz privatnu prijavu na GitHubu (kartica **Security** →
 **Report a vulnerability**). Prijava ostaje između tebe i mene.
 
-Odgovoriću, pogledati obje strane i odlučiti. Ishod može biti opomena,
+Odgovorit ću, pogledati obje strane i odlučiti. Ishod može biti opomena,
 brisanje poruke ili blokada — zavisno od težine. Ako je prijava protiv
 mene, reci to javno u issueu; nemam iznad sebe nikoga kome bi se žalio,
 ali javnost je dovoljna kontrola.

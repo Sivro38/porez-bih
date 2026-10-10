@@ -1,0 +1,73 @@
+/* ============================================================ */
+/* Kad JavaScript ne radi.                                      */
+/*                                                              */
+/* Bez njega se ne dobija prazna stranica — `index.html` nosi   */
+/* cijeli XP prozor, menije i natpise, pa se ucita okvir koji   */
+/* izgleda ispravno a mrtav je: tabela obracuna je prazna,      */
+/* padajuci izbor kantona je prazan, vrste prihoda nema i nista */
+/* ne reaguje na klik. To je gore od prazne stranice, jer ne    */
+/* kaze sta ne valja.                                           */
+/*                                                              */
+/* Dva slucaja, i oba moraju biti pokrivena:                    */
+/*   - JavaScript je iskljucen      -> <noscript> u index.html  */
+/*   - browser ne zna ES module     -> <script nomodule> isto   */
+/* Drugi se ne vidi iz <noscript>: tamo JS radi, samo program   */
+/* ne moze da se ucita.                                         */
+/* ============================================================ */
+
+.xp-nojs { display: none; }
+
+.bez-modula .xp-nojs { display: block; }
+.bez-modula .window { display: none; }
+
+.xp-nojs-okvir {
+  max-width: 520px;
+  margin: 0 auto;
+  background: #ECE9D8;
+  border: 1px solid #0A246A;
+  border-radius: 8px 8px 3px 3px;
+  box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+}
+
+/* Ista naslovna traka kao na pravom prozoru — ovo i jeste prozor,
+   samo onaj koji javlja da ostalih nema. */
+.xp-nojs-traka {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 8px;
+  background: linear-gradient(180deg, #2A6EE8 0%, #1958D6 6%, #0F45B8 50%, #1958D6 94%, #2A6EE8 100%);
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.45);
+}
+
+.xp-nojs-znak {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  background: linear-gradient(135deg, #ffd24a, #e8a415);
+  color: #5a3b00;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.xp-nojs-tijelo {
+  padding: 16px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: #000;
+}
+.xp-nojs-tijelo p { margin: 0 0 10px; }
+.xp-nojs-tijelo p:last-child { margin-bottom: 0; }
+.xp-nojs-tijelo ul { margin: 0 0 10px; padding-left: 20px; }
+.xp-nojs-tijelo li { margin-bottom: 4px; }
+
+.xp-nojs-tijelo a { color: #0A246A; }

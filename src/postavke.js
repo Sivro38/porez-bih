@@ -1,4 +1,5 @@
 import { napraviProzor, pitajZaPotvrdu } from './prozor.js';
+import * as ikone from './ikone.js';
 import { PROMJENJIVE, stope, zadaneStope, snimiStope, vratiZadane, suIzmijenjene } from './stope.js';
 import { fmtPct } from './format.js';
 
@@ -99,6 +100,7 @@ function sadrzajHTML() {
 export function napraviPostavke(onPromjenaStopa, onZatvaranju) {
   const prozor = napraviProzor({
     naslov: 'Postavke poreskih stopa',
+    ikona: ikone.POSTAVKE,
     nazivNaTraci: 'Postavke',
     sirina: 460,
     klasa: 'po-prozor',

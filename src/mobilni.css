@@ -202,12 +202,23 @@
   /* --- moji podaci --- */
 
   /*
-   * Dvije kolone, ne jedna: polja su kratka, a prozor tako stane bez
-   * skrolanja. U jednoj koloni deset polja premasi visinu telefona.
+   * Natpis ostaje LIJEVO od polja i na telefonu, samo mu se kolona
+   * suzi. Natpis iznad polja bi dodao red po polju — trinaest polja
+   * puta petnaest piksela je dvjesta piksela, sto je na telefonu
+   * razlika izmedju prozora koji stane i onog koji se skroluje.
    */
-  .pd-grid { grid-template-columns: 1fr 1fr; gap: 6px 8px; }
-  .pd-mjesta { gap: 5px; padding-bottom: 8px; margin-bottom: 9px; }
-  .pd-profili { gap: 5px; }
+  .pd-panel .pd-sadrzaj { --pd-natpis: 92px; }
+  /*
+   * Traka lijevo nema smisla kad je panel sirok kao telefon: ostalo bi
+   * forme stotinu piksela. Profili se vracaju u red preko vrha.
+   */
+  .pd-dvije { grid-template-columns: 1fr; gap: 0; }
+  .pd-stub { margin-bottom: 7px; }
+  .pd-mjesta { grid-template-columns: repeat(3, 1fr); gap: 5px; }
+  /* Usko polje prestaje biti usko: tu je svaki piksel sirine potreban
+     polju, a nedostaje visina. */
+  .pd-panel .pd-usko .pd-polje > .pd-input,
+  .pd-panel .pd-usko .pd-polje > .pd-datum { flex: 1 1 auto; }
   .pd-actions { gap: 5px; margin-top: 9px; padding-top: 8px; }
   .pd-hint { display: none; }
   .xp-prozor.pd-panel { height: auto !important; }

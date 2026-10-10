@@ -52,13 +52,24 @@
   :root { --okvir-visina: 132px; }
 
   /* moji podaci */
+  /*
+   * Kolona natpisa i traka s profilima su u pikselima, pa moraju rasti
+   * zajedno sa slovima. Panel se vise ne skalira (vidi podaci.css), pa
+   * je ovo jedino sto ih krupnja — bez ovoga bi se natpisi odsijecali.
+   */
+  .pd-panel .pd-sadrzaj { --pd-natpis: 132px; --pd-stub: 140px; }
   .pd-lbl { font-size: 13px; }
   .pd-panel input[type=text],
   .pd-panel input[type=date],
   .pd-panel select { font-size: 14px; }
+  .pd-panel select { height: 29px; }
   .pd-prekidac { font-size: 13px; }
   .pd-hint { font-size: 12px; }
-  .pd-mjesto-glavno { font-size: 13px; }
+  .pd-mjesto-glavno { font-size: 13px; min-height: 95px; }
+  .pd-alat { width: 26px; height: 24px; }
+  .pd-alat svg { width: 16px; height: 16px; }
+  .pd-mjesto-naziv { margin-bottom: 28px; }
+  .pd-okvir-naslov { font-size: 13px; }
 
   /* uputstvo */
   .up-tema { font-size: 13px; }
@@ -66,6 +77,25 @@
 
   /* Polazna velicina prozora raste zajedno sa slovima u njemu */
   .window { width: 560px; height: 800px; }
+
+  /*
+   * Upozorenje: dugme raste s ostalima, pa podnozje postane vise i
+   * slici ostane manje visine. Rezerva je zato 162 umjesto 150: traka
+   * 30, tijelo 24, podnozje 1+10+58+10 = 79, ivice 2, razmak do ivice
+   * ekrana 20 — ukupno 155, plus nekoliko piksela zraka.
+   *
+   * Sirinu postavlja JS kao inline stil (vezana je za omjer slike), pa
+   * se drukcije ne da nadjacati.
+   */
+  .upoz-prozor .xp-prozor-akcije .xp-btn {
+    height: 58px;
+    min-width: 200px;
+    padding: 0 30px;
+    font-size: 18px;
+  }
+  .upoz-prozor {
+    width: min(2400px, 96vw, calc((100dvh - 162px) * 1.2487)) !important;
+  }
 }
 
 
@@ -107,15 +137,20 @@
   body { padding-bottom: 74px; }
   :root { --okvir-visina: 146px; }
 
+  .pd-panel .pd-sadrzaj { --pd-natpis: 172px; --pd-stub: 184px; }
   .pd-lbl { font-size: 17px; }
   .pd-panel input[type=text],
   .pd-panel input[type=date],
   .pd-panel select { font-size: 19px; padding: 5px 8px; }
-  .pd-panel select { height: 34px; }
+  .pd-panel select { height: 40px; }
   .pd-prekidac { font-size: 17px; }
   .pd-prekidac input { width: 20px; height: 20px; }
   .pd-hint { font-size: 15px; }
-  .pd-mjesto-glavno { font-size: 17px; }
+  .pd-mjesto-glavno { font-size: 17px; min-height: 120px; }
+  .pd-alat { width: 34px; height: 32px; }
+  .pd-alat svg { width: 21px; height: 21px; }
+  .pd-mjesto-naziv { margin-bottom: 38px; }
+  .pd-okvir-naslov { font-size: 17px; }
 
   .up-tema { font-size: 17px; }
   .up-clanak { font-size: 17px; }
@@ -131,11 +166,20 @@
      puna bi prerasla sirinu prozora koju im zadaje uplatniceProzor.js */
 
   /*
-   * Upozorenje: sirinu mu postavlja JS kao inline stil (vezana je za
-   * omjer slike), pa se drukcije ne da nadjacati. Gornja granica raste,
-   * a visina i dalje drzi sliku u vidnom polju.
+   * Upozorenje: dugme je ovdje najvece, pa je i rezerva najveca — 185:
+   * traka 30, tijelo 24, podnozje 1+10+80+10 = 101, ivice 2, razmak do
+   * ivice ekrana 20 — ukupno 177.
+   *
+   * Sirinu postavlja JS kao inline stil (vezana je za omjer slike), pa
+   * se drukcije ne da nadjacati.
    */
+  .upoz-prozor .xp-prozor-akcije .xp-btn {
+    height: 80px;
+    min-width: 280px;
+    padding: 0 40px;
+    font-size: 25px;
+  }
   .upoz-prozor {
-    width: min(2100px, 72vw, calc((100dvh - 260px) * 1.2487)) !important;
+    width: min(2400px, 96vw, calc((100dvh - 185px) * 1.2487)) !important;
   }
 }

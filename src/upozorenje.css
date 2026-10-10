@@ -50,11 +50,38 @@
 /* Slika je namjerno uklopljena da stane cijela — bez skrolanja */
 .upoz-prozor .xp-prozor-body { overflow: hidden; }
 
+/* --- dugme --- */
+
+/*
+ * Dugme je duplo vece od obicnog (23px -> 46px, 75px -> 160px).
+ *
+ * Ovo je jedini prozor koji se mora potvrditi da bi se islo dalje:
+ * podloga blokira, ✕ nema, Escape ne radi. Dugme je jedini izlaz, pa
+ * se mora vidjeti odmah — a na prozoru preko cijelog ekrana se obicno
+ * dugme od 23px gubi u uglu.
+ *
+ * Ako se ova visina promijeni, mijenja se i rezerva u SIRINA
+ * (upozorenje.js) i ona u veliki.css: od nje zavisi koliko visine
+ * ostane slici.
+ */
+.upoz-prozor .xp-prozor-akcije .xp-btn {
+  height: 46px;
+  min-width: 160px;
+  padding: 0 24px;
+  font-size: 15px;
+}
+
 /* --- slika naspram teksta --- */
 /*
  * Na sirokom ekranu ide slika. Na telefonu je nema: tekst u oblacicu
  * tamo spadne na par piksela i ne moze se procitati, a isjecak sa misem
  * je samo trosio visinu iznad poruke koja jedina nesto govori.
+ *
+ * Isto vazi i za NIZAK ekran, makar bio sirok — polozen telefon je siri
+ * od 760px pa nije ulazio u ovaj upit, a sirina slike se racuna iz
+ * visine ekrana, pa je na 390px visine slika ispadala oko 300px siroka
+ * i tekst u njoj se nije mogao procitati. Ispod 520px visine slika bi
+ * bila uza od 460px, sto je premalo, pa se i tamo ide na tekst.
  */
 
 .upoz-tekst { display: none; }
@@ -62,7 +89,16 @@
 /* Na desktopu okvir ne postoji kao kutija — slika se ponasa kao i prije */
 .upoz-slika-okvir { display: contents; }
 
-@media screen and (max-width: 760px) {
+/*
+ * Kad se ide na tekst na sirokom a niskom ekranu, sirina se vise ne
+ * racuna iz omjera slike — tekstu treba sirina za citanje, ne omjer.
+ * Inline stil iz upozorenje.js se drukcije ne da nadjacati.
+ */
+@media screen and (min-width: 761px) and (max-height: 520px) {
+  .upoz-prozor { width: min(680px, 96vw) !important; }
+}
+
+@media screen and (max-width: 760px), screen and (max-height: 520px) {
   .upoz-slika-okvir { display: none; }
 
   .upoz-tekst {

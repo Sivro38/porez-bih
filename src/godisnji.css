@@ -1,0 +1,179 @@
+/* ============================================================ */
+/* Godisnja prijava — prozor sa karticama (godisnjiProzor.js)    */
+/*                                                               */
+/* Kartice su XP-ov prozor sa svojstvima (Luna): jezici sa       */
+/* svijetlim prelivom, izabrani bijel i visi, narandzasta crta   */
+/* na vrhu izabranog i onog pod misem, ploca sa sivoplavom       */
+/* ivicom. Polja i dugmad su ista kao u ostatku programa.        */
+/* ============================================================ */
+
+.gd-prozor .xp-prozor-body {
+  font-family: Tahoma, Verdana, Arial, sans-serif;
+  font-size: 11px;
+}
+
+/* --- jezici kartica --- */
+
+.gd-tabovi {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  padding-left: 3px;
+  position: relative;
+  z-index: 1;
+  margin-bottom: -1px;
+}
+.gd-tab {
+  position: relative;
+  top: 2px;
+  margin-right: -1px;
+  padding: 3px 10px 4px;
+  border: 1px solid #919B9C;
+  border-bottom: none;
+  border-radius: 3px 3px 0 0;
+  background: linear-gradient(180deg, #FFFFFF 0%, #F3F3EF 60%, #E3E2DC 100%);
+  font: inherit;
+  color: #000;
+  cursor: pointer;
+}
+.gd-tab:hover { box-shadow: inset 0 2px 0 #FFC83C; }
+.gd-tab.aktivan {
+  top: 0;
+  z-index: 2;
+  padding-bottom: 6px;
+  background: #FCFCFE;
+  box-shadow: inset 0 2px 0 #E8A425, inset 0 3px 0 #FFC83C;
+}
+.gd-tab:focus-visible { outline: 1px dotted #000; outline-offset: -4px; }
+
+/* --- ploca --- */
+
+.gd-ploca {
+  border: 1px solid #919B9C;
+  background: #FCFCFE;
+  padding: 10px;
+  box-shadow: 1px 1px 0 #D0D0BF;
+}
+.gd-ploca[hidden] { display: none; }
+
+/* --- polja --- */
+
+.gd-polje {
+  box-sizing: border-box;
+  min-width: 0;
+  padding: 2px 4px;
+  border: 1px solid #7F9DB9;
+  background: #fff;
+  font: 11px Tahoma, Verdana, Arial, sans-serif;
+  color: #000;
+}
+.gd-polje:focus { outline: none; border-color: #003399; background: #FFFFF0; }
+.gd-iznos { width: 100%; text-align: right; }
+.gd-kratko { width: 64px; text-align: right; }
+select.gd-polje { padding: 1px 2px; }
+
+.gd-red {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  margin-bottom: 8px;
+}
+.gd-lbl { display: inline-flex; align-items: center; gap: 5px; }
+
+.gd-savjet {
+  margin: 0 0 8px;
+  padding: 6px 8px;
+  background: #FFFFE1;
+  border: 1px solid #ACA899;
+  line-height: 1.4;
+}
+.gd-sitno { display: block; color: #555; font-size: 10px; line-height: 1.35; margin-top: 2px; }
+
+/* --- tabela uplata i redova --- */
+
+.gd-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border: 1px solid #ACA899;
+}
+.gd-tabela th {
+  padding: 3px 5px;
+  background: linear-gradient(180deg, #FFFFFF, #EBEAE4);
+  border-bottom: 1px solid #ACA899;
+  border-right: 1px solid #D6D3C6;
+  font-weight: normal;
+  text-align: left;
+  white-space: nowrap;
+}
+.gd-tabela td { padding: 2px 5px; border-bottom: 1px solid #EFEDE4; vertical-align: middle; }
+.gd-tabela tr.gd-prvi td { border-top: 1px solid #D6D3C6; }
+.gd-tabela tfoot td { border-top: 1px solid #ACA899; background: #F3F2EC; font-weight: bold; }
+.gd-mjesec { white-space: nowrap; }
+.gd-broj { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.gd-akcije { width: 22px; text-align: center; }
+.gd-vrsta { width: 100%; }
+.gd-mali {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 1px solid #003C74;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #FFFFFF, #E3E2DC);
+  font: bold 11px/1 Tahoma, sans-serif;
+  color: #000;
+  cursor: pointer;
+}
+.gd-mali:hover { box-shadow: inset 0 0 0 1px #F8B636; }
+
+.gd-redovi td:first-child { width: 38px; text-align: center; color: #555; }
+.gd-redovi tr.gd-istaknut td { background: #EFFAE8; font-weight: bold; }
+
+/* --- grupe na kartici Odbici --- */
+
+.gd-grupa {
+  margin: 0 0 10px;
+  padding: 6px 10px 8px;
+  border: 1px solid #D0D0BF;
+  border-radius: 4px;
+}
+.gd-grupa legend { padding: 0 4px; color: #0046D5; }
+.gd-stavka { display: block; margin: 4px 0 8px; }
+.gd-stavka .gd-iznos { max-width: 160px; }
+.gd-lbl-blok { display: block; margin-bottom: 2px; }
+.gd-stavka .xp-radio { margin: 3px 0; }
+
+/* --- rezultat --- */
+
+.gd-rezultat {
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  border: 1px solid #ACA899;
+  background: #F3F2EC;
+  font-size: 13px;
+}
+.gd-povrat { background: #EFFAE8; border-color: #A8CE96; color: #2E6B1F; }
+.gd-doplata { background: #FFFBE6; border-color: #E0C56B; color: #3D3016; }
+.gd-podnaslov { margin: 12px 0 4px; color: #0046D5; font-size: 11px; }
+.gd-spisak { margin: 0 0 6px; padding-left: 18px; line-height: 1.45; }
+.gd-veze { line-height: 1.6; }
+
+/* --- obrazac --- */
+
+.gd-alat {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ACA899;
+}
+.gd-alat .gd-desno { margin-left: auto; text-decoration: none; color: inherit; }
+.gpd-mount { overflow-x: auto; }
+
+@media screen and (max-width: 760px) {
+  .gd-tab { padding: 3px 7px 4px; }
+  .gd-tabela th, .gd-tabela td { padding: 2px 3px; }
+}
